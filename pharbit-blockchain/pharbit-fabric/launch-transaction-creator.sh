@@ -36,6 +36,14 @@ show_menu() {
 start_web_interface() {
     echo "🌐 Starting Web Interface..."
     echo ""
+    
+    # Check if web interface file exists
+    if [ ! -f "client/web-interface.html" ]; then
+        echo "❌ Web interface file not found!"
+        echo "Please ensure client/web-interface.html exists."
+        return
+    fi
+    
     echo "The web interface will open in your default browser."
     echo "If it doesn't open automatically, go to:"
     echo "file://$(pwd)/client/web-interface.html"
@@ -54,6 +62,9 @@ start_web_interface() {
     
     echo "✅ Web interface launched!"
     echo "You can now create transactions by entering sender, receiver, and amount."
+    echo ""
+    echo "💡 Tip: If the browser doesn't open automatically,"
+    echo "   manually open: client/web-interface.html"
 }
 
 # Function to start interactive terminal
@@ -68,11 +79,20 @@ start_interactive_terminal() {
     
     if [[ $network_running =~ ^[Yy]$ ]]; then
         cd client
+        
+        # Check if dependencies are installed
+        if [ ! -d "node_modules" ]; then
+            echo "📦 Installing dependencies..."
+            npm install
+        fi
+        
         echo "Starting interactive transaction creator..."
         node interactive-transaction.js
     else
         echo "Please start the network first using: ./start-first-block.sh"
         echo "Then run this option again."
+        echo ""
+        echo "💡 Tip: For a simpler experience, try the web interface (option 1)!"
     fi
 }
 
@@ -89,7 +109,13 @@ run_quick_transaction() {
     read -p "Proceed with this transaction? (y/n): " proceed
     
     if [[ $proceed =~ ^[Yy]$ ]]; then
-        ./quick-start-transaction.sh
+        if [ -f "./quick-start-transaction.sh" ]; then
+            ./quick-start-transaction.sh
+        else
+            echo "❌ Quick start script not found. Please use the web interface instead."
+            echo "Opening web interface..."
+            start_web_interface
+        fi
     else
         echo "Transaction cancelled."
     fi
