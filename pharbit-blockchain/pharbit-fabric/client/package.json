@@ -7,6 +7,8 @@
     "start": "node create-first-block.js",
     "create-block": "node create-first-block.js",
     "create-transaction": "node create-transaction.js",
+    "interactive": "node interactive-transaction.js",
+    "launch": "../launch-transaction-creator.sh",
     "query": "node query-medicine.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
