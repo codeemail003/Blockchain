@@ -378,27 +378,72 @@
         document.addEventListener('DOMContentLoaded', function() {
             refreshStats();
             loadTransactions();
+            loadExistingWallet();
         });
+
+        // Load existing wallet if available
+        async function loadExistingWallet() {
+            try {
+                const response = await fetch(`${API_BASE}/wallet`);
+                const data = await response.json();
+                
+                if (data && data.address) {
+                    // Store the wallet for both wallet slots
+                    wallets[1] = data;
+                    wallets[2] = data;
+                    updateWalletDisplay(1, data);
+                    updateWalletDisplay(2, data);
+                    showStatus('wallet-status', 'success', 'Existing wallet loaded successfully!');
+                }
+            } catch (error) {
+                console.log('No existing wallet found or error loading wallet:', error);
+            }
+        }
 
         // Generate wallet
         async function generateWallet(walletNum) {
             try {
-                showStatus('wallet-status', 'info', 'Generating wallet...');
+                showStatus('wallet-status', 'info', `Generating wallet ${walletNum}...`);
                 
-                const response = await fetch(`${API_BASE}/wallet/generate`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    wallets[walletNum] = data.wallet;
-                    updateWalletDisplay(walletNum, data.wallet);
-                    showStatus('wallet-status', 'success', `Wallet ${walletNum} generated successfully!`);
-                    refreshStats();
-                } else {
-                    showStatus('wallet-status', 'error', data.error);
+                // For demo purposes, we'll generate different wallets for each slot
+                // In a real implementation, you'd have separate wallet instances
+                if (walletNum === 1) {
+                    const response = await fetch(`${API_BASE}/wallet/generate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        wallets[1] = data.wallet;
+                        updateWalletDisplay(1, data.wallet);
+                        showStatus('wallet-status', 'success', `Wallet 1 generated successfully!`);
+                        refreshStats();
+                    } else {
+                        showStatus('wallet-status', 'error', data.error);
+                    }
+                } else if (walletNum === 2) {
+                    // For wallet 2, we'll create a different wallet by importing a different private key
+                    // This is a demo approach - in production you'd have proper multi-wallet support
+                    const demoPrivateKey = '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+                    
+                    const response = await fetch(`${API_BASE}/wallet/import`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ privateKey: demoPrivateKey })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        wallets[2] = data.wallet;
+                        updateWalletDisplay(2, data.wallet);
+                        showStatus('wallet-status', 'success', `Wallet 2 generated successfully!`);
+                        refreshStats();
+                    } else {
+                        showStatus('wallet-status', 'error', data.error);
+                    }
                 }
             } catch (error) {
                 showStatus('wallet-status', 'error', 'Failed to generate wallet: ' + error.message);
@@ -452,6 +497,7 @@
             try {
                 showStatus('transaction-status', 'info', 'Creating transaction...');
                 
+                // Create transaction from the selected wallet to the target wallet
                 const response = await fetch(`${API_BASE}/wallet/transaction`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

@@ -100,10 +100,11 @@ class Blockchain {
         this.pendingTransactions.push(rewardTransaction);
 
         // Create new block
+        const previousHash = this.chain.length > 0 ? this.getLatestBlock().hash : '0';
         const block = new Block(
             this.chain.length,
             this.pendingTransactions.slice(0, this.blockSize),
-            this.getLatestBlock().hash,
+            previousHash,
             this.difficulty
         );
 
@@ -152,16 +153,24 @@ class Blockchain {
     isValidNewBlock(block) {
         const previousBlock = this.getLatestBlock();
 
-        // Check block index
-        if (block.index !== previousBlock.index + 1) {
-            console.log(`Block index mismatch: expected ${previousBlock.index + 1}, got ${block.index}`);
-            return false;
-        }
+        // For genesis block (first block)
+        if (block.index === 0) {
+            if (block.previousHash !== '0') {
+                console.log('Genesis block must have previous hash of "0"');
+                return false;
+            }
+        } else {
+            // Check block index
+            if (block.index !== previousBlock.index + 1) {
+                console.log(`Block index mismatch: expected ${previousBlock.index + 1}, got ${block.index}`);
+                return false;
+            }
 
-        // Check previous hash
-        if (block.previousHash !== previousBlock.hash) {
-            console.log(`Previous hash mismatch: expected ${previousBlock.hash}, got ${block.previousHash}`);
-            return false;
+            // Check previous hash
+            if (block.previousHash !== previousBlock.hash) {
+                console.log(`Previous hash mismatch: expected ${previousBlock.hash}, got ${block.previousHash}`);
+                return false;
+            }
         }
 
         // Check block validity
