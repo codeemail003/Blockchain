@@ -3,14 +3,20 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const Blockchain = require('./blockchain');
 const Wallet = require('./wallet');
-const Transaction = require('./transaction');
+const PharmaceuticalTransaction = require('./transaction');
 const CryptoUtils = require('./crypto');
+const IoTIntegration = require('./iot-integration');
+const AlertSystem = require('./alerts');
+const SupplyChain = require('./supply-chain');
 
 class BlockchainNode {
     constructor(port = 3000) {
         this.port = port;
         this.blockchain = new Blockchain();
         this.wallet = new Wallet();
+        this.alertSystem = new AlertSystem();
+        this.iotIntegration = new IoTIntegration(this.blockchain, this.alertSystem);
+        this.supplyChain = new SupplyChain(this.blockchain, this.alertSystem);
         this.app = express();
         this.isMining = false;
         
@@ -244,8 +250,276 @@ class BlockchainNode {
                 wallet: {
                     initialized: this.wallet.isInitialized(),
                     address: this.wallet.getAddress()
+                },
+                pharmaceutical: {
+                    batches: this.supplyChain.getAllBatches().length,
+                    activeAlerts: this.alertSystem.getActiveAlerts().length,
+                    activeSensors: this.iotIntegration.getActiveSensors().size
                 }
             });
+        });
+
+        // ===== PHARMACEUTICAL API ENDPOINTS =====
+
+        // Get batch information
+        this.app.get('/api/batch/:batchId', (req, res) => {
+            try {
+                const { batchId } = req.params;
+                const batch = this.supplyChain.getBatch(batchId);
+                
+                if (!batch) {
+                    return res.status(404).json({ error: 'Batch not found' });
+                }
+                
+                res.json({
+                    batch: batch,
+                    history: this.supplyChain.getBatchHistory(batchId),
+                    temperatureHistory: this.supplyChain.getBatchTemperatureHistory(batchId),
+                    authenticity: this.supplyChain.verifyBatchAuthenticity(batchId)
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Create new medicine batch
+        this.app.post('/api/batch', (req, res) => {
+            try {
+                const { batchInfo, manufacturerAddress, privateKey } = req.body;
+                
+                if (!batchInfo || !manufacturerAddress || !privateKey) {
+                    return res.status(400).json({ 
+                        error: 'Missing required fields: batchInfo, manufacturerAddress, privateKey' 
+                    });
+                }
+                
+                const result = this.supplyChain.createBatch(batchInfo, manufacturerAddress, privateKey);
+                
+                res.json({
+                    message: 'Batch created successfully',
+                    batchId: result.batchId,
+                    batch: result.batch,
+                    transaction: result.transaction.toJSON()
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Get temperature history for batch
+        this.app.get('/api/temperature/:batchId', (req, res) => {
+            try {
+                const { batchId } = req.params;
+                const { hours = 24 } = req.query;
+                
+                const history = this.iotIntegration.getTemperatureHistory(batchId, parseInt(hours));
+                
+                res.json({
+                    batchId: batchId,
+                    history: history,
+                    hours: parseInt(hours)
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Receive IoT sensor data
+        this.app.post('/api/sensor-data', (req, res) => {
+            try {
+                const sensorData = req.body;
+                
+                if (!sensorData.batchId || !sensorData.sensorId) {
+                    return res.status(400).json({ 
+                        error: 'Missing required fields: batchId, sensorId' 
+                    });
+                }
+                
+                const result = this.iotIntegration.processSensorData(sensorData);
+                
+                res.json(result);
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Verify batch authenticity
+        this.app.get('/api/verify/:batchId', (req, res) => {
+            try {
+                const { batchId } = req.params;
+                const verification = this.supplyChain.verifyBatchAuthenticity(batchId);
+                
+                res.json({
+                    batchId: batchId,
+                    verification: verification
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Get active alerts
+        this.app.get('/api/alerts', (req, res) => {
+            try {
+                const { severity, type, batchId } = req.query;
+                const filters = {};
+                
+                if (severity) filters.severity = severity;
+                if (type) filters.type = type;
+                if (batchId) filters.batchId = batchId;
+                
+                const alerts = this.alertSystem.getAlerts(filters);
+                const stats = this.alertSystem.getAlertStats();
+                
+                res.json({
+                    alerts: alerts,
+                    stats: stats
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Acknowledge alert
+        this.app.post('/api/alerts/:alertId/acknowledge', (req, res) => {
+            try {
+                const { alertId } = req.params;
+                const { acknowledgedBy, notes } = req.body;
+                
+                if (!acknowledgedBy) {
+                    return res.status(400).json({ error: 'acknowledgedBy is required' });
+                }
+                
+                const alert = this.alertSystem.acknowledgeAlert(alertId, acknowledgedBy, notes);
+                
+                res.json({
+                    message: 'Alert acknowledged successfully',
+                    alert: alert
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Resolve alert
+        this.app.post('/api/alerts/:alertId/resolve', (req, res) => {
+            try {
+                const { alertId } = req.params;
+                const { resolvedBy, resolution } = req.body;
+                
+                if (!resolvedBy) {
+                    return res.status(400).json({ error: 'resolvedBy is required' });
+                }
+                
+                const alert = this.alertSystem.resolveAlert(alertId, resolvedBy, resolution);
+                
+                res.json({
+                    message: 'Alert resolved successfully',
+                    alert: alert
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Get supply chain journey
+        this.app.get('/api/supply-chain/:batchId', (req, res) => {
+            try {
+                const { batchId } = req.params;
+                const batch = this.supplyChain.getBatch(batchId);
+                
+                if (!batch) {
+                    return res.status(404).json({ error: 'Batch not found' });
+                }
+                
+                const history = this.supplyChain.getBatchHistory(batchId);
+                const temperatureHistory = this.supplyChain.getBatchTemperatureHistory(batchId);
+                const alerts = this.alertSystem.getBatchAlerts(batchId);
+                
+                res.json({
+                    batchId: batchId,
+                    batch: batch,
+                    journey: history,
+                    temperatureHistory: temperatureHistory,
+                    alerts: alerts
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Transfer batch custody
+        this.app.post('/api/supply-chain/transfer', (req, res) => {
+            try {
+                const { batchId, fromStakeholder, toStakeholder, transferInfo, privateKey } = req.body;
+                
+                if (!batchId || !fromStakeholder || !toStakeholder || !transferInfo || !privateKey) {
+                    return res.status(400).json({ 
+                        error: 'Missing required fields: batchId, fromStakeholder, toStakeholder, transferInfo, privateKey' 
+                    });
+                }
+                
+                const result = this.supplyChain.transferCustody(batchId, fromStakeholder, toStakeholder, transferInfo, privateKey);
+                
+                res.json({
+                    message: 'Custody transferred successfully',
+                    result: result
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Get supply chain statistics
+        this.app.get('/api/supply-chain/stats', (req, res) => {
+            try {
+                const stats = this.supplyChain.getSupplyChainStats();
+                
+                res.json({
+                    stats: stats
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Register stakeholder
+        this.app.post('/api/stakeholders', (req, res) => {
+            try {
+                const { stakeholderId, stakeholderInfo } = req.body;
+                
+                if (!stakeholderId || !stakeholderInfo) {
+                    return res.status(400).json({ 
+                        error: 'Missing required fields: stakeholderId, stakeholderInfo' 
+                    });
+                }
+                
+                this.supplyChain.registerStakeholder(stakeholderId, stakeholderInfo);
+                
+                res.json({
+                    message: 'Stakeholder registered successfully',
+                    stakeholderId: stakeholderId
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Authorize stakeholder for batch
+        this.app.post('/api/stakeholders/:stakeholderId/authorize/:batchId', (req, res) => {
+            try {
+                const { stakeholderId, batchId } = req.params;
+                
+                this.supplyChain.authorizeStakeholder(stakeholderId, batchId);
+                
+                res.json({
+                    message: 'Stakeholder authorized successfully',
+                    stakeholderId: stakeholderId,
+                    batchId: batchId
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
         });
     }
 
@@ -278,6 +552,20 @@ class BlockchainNode {
             console.log(`   GET  /api/blockchain/validate - Validate blockchain`);
             console.log(`   GET  /api/mining/status - Get mining status`);
             console.log(`   GET  /api/health - Health check`);
+            console.log(`\n💊 Pharmaceutical API Endpoints:`);
+            console.log(`   GET  /api/batch/:batchId - Get batch information`);
+            console.log(`   POST /api/batch - Create new medicine batch`);
+            console.log(`   GET  /api/temperature/:batchId - Get temperature history`);
+            console.log(`   POST /api/sensor-data - Receive IoT sensor data`);
+            console.log(`   GET  /api/verify/:batchId - Verify batch authenticity`);
+            console.log(`   GET  /api/alerts - Get active alerts`);
+            console.log(`   POST /api/alerts/:alertId/acknowledge - Acknowledge alert`);
+            console.log(`   POST /api/alerts/:alertId/resolve - Resolve alert`);
+            console.log(`   GET  /api/supply-chain/:batchId - Get supply chain journey`);
+            console.log(`   POST /api/supply-chain/transfer - Transfer batch custody`);
+            console.log(`   GET  /api/supply-chain/stats - Get supply chain statistics`);
+            console.log(`   POST /api/stakeholders - Register stakeholder`);
+            console.log(`   POST /api/stakeholders/:id/authorize/:batchId - Authorize stakeholder`);
         });
     }
 
