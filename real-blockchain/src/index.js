@@ -28,12 +28,31 @@ class BlockchainNode {
      * Setup Express middleware
      */
     setupMiddleware() {
+        // CORS middleware
         this.app.use(cors());
+        
+        // Body parsing middleware
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
         
+        // Request logging middleware
+        this.app.use((req, res, next) => {
+            console.log(`📡 ${req.method} ${req.path} - ${new Date().toISOString()}`);
+            next();
+        });
+        
         // Serve static files from public directory
         this.app.use(express.static('public'));
+        
+        // Error handling middleware
+        this.app.use((error, req, res, next) => {
+            console.error('❌ Server Error:', error);
+            res.status(500).json({ 
+                error: 'Internal server error',
+                message: error.message,
+                timestamp: new Date().toISOString()
+            });
+        });
     }
 
     /**
@@ -81,7 +100,19 @@ class BlockchainNode {
                     });
                 }
 
-                const transaction = new Transaction(from, to, amount, privateKey, fee || 0.001);
+                // Note: This endpoint is for legacy compatibility
+                // For pharmaceutical transactions, use the batch endpoints
+                const transaction = new PharmaceuticalTransaction(
+                    from, to, 
+                    'LEGACY_BATCH', // batchId
+                    { name: 'Legacy Transaction', manufacturer: 'System', type: 'legacy', expiration: '2099-12-31' }, // medicineInfo
+                    'transfer', // action
+                    'system', // stakeholder
+                    { lat: 0, lon: 0, facility: 'System' }, // location
+                    { temperature: 20, humidity: 50, light: 0, tampering: false, timestamp: Date.now() }, // sensorData
+                    privateKey, 
+                    fee || 0.001
+                );
                 
                 if (!transaction.isValid()) {
                     return res.status(400).json({ error: 'Invalid transaction' });
@@ -422,6 +453,19 @@ class BlockchainNode {
             }
         });
 
+        // Get supply chain statistics
+        this.app.get('/api/supply-chain/stats', (req, res) => {
+            try {
+                const stats = this.supplyChain.getSupplyChainStats();
+                
+                res.json({
+                    stats: stats
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
         // Get supply chain journey
         this.app.get('/api/supply-chain/:batchId', (req, res) => {
             try {
@@ -464,19 +508,6 @@ class BlockchainNode {
                 res.json({
                     message: 'Custody transferred successfully',
                     result: result
-                });
-            } catch (error) {
-                res.status(400).json({ error: error.message });
-            }
-        });
-
-        // Get supply chain statistics
-        this.app.get('/api/supply-chain/stats', (req, res) => {
-            try {
-                const stats = this.supplyChain.getSupplyChainStats();
-                
-                res.json({
-                    stats: stats
                 });
             } catch (error) {
                 res.status(400).json({ error: error.message });
@@ -527,15 +558,21 @@ class BlockchainNode {
      * Start the blockchain node
      */
     start() {
-        this.app.listen(this.port, () => {
-            console.log(`🚀 Real Blockchain Node started on port ${this.port}`);
-            console.log(`📊 Blockchain Stats:`, this.blockchain.getStats());
+        try {
+            console.log('🚀 Starting Pharbit Pharmaceutical Blockchain Server...');
+            console.log(`📡 Server will listen on port ${this.port}`);
+            console.log(`🌐 Dashboard will be available at: http://localhost:${this.port}`);
             
-            if (this.wallet.isInitialized()) {
-                console.log(`💰 Wallet Address: ${this.wallet.getAddress()}`);
-            } else {
-                console.log(`⚠️  No wallet initialized. Use /api/wallet/generate to create one.`);
-            }
+            this.app.listen(this.port, () => {
+                console.log(`\n✅ Pharbit Blockchain Server Successfully Started!`);
+                console.log(`📍 Server URL: http://localhost:${this.port}`);
+                console.log(`📊 Blockchain Stats:`, this.blockchain.getStats());
+                
+                if (this.wallet.isInitialized()) {
+                    console.log(`💰 Wallet Address: ${this.wallet.getAddress()}`);
+                } else {
+                    console.log(`⚠️  No wallet initialized. Use /api/wallet/generate to create one.`);
+                }
             
             console.log(`🌐 API Documentation:`);
             console.log(`   GET  /api/blockchain - Get blockchain info`);
@@ -566,7 +603,14 @@ class BlockchainNode {
             console.log(`   GET  /api/supply-chain/stats - Get supply chain statistics`);
             console.log(`   POST /api/stakeholders - Register stakeholder`);
             console.log(`   POST /api/stakeholders/:id/authorize/:batchId - Authorize stakeholder`);
+            console.log(`\n🎯 Ready for pharmaceutical supply chain operations!`);
+            console.log(`💊 Access the dashboard at: http://localhost:${this.port}`);
         });
+        
+        } catch (error) {
+            console.error('❌ Failed to start Pharbit Blockchain Server:', error);
+            process.exit(1);
+        }
     }
 
     /**
