@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Pharbit Dashboard</title>
+	<style>
+		body { font-family: system-ui, Arial, sans-serif; margin: 0; padding: 20px; background:#0b1220; color:#e8eefc; }
+		.container { max-width: 1000px; margin: 0 auto; }
+		.card { background:#121a2b; border:1px solid #1f2b45; border-radius:12px; padding:16px; margin-bottom:16px; }
+		.btn { background:#3b82f6; color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; }
+		.btn:disabled { opacity:.6; cursor:not-allowed; }
+		input, textarea { width:100%; padding:10px; border-radius:8px; border:1px solid #334155; background:#0f172a; color:#e2e8f0; }
+		label { font-size:14px; color:#93c5fd; }
+		pre { background:#0f172a; padding:10px; border-radius:8px; overflow:auto; }
+		.row { display:flex; gap:16px; flex-wrap:wrap; }
+		.col { flex:1 1 300px; }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Pharbit Dashboard</h1>
+		<p>Supply chain smart contracts + Web3 API</p>
+
+		<div class="card">
+			<h3>Wallet</h3>
+			<button class="btn" id="connect">Connect MetaMask</button>
+			<p id="address"></p>
+		</div>
+
+		<div class="row">
+			<div class="card col">
+				<h3>API Health</h3>
+				<button class="btn" id="healthBtn">Check /api/health</button>
+				<pre id="healthOut"></pre>
+			</div>
+			<div class="card col">
+				<h3>Verify Batch</h3>
+				<label>Batch ID</label>
+				<input id="verifyBatchId" placeholder="BATCH_123" />
+				<br /><br />
+				<button class="btn" id="verifyBtn">Verify</button>
+				<pre id="verifyOut"></pre>
+			</div>
+		</div>
+
+		<div class="card">
+			<h3>Record Sensor Data</h3>
+			<div class="row">
+				<div class="col">
+					<label>Batch ID</label>
+					<input id="sBatch" placeholder="BATCH_123" />
+				</div>
+				<div class="col">
+					<label>Temperature (°C)</label>
+					<input id="sTemp" type="number" step="0.1" value="5.0" />
+				</div>
+				<div class="col">
+					<label>Humidity (%)</label>
+					<input id="sHum" type="number" step="1" value="45" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label>Latitude</label>
+					<input id="sLat" type="number" step="0.000001" value="40.7128" />
+				</div>
+				<div class="col">
+					<label>Longitude</label>
+					<input id="sLon" type="number" step="0.000001" value="-74.0060" />
+				</div>
+				<div class="col">
+					<label>Tampering</label>
+					<input id="sTamper" type="checkbox" />
+				</div>
+			</div>
+			<br />
+			<button class="btn" id="sensorBtn">Submit Sensor Data</button>
+			<pre id="sensorOut"></pre>
+		</div>
+	</div>
+
+	<script type="module">
+		const API_BASE = (location.origin.replace(/:\\d+$/, ':4000')) + '/api';
+		const qs = (id) => document.getElementById(id);
+
+		async function connectWallet() {
+			if (!window.ethereum) { alert('MetaMask not found'); return; }
+			const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+			qs('address').textContent = `Connected: ${accounts[0]}`;
+		}
+
+		async function apiGet(path) {
+			const res = await fetch(API_BASE + path);
+			return await res.json();
+		}
+		async function apiPost(path, body) {
+			const res = await fetch(API_BASE + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+			return await res.json();
+		}
+
+		qs('connect').onclick = connectWallet;
+		qs('healthBtn').onclick = async () => {
+			qs('healthOut').textContent = JSON.stringify(await apiGet('/health'), null, 2);
+		};
+		qs('verifyBtn').onclick = async () => {
+			const id = qs('verifyBatchId').value.trim();
+			if (!id) return;
+			qs('verifyOut').textContent = JSON.stringify(await apiGet(`/verify/${encodeURIComponent(id)}`), null, 2);
+		};
+		qs('sensorBtn').onclick = async () => {
+			const payload = {
+				batchId: qs('sBatch').value.trim(),
+				temperature: parseFloat(qs('sTemp').value),
+				humidity: parseInt(qs('sHum').value, 10),
+				gps: { lat: parseFloat(qs('sLat').value), lon: parseFloat(qs('sLon').value) },
+				tampering: qs('sTamper').checked,
+				timestamp: Math.floor(Date.now()/1000)
+			};
+			qs('sensorOut').textContent = JSON.stringify(await apiPost('/sensor-data', payload), null, 2);
+		};
+	</script>
+</body>
+</html>
