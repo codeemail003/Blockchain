@@ -1,5 +1,5 @@
 {
-  "_format": "hh3-artifact-1",
+  "_format": "hh-sol-artifact-1",
   "contractName": "IPharbitBatch",
   "sourceName": "contracts/PharbitSupplyChain.sol",
   "abi": [
@@ -43,8 +43,5 @@
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "linkReferences": {},
-  "deployedLinkReferences": {},
-  "immutableReferences": {},
-  "inputSourceName": "project/contracts/PharbitSupplyChain.sol",
-  "buildInfoId": "solc-0_8_20-b09318e02b1418fb518b3c17e014e96dfffe52de"
+  "deployedLinkReferences": {}
 }
