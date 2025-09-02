@@ -15,6 +15,10 @@ function loadJSON(p) {
 	return JSON.parse(readFileSync(p, 'utf-8'));
 }
 
+function toJSONSafe(obj) {
+	return JSON.parse(JSON.stringify(obj, (_k, v) => typeof v === 'bigint' ? v.toString() : v));
+}
+
 // Load addresses and ABIs
 const ROOT = path.resolve(__dirname, "../../");
 const addressesPath = path.join(ROOT, "deployments", "addresses.local.json");
@@ -58,7 +62,7 @@ router.get('/batch/:id', async (req, res) => {
 		const id = req.params.id;
 		const info = await batchC.getBatch(id);
 		const sensors = await batchC.getSensorData(id);
-		res.json({ batchId: id, info, sensors });
+		res.json({ batchId: id, info: toJSONSafe(info), sensors: toJSONSafe(sensors) });
 	} catch (e) {
 		res.status(500).json({ error: e.message });
 	}
@@ -70,8 +74,7 @@ router.get('/verify/:batchId', async (req, res) => {
 		const batchC = getContract('PharbitBatch', 'batch');
 		const id = req.params.batchId;
 		const result = await batchC.verifyBatch(id);
-		// result is tuple (info, isValid)
-		res.json({ batchId: id, info: result[0], valid: result[1] });
+		res.json({ batchId: id, info: toJSONSafe(result[0]), valid: !!result[1] });
 	} catch (e) {
 		res.status(500).json({ error: e.message });
 	}
@@ -100,7 +103,7 @@ router.post('/sensor-data', async (req, res) => {
 	}
 });
 
-// Supply chain journey placeholder (events processing can be added later)
+// Supply chain journey placeholder
 router.get('/supply-chain/:batchId', async (req, res) => {
 	try {
 		const id = req.params.batchId;
