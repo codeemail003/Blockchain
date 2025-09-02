@@ -9,20 +9,22 @@
   "scripts": {
     "compile": "hardhat compile",
     "clean": "hardhat clean",
-    "deploy": "hardhat run scripts/deploy.js --network hardhat",
-    "deploy:testnet": "hardhat run scripts/deploy.js --network polygonTestnet",
-    "test": "hardhat test"
+    "deploy": "hardhat ignition deploy ./ignition/modules/PharbitModule.ts --network hardhat",
+    "export": "node scripts/export-addresses.js",
+    "deploy:export": "npm run deploy && npm run export",
+    "test": "hardhat test",
+    "backend": "npm --prefix backend start"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@nomicfoundation/hardhat-ignition": "^0.15.13",
-    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-ignition": "0.15.13",
+    "@nomicfoundation/hardhat-toolbox": "6.1.0",
     "@openzeppelin/contracts": "^5.4.0",
     "dotenv": "^17.2.1",
-    "hardhat": "^2.26.0"
+    "hardhat": "2.26.0"
   },
   "type": "commonjs"
 }
