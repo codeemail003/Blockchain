@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import "@nomicfoundation/hardhat-viem";
+import "@nomicfoundation/hardhat-ignition";
 
 dotenv.config();
 
