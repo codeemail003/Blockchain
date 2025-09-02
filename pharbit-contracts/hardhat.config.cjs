@@ -4,7 +4,7 @@ require('@nomicfoundation/hardhat-ignition');
 
 const { PRIVATE_KEY, RPC_URL, ETHERSCAN_API_KEY, POLYGONSCAN_API_KEY } = process.env;
 
-const networks = { hardhat: {} };
+const networks = { hardhat: {}, localhost: { url: 'http://127.0.0.1:8545' } };
 if (RPC_URL && PRIVATE_KEY) {
 	networks.polygonTestnet = { url: RPC_URL, accounts: [PRIVATE_KEY] };
 }

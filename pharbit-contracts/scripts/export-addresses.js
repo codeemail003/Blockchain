@@ -26,19 +26,22 @@ function copyAbis() {
 	}
 }
 
-function exportAddresses(addresses) {
+function exportAddresses(addresses, network) {
 	const outDir = `${process.cwd()}/deployments`;
 	ensureDir(outDir);
-	const outPath = `${outDir}/addresses.local.json`;
+	const outPath = `${outDir}/addresses.${network}.json`;
 	writeFileSync(outPath, JSON.stringify(addresses, null, 2));
+	// maintain local.json as latest
+	writeFileSync(`${outDir}/addresses.local.json`, JSON.stringify(addresses, null, 2));
 	console.log(`Saved addresses -> ${outPath}`);
 }
 
 function main() {
-	// For local hardhat network, Ignition prints standard addresses, capture via dry run
+	const network = process.env.NETWORK || 'hardhat';
 	let addresses = null;
 	try {
-		const output = execSync('npx hardhat ignition deploy ./ignition/modules/PharbitModule.ts --network hardhat', { encoding: 'utf-8' });
+		const cmd = `npx hardhat ignition deploy ./ignition/modules/PharbitModule.ts --network ${network}`;
+		const output = execSync(cmd, { encoding: 'utf-8' });
 		const lines = output.split('\n').filter(l => l.includes('PharbitModule#'));
 		const map = {};
 		for (const line of lines) {
@@ -49,20 +52,20 @@ function main() {
 			}
 		}
 		addresses = {
-			network: 'hardhat',
+			network,
 			stakeholder: map.stakeholder,
 			sensor: map.sensor,
 			governance: map.governance,
 			batch: map.batch,
 			supplyChain: map.supplychain
 		};
-		console.log('Captured addresses from Ignition output');
+		console.log(`Captured addresses from Ignition output for ${network}`);
 	} catch (e) {
 		console.warn('Failed to capture addresses from Ignition. You can fill them manually.');
-		addresses = { network: 'hardhat' };
+		addresses = { network };
 	}
 
-	exportAddresses(addresses);
+	exportAddresses(addresses, network);
 	copyAbis();
 }
 
