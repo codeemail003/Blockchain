@@ -1,46 +1,6 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/workspace/pharbit-contracts/contracts/PharbitBatch.sol": {
-      "lastModificationDate": 1756811229888,
-      "contentHash": "7d5a3b356251cb97f1bb27d82991dcc5",
-      "sourceName": "contracts/PharbitBatch.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/utils/structs/EnumerableSet.sol",
-        "@openzeppelin/contracts/access/AccessControl.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "IPharbitStakeholder",
-        "PharbitBatch"
-      ]
-    },
     "/workspace/pharbit-contracts/node_modules/@openzeppelin/contracts/access/AccessControl.sol": {
       "lastModificationDate": 1756811024953,
       "contentHash": "d0e2c05f09a3aea7cd299bbd4a435ee2",
@@ -121,8 +81,8 @@
       ]
     },
     "/workspace/pharbit-contracts/node_modules/@openzeppelin/contracts/utils/Context.sol": {
-      "lastModificationDate": 1756811025009,
-      "contentHash": "67bfbc07588eb8683b3fd8f6f909563e",
+      "lastModificationDate": 1757020658721,
+      "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -150,7 +110,7 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.20"
+        "^0.8.0"
       ],
       "artifacts": [
         "Context"
@@ -346,78 +306,6 @@
         "Math"
       ]
     },
-    "/workspace/pharbit-contracts/node_modules/@openzeppelin/contracts/utils/Comparators.sol": {
-      "lastModificationDate": 1756811025009,
-      "contentHash": "0e57405a6f979853cbfeb0df3546c3a3",
-      "sourceName": "@openzeppelin/contracts/utils/Comparators.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Comparators"
-      ]
-    },
-    "/workspace/pharbit-contracts/node_modules/@openzeppelin/contracts/utils/SlotDerivation.sol": {
-      "lastModificationDate": 1756811025349,
-      "contentHash": "43950136ee6a1761d2cbed39d16bb1e0",
-      "sourceName": "@openzeppelin/contracts/utils/SlotDerivation.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "SlotDerivation"
-      ]
-    },
     "/workspace/pharbit-contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": {
       "lastModificationDate": 1756811025349,
       "contentHash": "e656d64c4ce918f3d13030b91c935134",
@@ -452,42 +340,6 @@
       ],
       "artifacts": [
         "StorageSlot"
-      ]
-    },
-    "/workspace/pharbit-contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol": {
-      "lastModificationDate": 1756811025317,
-      "contentHash": "2133dc13536b4a6a98131e431fac59e1",
-      "sourceName": "@openzeppelin/contracts/utils/Panic.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "Panic"
       ]
     },
     "/workspace/pharbit-contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": {
@@ -526,10 +378,10 @@
         "SafeCast"
       ]
     },
-    "/workspace/pharbit-contracts/contracts/PharbitStakeholder.sol": {
-      "lastModificationDate": 1756811212954,
-      "contentHash": "68dfdb541636cc60f8f6901458ead17c",
-      "sourceName": "contracts/PharbitStakeholder.sol",
+    "/workspace/pharbit-contracts/contracts/PharmaTracker.sol": {
+      "lastModificationDate": 1757020836897,
+      "contentHash": "f6e59630329e6bb680e8328451d9db96",
+      "sourceName": "contracts/PharmaTracker.sol",
       "solcConfig": {
         "version": "0.8.20",
         "settings": {
@@ -555,95 +407,20 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/access/AccessControl.sol"
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/security/ReentrancyGuard.sol"
       ],
       "versionPragmas": [
         "^0.8.20"
       ],
       "artifacts": [
-        "PharbitStakeholder"
+        "PharmaTracker"
       ]
     },
-    "/workspace/pharbit-contracts/contracts/PharbitSensor.sol": {
-      "lastModificationDate": 1756811239715,
-      "contentHash": "f54574ded4492850279a4d250a1c342b",
-      "sourceName": "contracts/PharbitSensor.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/access/AccessControl.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "PharbitSensor"
-      ]
-    },
-    "/workspace/pharbit-contracts/contracts/PharbitGovernance.sol": {
-      "lastModificationDate": 1756811253617,
-      "contentHash": "658e7e87d28a78b1245ff035ee38d2dd",
-      "sourceName": "contracts/PharbitGovernance.sol",
-      "solcConfig": {
-        "version": "0.8.20",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/access/AccessControl.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.20"
-      ],
-      "artifacts": [
-        "PharbitGovernance"
-      ]
-    },
-    "/workspace/pharbit-contracts/contracts/PharbitSupplyChain.sol": {
-      "lastModificationDate": 1756811247582,
-      "contentHash": "288dd9941ca00ddaab745578eb426ab6",
-      "sourceName": "contracts/PharbitSupplyChain.sol",
+    "/workspace/pharbit-contracts/node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol": {
+      "lastModificationDate": 1757020658849,
+      "contentHash": "1535f8c0c68463f8c1b5239f7584e71f",
+      "sourceName": "@openzeppelin/contracts/security/ReentrancyGuard.sol",
       "solcConfig": {
         "version": "0.8.20",
         "settings": {
@@ -670,12 +447,48 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.20"
+        "^0.8.0"
       ],
       "artifacts": [
-        "IPharbitBatch",
-        "IPharbitStakeholderSC",
-        "PharbitSupplyChain"
+        "ReentrancyGuard"
+      ]
+    },
+    "/workspace/pharbit-contracts/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
+      "lastModificationDate": 1757020658849,
+      "contentHash": "5a20b2cad87ddb61c7a3a6af21289e28",
+      "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../utils/Context.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Ownable"
       ]
     }
   }
