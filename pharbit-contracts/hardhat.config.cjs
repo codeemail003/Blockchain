@@ -7,6 +7,7 @@ const { PRIVATE_KEY, RPC_URL, ETHERSCAN_API_KEY, POLYGONSCAN_API_KEY } = process
 const networks = { hardhat: {}, localhost: { url: 'http://127.0.0.1:8545' } };
 if (RPC_URL && PRIVATE_KEY) {
 	networks.polygonTestnet = { url: RPC_URL, accounts: [PRIVATE_KEY] };
+	networks.sepolia = { url: RPC_URL, accounts: [PRIVATE_KEY], chainId: 11155111 };
 }
 
 module.exports = {
