@@ -14,6 +14,8 @@
     "export": "node scripts/export-addresses.js",
     "deploy:export": "npm run deploy && npm run export",
     "deploy:localhost:export": "npm run deploy:localhost && npm run export",
+    "deploy:full": "./deploy.sh",
+    "verify": "node scripts/verify-setup.js",
     "test": "hardhat test",
     "backend": "npm --prefix backend start",
     "node": "hardhat node",
