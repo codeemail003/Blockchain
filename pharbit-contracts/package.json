@@ -10,10 +10,16 @@
     "compile": "hardhat compile",
     "clean": "hardhat clean",
     "deploy": "hardhat ignition deploy ./ignition/modules/PharbitModule.ts --network hardhat",
+    "deploy:localhost": "hardhat run scripts/deploy-localhost.js --network localhost",
     "export": "node scripts/export-addresses.js",
     "deploy:export": "npm run deploy && npm run export",
+    "deploy:localhost:export": "npm run deploy:localhost && npm run export",
     "test": "hardhat test",
-    "backend": "npm --prefix backend start"
+    "backend": "npm --prefix backend start",
+    "node": "hardhat node",
+    "node:deploy": "npm run node:deploy:script",
+    "setup": "./scripts/start-and-deploy.sh",
+    "quick-deploy": "./scripts/quick-deploy.sh"
   },
   "keywords": [],
   "author": "",

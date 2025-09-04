@@ -1,40 +1,56 @@
-import hre from "hardhat";
-import { writeFileSync, mkdirSync, copyFileSync } from "fs";
-import { dirname } from "path";
+const hre = require("hardhat");
+const { writeFileSync, mkdirSync, copyFileSync } = require("fs");
+const { dirname } = require("path");
 
 function ensureDir(p) { try { mkdirSync(p, { recursive: true }); } catch (e) {} }
 
 async function main() {
-	// Deploy Stakeholder (admin = zero will be replaced after)
-	const stakeholder = await hre.viem.deployContract("PharbitStakeholder", ["0x0000000000000000000000000000000000000001"]);
-	console.log(`PharbitStakeholder: ${stakeholder.address}`);
+	// Get the deployer account
+	const [deployer] = await hre.ethers.getSigners();
+	console.log("Deploying contracts with account:", deployer.address);
+
+	// Deploy Stakeholder (admin = deployer)
+	const PharbitStakeholder = await hre.ethers.getContractFactory("PharbitStakeholder");
+	const stakeholder = await PharbitStakeholder.deploy(deployer.address);
+	await stakeholder.waitForDeployment();
+	const stakeholderAddress = await stakeholder.getAddress();
+	console.log(`PharbitStakeholder: ${stakeholderAddress}`);
 
 	// Deploy Sensor registry (admin)
-	const sensor = await hre.viem.deployContract("PharbitSensor", ["0x0000000000000000000000000000000000000001"]);
-	console.log(`PharbitSensor:     ${sensor.address}`);
+	const PharbitSensor = await hre.ethers.getContractFactory("PharbitSensor");
+	const sensor = await PharbitSensor.deploy(deployer.address);
+	await sensor.waitForDeployment();
+	const sensorAddress = await sensor.getAddress();
+	console.log(`PharbitSensor:     ${sensorAddress}`);
 
 	// Deploy Governance
-	const governance = await hre.viem.deployContract("PharbitGovernance", [
-		"0x0000000000000000000000000000000000000001",
-		20, 80, 3600
-	]);
-	console.log(`PharbitGovernance: ${governance.address}`);
+	const PharbitGovernance = await hre.ethers.getContractFactory("PharbitGovernance");
+	const governance = await PharbitGovernance.deploy(deployer.address, 20, 80, 3600);
+	await governance.waitForDeployment();
+	const governanceAddress = await governance.getAddress();
+	console.log(`PharbitGovernance: ${governanceAddress}`);
 
 	// Deploy Batch (stakeholder, admin)
-	const batch = await hre.viem.deployContract("PharbitBatch", [stakeholder.address, "0x0000000000000000000000000000000000000001"]);
-	console.log(`PharbitBatch:      ${batch.address}`);
+	const PharbitBatch = await hre.ethers.getContractFactory("PharbitBatch");
+	const batch = await PharbitBatch.deploy(stakeholderAddress, deployer.address);
+	await batch.waitForDeployment();
+	const batchAddress = await batch.getAddress();
+	console.log(`PharbitBatch:      ${batchAddress}`);
 
 	// Deploy SupplyChain (batch, stakeholder)
-	const supplyChain = await hre.viem.deployContract("PharbitSupplyChain", [batch.address, stakeholder.address]);
-	console.log(`PharbitSupplyChain:${supplyChain.address}`);
+	const PharbitSupplyChain = await hre.ethers.getContractFactory("PharbitSupplyChain");
+	const supplyChain = await PharbitSupplyChain.deploy(batchAddress, stakeholderAddress);
+	await supplyChain.waitForDeployment();
+	const supplyChainAddress = await supplyChain.getAddress();
+	console.log(`PharbitSupplyChain:${supplyChainAddress}`);
 
 	const out = {
 		network: process.env.HARDHAT_NETWORK || 'hardhat',
-		stakeholder: stakeholder.address,
-		sensor: sensor.address,
-		governance: governance.address,
-		batch: batch.address,
-		supplyChain: supplyChain.address
+		stakeholder: stakeholderAddress,
+		sensor: sensorAddress,
+		governance: governanceAddress,
+		batch: batchAddress,
+		supplyChain: supplyChainAddress
 	};
 
 	const deploymentsDir = `${process.cwd()}/deployments`;
