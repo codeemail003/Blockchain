@@ -1,6 +1,47 @@
 const hre = require("hardhat");
 const { writeFileSync, mkdirSync } = require("fs");
 const { dirname } = require("path");
+const hre = require("hardhat");
+
+async function main() {
+  const [deployer] = await hre.ethers.getSigners();
+  console.log("Deploying with:", deployer.address);
+
+  // Governance
+  const Governance = await hre.ethers.getContractFactory("GovernanceContract");
+  const governance = await Governance.deploy([deployer.address], 1, deployer.address);
+  await governance.waitForDeployment();
+  console.log("Governance:", await governance.getAddress());
+
+  // Stakeholders
+  const Stakeholders = await hre.ethers.getContractFactory("StakeholderContract");
+  const stakeholders = await Stakeholders.deploy(deployer.address);
+  await stakeholders.waitForDeployment();
+  console.log("Stakeholders:", await stakeholders.getAddress());
+
+  // Batches
+  const Batches = await hre.ethers.getContractFactory("BatchContract");
+  const batches = await Batches.deploy(deployer.address);
+  await batches.waitForDeployment();
+  console.log("Batches:", await batches.getAddress());
+
+  // Sensor Data
+  const Sensor = await hre.ethers.getContractFactory("SensorDataContract");
+  const sensor = await Sensor.deploy(-20000, 40000, 900, deployer.address);
+  await sensor.waitForDeployment();
+  console.log("SensorData:", await sensor.getAddress());
+
+  // Supply Chain
+  const Supply = await hre.ethers.getContractFactory("SupplyChainContract");
+  const supply = await Supply.deploy(deployer.address, await stakeholders.getAddress());
+  await supply.waitForDeployment();
+  console.log("SupplyChain:", await supply.getAddress());
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
 
 // Utility function to ensure directory exists
 function ensureDir(p) {
