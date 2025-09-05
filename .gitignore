@@ -1,0 +1,17 @@
+# Ignore node artifacts and logs
+node_modules/
+*.log
+# Ignore hardhat cache & artifacts if desired
+# cache/
+# artifacts/
+
+# Ignore core dumps and binaries
+core*
+*.core
+*.bin
+*.zip
+*.tar
+*.tar.gz
+
+# Project-specific large artifacts
+pharbit-contracts/backend/core.*
