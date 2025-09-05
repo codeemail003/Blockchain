@@ -82,7 +82,7 @@ pharbit-contracts/
 ├── frontend/
 │   └── src/contracts/             # Frontend contract ABIs
 ├── deployments/                   # Deployment addresses
-├── hardhat.config.js              # Hardhat configuration
+├── hardhat.config.cjs              # Hardhat configuration
 └── package.json                   # Dependencies
 ```
 
