@@ -1,173 +1,120 @@
 const hre = require("hardhat");
-const { writeFileSync, mkdirSync } = require("fs");
-const { dirname } = require("path");
-const hre = require("hardhat");
 
 async function main() {
+  console.log("🚀 Starting Pharbit Contracts Deployment to Sepolia...");
+  
   const [deployer] = await hre.ethers.getSigners();
-  console.log("Deploying with:", deployer.address);
-
-  // Governance
-  const Governance = await hre.ethers.getContractFactory("GovernanceContract");
-  const governance = await Governance.deploy([deployer.address], 1, deployer.address);
-  await governance.waitForDeployment();
-  console.log("Governance:", await governance.getAddress());
-
-  // Stakeholders
-  const Stakeholders = await hre.ethers.getContractFactory("StakeholderContract");
-  const stakeholders = await Stakeholders.deploy(deployer.address);
-  await stakeholders.waitForDeployment();
-  console.log("Stakeholders:", await stakeholders.getAddress());
-
-  // Batches
-  const Batches = await hre.ethers.getContractFactory("BatchContract");
-  const batches = await Batches.deploy(deployer.address);
-  await batches.waitForDeployment();
-  console.log("Batches:", await batches.getAddress());
-
-  // Sensor Data
-  const Sensor = await hre.ethers.getContractFactory("SensorDataContract");
-  const sensor = await Sensor.deploy(-20000, 40000, 900, deployer.address);
-  await sensor.waitForDeployment();
-  console.log("SensorData:", await sensor.getAddress());
-
-  // Supply Chain
-  const Supply = await hre.ethers.getContractFactory("SupplyChainContract");
-  const supply = await Supply.deploy(deployer.address, await stakeholders.getAddress());
-  await supply.waitForDeployment();
-  console.log("SupplyChain:", await supply.getAddress());
-}
-
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
-
-// Utility function to ensure directory exists
-function ensureDir(p) {
-  try {
-    mkdirSync(p, { recursive: true });
-  } catch (e) {
-    // Directory already exists or other error, ignore
-  }
-}
-
-async function main() {
-  console.log("🚀 Starting PharmaTracker Contract Deployment");
-  console.log("=============================================");
+  console.log("🔑 Deploying with account:", deployer.address);
+  
+  // Check balance
+  const balance = await hre.ethers.provider.getBalance(deployer.address);
+  console.log("💰 Account balance:", hre.ethers.formatEther(balance), "ETH");
 
   try {
-    // Get the deployer account
-    const [deployer] = await hre.ethers.getSigners();
-    console.log("📋 Deploying contracts with account:", deployer.address);
+    // Deploy GovernanceContract with constructor arguments
+    console.log("📋 Deploying GovernanceContract...");
+    const GovernanceContract = await hre.ethers.getContractFactory("GovernanceContract");
+    // GovernanceContract(address[] memory initialOwners, uint256 initialQuorum, address admin)
+    const initialOwners = [deployer.address]; // Start with deployer as initial owner
+    const initialQuorum = 1; // Start with quorum of 1 for testing
+    const governance = await GovernanceContract.deploy(initialOwners, initialQuorum, deployer.address);
+    await governance.waitForDeployment();
+    const governanceAddress = await governance.getAddress();
+    console.log("✅ GovernanceContract deployed to:", governanceAddress);
 
-    // Check account balance
-    const balance = await hre.ethers.provider.getBalance(deployer.address);
-    console.log("💰 Account balance:", hre.ethers.utils.formatEther(balance), "ETH");
+    // Deploy SensorDataContract with constructor arguments
+    console.log("📡 Deploying SensorDataContract...");
+    const SensorDataContract = await hre.ethers.getContractFactory("SensorDataContract");
+    // SensorDataContract(int256 minTempMilliC, int256 maxTempMilliC, uint256 maxHumidityPermille, address admin)
+    const minTempMilliC = 2000;  // 2°C in millicelsius
+    const maxTempMilliC = 8000;  // 8°C in millicelsius (typical pharma cold chain)
+    const maxHumidityPermille = 600; // 60% humidity in permille
+    const sensorData = await SensorDataContract.deploy(minTempMilliC, maxTempMilliC, maxHumidityPermille, deployer.address);
+    await sensorData.waitForDeployment();
+    const sensorDataAddress = await sensorData.getAddress();
+    console.log("✅ SensorDataContract deployed to:", sensorDataAddress);
 
-    if (balance.eq(0)) {
-      console.log("⚠️  Warning: Account has no ETH. Make sure Hardhat node is running with funded accounts.");
-    }
+    // Deploy StakeholderContract with constructor arguments
+    console.log("👥 Deploying StakeholderContract...");
+    const StakeholderContract = await hre.ethers.getContractFactory("StakeholderContract");
+    // StakeholderContract(address admin)
+    const stakeholder = await StakeholderContract.deploy(deployer.address);
+    await stakeholder.waitForDeployment();
+    const stakeholderAddress = await stakeholder.getAddress();
+    console.log("✅ StakeholderContract deployed to:", stakeholderAddress);
 
-    // Deploy PharmaTracker contract
-    console.log("\n📦 Deploying PharmaTracker contract...");
-    const PharmaTracker = await hre.ethers.getContractFactory("PharmaTracker");
-    const pharmaTracker = await PharmaTracker.deploy();
-    await pharmaTracker.deployed();
+    // Deploy BatchContract with constructor arguments
+    console.log("📦 Deploying BatchContract...");
+    const BatchContract = await hre.ethers.getContractFactory("BatchContract");
+    // BatchContract(address admin)
+    const batch = await BatchContract.deploy(deployer.address);
+    await batch.waitForDeployment();
+    const batchAddress = await batch.getAddress();
+    console.log("✅ BatchContract deployed to:", batchAddress);
 
-    const contractAddress = pharmaTracker.address;
-    console.log(`✅ PharmaTracker deployed to: ${contractAddress}`);
+    // Deploy SupplyChainContract with constructor arguments
+    console.log("🔗 Deploying SupplyChainContract...");
+    const SupplyChainContract = await hre.ethers.getContractFactory("SupplyChainContract");
+    // SupplyChainContract(address admin, address _stakeholderContract)
+    const supplyChain = await SupplyChainContract.deploy(deployer.address, stakeholderAddress);
+    await supplyChain.waitForDeployment();
+    const supplyChainAddress = await supplyChain.getAddress();
+    console.log("✅ SupplyChainContract deployed to:", supplyChainAddress);
 
-    // Prepare deployment data
-    const deploymentData = {
-      network: hre.network.name,
+    // Save contract addresses
+    const addresses = {
+      GovernanceContract: governanceAddress,
+      SensorDataContract: sensorDataAddress,
+      StakeholderContract: stakeholderAddress,
+      BatchContract: batchAddress,
+      SupplyChainContract: supplyChainAddress,
+      network: "sepolia",
+      chainId: 11155111,
       deployer: deployer.address,
-      timestamp: new Date().toISOString(),
-      contracts: {
-        PharmaTracker: contractAddress,
-      },
-      abi: PharmaTracker.interface.format("json"),
+      deployedAt: new Date().toISOString(),
+      gasUsed: "Calculated after deployment"
     };
 
-    // Save addresses to deployments directory
-    const deploymentsDir = `${process.cwd()}/deployments`;
-    ensureDir(deploymentsDir);
+    // Write to contract-addresses.json
+    const fs = require('fs');
+    fs.writeFileSync('contract-addresses.json', JSON.stringify(addresses, null, 2));
+    
+    console.log("\n🎉 All contracts deployed successfully!");
+    console.log("📄 Contract addresses saved to contract-addresses.json");
+    
+    console.log("\n📋 Deployment Summary:");
+    console.log("=" + "=".repeat(50));
+    Object.keys(addresses).forEach(name => {
+      if (name !== 'network' && name !== 'chainId' && name !== 'deployer' && name !== 'deployedAt' && name !== 'gasUsed') {
+        console.log(`${name.padEnd(25)}: ${addresses[name]}`);
+      }
+    });
+    
+    console.log("\n🔍 Verify contracts on Etherscan:");
+    console.log("=" + "=".repeat(50));
+    console.log(`npx hardhat verify --network sepolia ${governanceAddress} '[${JSON.stringify(initialOwners)}]' ${initialQuorum} ${deployer.address}`);
+    console.log(`npx hardhat verify --network sepolia ${sensorDataAddress} ${minTempMilliC} ${maxTempMilliC} ${maxHumidityPermille} ${deployer.address}`);
+    console.log(`npx hardhat verify --network sepolia ${stakeholderAddress} ${deployer.address}`);
+    console.log(`npx hardhat verify --network sepolia ${batchAddress} ${deployer.address}`);
+    console.log(`npx hardhat verify --network sepolia ${supplyChainAddress} ${deployer.address} ${stakeholderAddress}`);
 
-    const addressesPath = `${deploymentsDir}/addresses.${hre.network.name}.json`;
-    writeFileSync(addressesPath, JSON.stringify(deploymentData, null, 2));
-    console.log(`💾 Saved addresses to ${addressesPath}`);
-
-    // Also save as local.json for compatibility
-    const localPath = `${deploymentsDir}/addresses.local.json`;
-    writeFileSync(localPath, JSON.stringify(deploymentData, null, 2));
-    console.log(`💾 Saved addresses to ${localPath}`);
-
-    // Copy ABI to frontend and backend directories
-    console.log("\n📋 Copying ABI to frontend and backend...");
-    const abiSrc = `${process.cwd()}/artifacts/contracts/PharmaTracker.sol/PharmaTracker.json`;
-    const abiDest = `${process.cwd()}/frontend/src/contracts/PharmaTracker.json`;
-    const backendAbiDest = `${process.cwd()}/backend/contracts/PharmaTracker.json`;
-
-    try {
-      // Frontend ABI
-      ensureDir(dirname(abiDest));
-      const abiContent = require(abiSrc);
-      writeFileSync(abiDest, JSON.stringify(abiContent, null, 2));
-      console.log(`✅ Copied ABI to frontend: ${abiDest}`);
-
-      // Backend ABI
-      ensureDir(dirname(backendAbiDest));
-      writeFileSync(backendAbiDest, JSON.stringify(abiContent, null, 2));
-      console.log(`✅ Copied ABI to backend: ${backendAbiDest}`);
-    } catch (e) {
-      console.warn(`⚠️  ABI copy failed: ${e.message}`);
-    }
-
-    // Display deployment summary
-    console.log("\n🎉 Deployment completed successfully!");
-    console.log("\n📊 Deployment Summary:");
-    console.log("=" * 50);
-    console.log(`Network: ${deploymentData.network}`);
-    console.log(`Deployer: ${deploymentData.deployer}`);
-    console.log(`Timestamp: ${deploymentData.timestamp}`);
-    console.log("\nContract Addresses:");
-    console.log(`  PharmaTracker: ${contractAddress}`);
-    console.log("=" * 50);
-
-    // Test basic functionality
-    console.log("\n🧪 Testing basic contract functionality...");
-    try {
-      // Test owner
-      const owner = await pharmaTracker.owner();
-      console.log(`✅ Contract owner: ${owner}`);
-
-      // Test authorized manufacturer
-      const isAuthorized = await pharmaTracker.isAuthorizedManufacturer(deployer.address);
-      console.log(`✅ Deployer is authorized manufacturer: ${isAuthorized}`);
-
-      // Test total drugs (should be 0)
-      const totalDrugs = await pharmaTracker.getTotalDrugs();
-      console.log(`✅ Total drugs registered: ${totalDrugs}`);
-
-      console.log("✅ Basic functionality test passed!");
-    } catch (e) {
-      console.warn(`⚠️  Basic functionality test failed: ${e.message}`);
-    }
-
-    return deploymentData;
   } catch (error) {
-    console.error("❌ Deployment failed:", error);
+    console.error("❌ Deployment failed:", error.message);
+    
+    // If it's a constructor argument error, let's get more specific info
+    if (error.message.includes("incorrect number of arguments")) {
+      console.log("\n🔍 Let's check the contract constructors...");
+      console.log("Run this to see constructor requirements:");
+      console.log("grep -n 'constructor' contracts/*.sol");
+    }
+    
     throw error;
   }
 }
 
-// Execute deployment
 main()
-  .then(() => {
-    console.log("\n✅ Deployment script completed successfully");
-    process.exit(0);
-  })
+  .then(() => process.exit(0))
   .catch((error) => {
-    console.error("\n❌ Deployment script failed:", error);
+    console.error(error);
     process.exit(1);
   });

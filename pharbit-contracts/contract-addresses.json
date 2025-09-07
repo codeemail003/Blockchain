@@ -1,12 +1,10 @@
 {
-  "network": "localhost",
-  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  "timestamp": "2025-09-04T19:24:55.207Z",
-  "contracts": {
-    "governance": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    "stakeholder": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    "sensor": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-    "batch": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-    "supplyChain": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
-  }
+  "GovernanceContract": "0xC0Aa3e906C29427b6fF874812dccF5458356e141",
+  "SensorDataContract": "0x5FD48B4130f5a87F3D37E2B14f938B5Ea017038C",
+  "StakeholderContract": "0x92739707801c23A2678cC176fdCda5e43C578413",
+  "BatchContract": "0x657bF4fc377d77010F56e93FE26A82E79FA44473",
+  "SupplyChainContract": "0xeaA2dAE65F0ECA8b8453B654Ed5A25C1500ab4b2",
+  "network": "sepolia",
+  "deployer": "0xd4106369Aae69A6E704404237fF88b6C5F51Fea2",
+  "deployedAt": "2025-09-07T14:17:13.544Z"
 }
