@@ -557,11 +557,14 @@ class BlockchainNode {
     /**
      * Start the blockchain node
      */
-    start() {
+    async start() {
         try {
             console.log('🚀 Starting Pharbit Pharmaceutical Blockchain Server...');
             console.log(`📡 Server will listen on port ${this.port}`);
             console.log(`🌐 Dashboard will be available at: http://localhost:${this.port}`);
+            
+            // Wait for blockchain initialization
+            await this.blockchain.waitForInitialization();
             
             this.app.listen(this.port, () => {
                 console.log(`\n✅ Pharbit Blockchain Server Successfully Started!`);
@@ -636,7 +639,10 @@ if (require.main === module) {
         node.stop();
     });
     
-    node.start();
+    node.start().catch(error => {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    });
 }
 
 module.exports = BlockchainNode;
