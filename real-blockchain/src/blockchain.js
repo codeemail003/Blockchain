@@ -113,14 +113,20 @@ class Blockchain {
             0
         );
 
-        // Add reward transaction to pending transactions
-        this.pendingTransactions.push(rewardTransaction);
+        // Select highest-fee transactions up to blockSize-1 (reserve 1 for reward)
+        const selectable = this.pendingTransactions.slice();
+        selectable.sort((a, b) => (b.fee || 0) - (a.fee || 0));
+        const txCountLimit = Math.max(0, this.blockSize - 1);
+        const chosen = selectable.slice(0, txCountLimit);
+
+        // Construct block transactions: reward first, then chosen transactions
+        const blockTransactions = [rewardTransaction, ...chosen];
 
         // Create new block
         const previousHash = this.chain.length > 0 ? this.getLatestBlock().hash : '0';
         const block = new Block(
             this.chain.length,
-            this.pendingTransactions.slice(0, this.blockSize),
+            blockTransactions,
             previousHash,
             this.difficulty
         );
@@ -136,9 +142,10 @@ class Blockchain {
             
             // Add block to chain
             this.addBlock(block);
-            
-            // Remove mined transactions from pending
-            this.pendingTransactions = this.pendingTransactions.slice(this.blockSize);
+
+            // Remove mined transactions (the chosen ones) from pending
+            const chosenIds = new Set(chosen.map(tx => tx.id));
+            this.pendingTransactions = this.pendingTransactions.filter(tx => !chosenIds.has(tx.id));
             
             return block;
         } else {
