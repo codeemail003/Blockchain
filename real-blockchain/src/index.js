@@ -566,7 +566,7 @@ class BlockchainNode {
             // Wait for blockchain initialization
             await this.blockchain.waitForInitialization();
             
-            this.app.listen(this.port, () => {
+            this.app.listen(this.port, '0.0.0.0', () => {
                 console.log(`\n✅ Pharbit Blockchain Server Successfully Started!`);
                 console.log(`📍 Server URL: http://localhost:${this.port}`);
                 console.log(`📊 Blockchain Stats:`, this.blockchain.getStats());
