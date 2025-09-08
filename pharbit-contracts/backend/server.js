@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import api from "./api/blockchain-api.js";
+import fabricApi from "./api/fabric-api.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -15,6 +16,11 @@ app.use(express.json());
 
 app.get('/health', (_req, res) => res.json({ status: 'OK' }));
 app.use('/api', api);
+
+// Mount Fabric API under /fabric if configured
+if (process.env.FABRIC_CONNECTION_PROFILE) {
+  app.use('/fabric', fabricApi);
+}
 
 // Serve frontend static dashboard
 app.use('/', express.static(path.join(__dirname, '../frontend/public')));
