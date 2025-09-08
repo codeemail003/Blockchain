@@ -1,19 +1,28 @@
-# 🚀 Pharbit Blockchain - Complete Blockchain Solutions
+# 🚀 Pharbit Blockchain - Fullstack
 
-A comprehensive blockchain implementation featuring both a **simple blockchain** for learning and a **production-ready real blockchain** with cryptographic security.
+This repository now focuses on the production-ready real blockchain and the pharma contracts backend. Use the unified launcher to run the fullstack locally:
 
-## 🎯 Two Complete Blockchain Solutions
+Quick start (from repo root):
+```bash
+./fullstack-launch.sh start-all
+# Real Blockchain API:   http://localhost:3000
+# Pharma Backend API:    http://localhost:4000
+```
 
-### **1. 🎓 Simple Blockchain** (`simple-blockchain/`)
-**Perfect for learning and basic transactions**
-- ✅ **No Docker Required** - Works in any environment
-- ✅ **Web Interface** - Beautiful UI for creating transactions
-- ✅ **Command Line** - Simple CLI for transactions
-- ✅ **Block Creation** - Each transaction creates a new block
-- ✅ **Account Management** - Track balances and transactions
-- ✅ **Transaction History** - View all transactions
+Other commands:
+```bash
+./fullstack-launch.sh status
+./fullstack-launch.sh stop
+./fullstack-launch.sh logs
+```
 
-### **2. 🔐 Real Blockchain** (`real-blockchain/`)
+---
+
+Legacy documentation below refers to the previous simple blockchain, which has been removed during cleanup. Prefer the commands above.
+
+## 🎯 Components
+
+### **🔐 Real Blockchain** (`real-blockchain/`)
 **Production-ready with cryptographic security**
 - ✅ **Cryptographic Security** - secp256k1 (same as Bitcoin)
 - ✅ **Proof of Work Consensus** - Mining with adjustable difficulty
@@ -26,35 +35,18 @@ A comprehensive blockchain implementation featuring both a **simple blockchain**
 
 ## 🚀 Quick Start Guide
 
-### **Choose Your Blockchain:**
-
-#### **🎓 For Learning & Simple Use:**
-```bash
-cd simple-blockchain
-./launch.sh
-# Choose option 1 for web interface
-```
-
-#### **🔐 For Production & Advanced Features:**
+### **Run Real Blockchain Manually (alternative)**
 ```bash
 cd real-blockchain
-./launch.sh
-# Choose option 1 to start server
-# Choose option 3 to open web interface
+npm install
+npm start
+# Health: curl http://localhost:3000/api/health
 ```
 
 ## 📁 Project Structure
 
 ```
 📦 Pharbit Blockchain
-├── 🎓 simple-blockchain/          # Learning blockchain
-│   ├── blocks/                    # Blockchain blocks
-│   ├── transactions/              # Transaction records
-│   ├── accounts/                  # Account balances
-│   ├── process-transaction.js     # Transaction processor
-│   ├── web-interface.html         # Web interface
-│   ├── launch.sh                  # Launcher script
-│   └── README.md                  # Documentation
 ├── 🔐 real-blockchain/            # Production blockchain
 │   ├── src/                       # Source code
 │   │   ├── crypto.js              # Cryptographic utilities
@@ -65,19 +57,21 @@ cd real-blockchain
 │   │   └── index.js               # API server
 │   ├── public/                    # Web interface
 │   ├── test-blockchain.js         # Test suite
-│   ├── launch.sh                  # Interactive launcher
 │   └── README.md                  # Documentation
+├── 🧪 pharbit-contracts/           # Smart contracts + backend API
+│   ├── contracts/                 # Solidity contracts
+│   ├── backend/                   # Express API (demo or on-chain)
+│   ├── scripts/                   # Deployment scripts
+│   ├── deployments/               # Deployed addresses (optional)
+│   └── README.md
+├── fullstack-launch.sh            # Unified start/stop/status
+├── aws/                           # Deployment artifacts
+├── pharbit-contracts/aws/         # Deployment artifacts (contracts)
+├── awscliv2.zip                   # AWS CLI installer
 └── README.md                      # This file
 ```
 
 ## 🎯 Use Cases
-
-### **🎓 Simple Blockchain - Perfect For:**
-- **Learning blockchain concepts**
-- **Educational demonstrations**
-- **Quick transaction testing**
-- **Basic cryptocurrency simulation**
-- **No-complexity blockchain operations**
 
 ### **🔐 Real Blockchain - Perfect For:**
 - **Production applications**
@@ -88,27 +82,7 @@ cd real-blockchain
 
 ## 🚀 Getting Started
 
-### **Option 1: Simple Blockchain (Recommended for Beginners)**
-
-```bash
-# Navigate to simple blockchain
-cd simple-blockchain
-
-# Launch the application
-./launch.sh
-
-# Choose option 1 for web interface
-# Or use command line:
-node process-transaction.js "sender" "receiver" "amount"
-```
-
-**Features:**
-- 🌐 **Web Interface**: Beautiful UI for transactions
-- 💻 **Command Line**: Simple CLI tools
-- 📊 **Real-time Updates**: See balances change instantly
-- 📋 **Transaction History**: Complete record keeping
-
-### **Option 2: Real Blockchain (Recommended for Developers)**
+### **Real Blockchain (Developers)**
 
 ```bash
 # Navigate to real blockchain
@@ -154,12 +128,6 @@ cd real-blockchain
 - `GET /api/mining/status` - Get mining status
 
 ## 🧪 Testing
-
-### **Test Simple Blockchain:**
-```bash
-cd simple-blockchain
-node process-transaction.js "0x89f97Cb35236a1d0190FB25B31C5C0fF4107Ec1b" "6M3uvRFJSR3hcJab22fSAQGUgXxiMKgdg225k3Pq9qpR" "10"
-```
 
 ### **Test Real Blockchain:**
 ```bash
@@ -207,26 +175,7 @@ curl -X POST http://localhost:3000/api/mine \
   -d '{"minerAddress": "YOUR_WALLET_ADDRESS"}'
 ```
 
-### **Simple Blockchain Examples:**
-
-```bash
-# Process a transaction
-node process-transaction.js "sender" "receiver" "amount"
-
-# View transaction history
-ls transactions/
-
-# Check account balances
-cat accounts/accounts.json
-```
-
 ## 🔍 Monitoring & Debugging
-
-### **Simple Blockchain:**
-- Check `blocks/` directory for blockchain data
-- Check `transactions/` directory for transaction records
-- Check `accounts/accounts.json` for balance information
-
 ### **Real Blockchain:**
 - Access web interface at `http://localhost:3000`
 - Use API endpoints for programmatic access
@@ -270,12 +219,6 @@ MIT License - see LICENSE file for details.
 
 ## 🎉 Success Indicators
 
-### **Simple Blockchain:**
-✅ **Transaction Created** - New transaction record saved  
-✅ **Block Generated** - New block added to blockchain  
-✅ **Balances Updated** - Account balances reflect changes  
-✅ **History Tracked** - Transaction history maintained  
-
 ### **Real Blockchain:**
 ✅ **Wallet Generated** - Cryptographic key pair created  
 ✅ **Transaction Signed** - Digital signature verified  
@@ -287,8 +230,6 @@ MIT License - see LICENSE file for details.
 
 ## 🚀 Ready to Use!
 
-**Choose your blockchain:**
-- **🎓 Simple Blockchain**: Perfect for learning and basic transactions
-- **🔐 Real Blockchain**: Production-ready with cryptographic security
+Use the unified launcher to start services quickly.
 
-**Both implementations are complete, tested, and ready to use! 🎉**
+The real blockchain and pharma backend are complete, tested, and ready to use! 🎉
