@@ -16,9 +16,12 @@ class Blockchain {
         this.blockSize = 1000; // Maximum transactions per block
         this.db = null;
         this.dbPath = dbPath;
+        this.initialized = false;
         
-        // Initialize database
-        this.initDatabase();
+        // Initialize database asynchronously
+        this.initDatabase().catch(error => {
+            console.error('Error initializing blockchain:', error);
+        });
     }
 
     /**
@@ -27,11 +30,25 @@ class Blockchain {
     async initDatabase() {
         try {
             this.db = new Level(this.dbPath);
+            await this.db.open();
             await this.loadChain();
+            this.initialized = true;
+            console.log('✅ Blockchain loaded from database');
         } catch (error) {
             console.log('Creating new blockchain...');
-            this.db = new Level(this.dbPath);
-            this.createGenesisBlock();
+            try {
+                this.db = new Level(this.dbPath);
+                await this.db.open();
+                this.createGenesisBlock();
+                this.initialized = true;
+                console.log('✅ New blockchain created');
+            } catch (createError) {
+                console.error('Error creating new blockchain:', createError);
+                // Fallback to in-memory blockchain
+                this.createGenesisBlock();
+                this.initialized = true;
+                console.log('✅ Fallback to in-memory blockchain');
+            }
         }
     }
 
@@ -305,6 +322,9 @@ class Blockchain {
      * Save blockchain to database
      */
     async saveChain() {
+        if (!this.db || !this.initialized) {
+            return; // Skip saving if database is not available
+        }
         try {
             await this.db.put('chain', JSON.stringify(this.chain.map(block => block.toJSON())));
             await this.db.put('pending', JSON.stringify(this.pendingTransactions.map(tx => tx.toJSON())));
@@ -343,6 +363,15 @@ class Blockchain {
             miningReward: this.miningReward,
             stats: this.getStats()
         };
+    }
+
+    /**
+     * Wait for blockchain initialization
+     */
+    async waitForInitialization() {
+        while (!this.initialized) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
     }
 }
 
