@@ -1,0 +1,86 @@
+{
+  "name": "Pharbit Blockchain (Codespaces)",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:18-bullseye",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "JuanBlanco.solidity",
+        "NomicFoundation.hardhat-solidity",
+        "tintinweb.solidity-visual-auditor",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "Continue.continue",
+        "ms-vscode.vscode-typescript-next",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "humao.rest-client",
+        "rangav.vscode-thunder-client",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "GitHub.vscode-pull-request-github",
+        "ms-vscode.vscode-json",
+        "yzhang.markdown-all-in-one"
+      ],
+      
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "solidity.compileUsingRemoteVersion": "v0.8.20",
+        "solidity.defaultCompiler": "remote",
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "github.copilot.enable": {
+          "*": true,
+          "javascript": true,
+          "typescript": true,
+          "solidity": true
+        }
+      }
+    },
+    
+    "codespaces": {
+      "openFiles": [
+        "README.md"
+      ]
+    }
+  },
+
+  "forwardPorts": [3000, 3001, 8080, 8545, 5000],
+  
+  "portsAttributes": {
+    "3000": {
+      "label": "Blockchain API",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Frontend",
+      "onAutoForward": "openPreview"
+    },
+    "8545": {
+      "label": "Ethereum RPC",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/codespaces-setup.sh",
+  
+  "containerEnv": {
+    "ALCHEMY_API_KEY": "bOqAXmb59Y7VZL5tZXoy5",
+    "INFURA_PROJECT_ID": "f0b19b873b9b40cdbb0bac08d84b02e8",
+    "PHARBIT_PRIVATE_KEY": "d20f141872ce6f92a95c22a928bd3eeaf1fe192d68612c34b34759eee76e8ad7",
+    "NODE_ENV": "development",
+    "BLOCKCHAIN_NETWORK": "development"
+  },
+
+  "remoteUser": "node",
+  "workspaceFolder": "/workspaces/Blockchain",
+  
+  "onCreateCommand": "echo 'Codespace created for Pharbit Blockchain!'",
+  "updateContentCommand": "npm install -g hardhat ganache-cli @truffle/hdwallet-provider"
+}
