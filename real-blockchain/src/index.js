@@ -652,6 +652,49 @@ class BlockchainNode {
             }
         });
 
+        // ===== ADMIN / NODE MANAGEMENT API =====
+        // List peers
+        this.app.get('/api/admin/peers', (req, res) => {
+            res.json({ peers: this.p2p.listPeers() });
+        });
+        // Add peer
+        this.app.post('/api/admin/peers', (req, res) => {
+            const { url } = req.body || {};
+            if (!url) return res.status(400).json({ error: 'url is required' });
+            this.p2p.addPeer(url);
+            res.json({ message: 'connecting', url });
+        });
+        // Remove peer
+        this.app.delete('/api/admin/peers', (req, res) => {
+            const { url } = req.body || {};
+            if (!url) return res.status(400).json({ error: 'url is required' });
+            const ok = this.p2p.disconnect(url);
+            res.json({ message: ok ? 'disconnected' : 'not_found', url });
+        });
+        // Start/stop mining (flag only; mining triggered by /api/mine)
+        this.app.post('/api/admin/mining', (req, res) => {
+            const { enabled } = req.body || {};
+            if (enabled === undefined) return res.status(400).json({ error: 'enabled is required' });
+            const prev = config.MINING_ENABLED;
+            config.MINING_ENABLED = !!enabled;
+            res.json({ previous: prev, current: config.MINING_ENABLED });
+        });
+        // Export blockchain JSON
+        this.app.get('/api/admin/export', (req, res) => {
+            res.setHeader('Content-Type', 'application/json');
+            res.json(this.blockchain.toJSON());
+        });
+        // Network stats
+        this.app.get('/api/admin/network', (req, res) => {
+            const tip = this.blockchain.getLatestBlock();
+            res.json({
+                peers: this.p2p.listPeers(),
+                height: tip.index,
+                hash: tip.hash,
+                metrics: metrics.summarize()
+            });
+        });
+
         // Get supply chain journey
         this.app.get('/api/supply-chain/:batchId', (req, res) => {
             try {

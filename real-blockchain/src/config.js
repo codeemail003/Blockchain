@@ -49,6 +49,7 @@ const config = {
     DIFFICULTY: toInt(process.env.DIFFICULTY, 4),
     MINING_REWARD: toFloat(process.env.MINING_REWARD, 50),
     BLOCK_SIZE: toInt(process.env.BLOCK_SIZE, 1000),
+    MINING_ENABLED: toBool(process.env.MINING_ENABLED, true),
 
     // Network constants (future use)
     NETWORK_ID: process.env.NETWORK_ID || 'pharbitchain-local',
@@ -63,6 +64,13 @@ const config = {
 
     // Security keys (if any future signing/secrets required)
     JWT_SECRET: process.env.JWT_SECRET || '',
+
+    // Peer controls
+    PEER_WHITELIST: (process.env.PEER_WHITELIST || '').split(',').map(s => s.trim()).filter(Boolean),
+    PEER_BLACKLIST: (process.env.PEER_BLACKLIST || '').split(',').map(s => s.trim()).filter(Boolean),
+
+    // Wallet auto (optional)
+    WALLET_AUTO_GENERATE: toBool(process.env.WALLET_AUTO_GENERATE, false)
 };
 
 module.exports = config;

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PharbitChain Node Admin</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    input, button { padding: 6px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background: #f3f3f3; }
+  </style>
+  <script>
+    async function loadPeers() {
+      const res = await fetch('/api/admin/peers');
+      const data = await res.json();
+      const tbody = document.getElementById('peers');
+      tbody.innerHTML = '';
+      (data.peers||[]).forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${p.url}</td><td>${p.inbound}</td><td>${p.score}</td><td>${p.ready}</td><td><button onclick="removePeer('${p.url}')">Disconnect</button></td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    async function addPeer() {
+      const url = document.getElementById('peerUrl').value;
+      if (!url) return;
+      await fetch('/api/admin/peers', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url }) });
+      document.getElementById('peerUrl').value='';
+      setTimeout(loadPeers, 500);
+    }
+    async function removePeer(url) {
+      await fetch('/api/admin/peers', { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url }) });
+      setTimeout(loadPeers, 300);
+    }
+    async function toggleMining() {
+      const enabled = document.getElementById('miningEnabled').checked;
+      await fetch('/api/admin/mining', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ enabled }) });
+    }
+    async function exportChain() {
+      const res = await fetch('/api/admin/export');
+      const data = await res.json();
+      const blob = new Blob([JSON.stringify(data,null,2)], { type:'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'pharbitchain-export.json';
+      a.click();
+    }
+    async function loadNetwork() {
+      const res = await fetch('/api/admin/network');
+      const data = await res.json();
+      document.getElementById('height').textContent = data.height;
+      document.getElementById('hash').textContent = data.hash;
+      document.getElementById('avgApi').textContent = data.metrics.avgApiMs + ' ms';
+      document.getElementById('avgMining').textContent = data.metrics.avgMiningMs + ' ms';
+    }
+    window.onload = function(){ loadPeers(); loadNetwork(); setInterval(loadNetwork, 2000); };
+  </script>
+</head>
+<body>
+  <h2>PharbitChain Node Administration</h2>
+  <div>
+    <input id="peerUrl" placeholder="ws://host:port" style="width: 300px;" />
+    <button onclick="addPeer()">Add Peer</button>
+    <button onclick="exportChain()">Export Blockchain</button>
+    <label style="margin-left:20px;">
+      <input type="checkbox" id="miningEnabled" onchange="toggleMining()" /> Mining Enabled
+    </label>
+  </div>
+  <h3>Connected Peers</h3>
+  <table>
+    <thead><tr><th>URL</th><th>Inbound</th><th>Score</th><th>Ready</th><th>Action</th></tr></thead>
+    <tbody id="peers"></tbody>
+  </table>
+  <h3>Network Status</h3>
+  <div>Height: <b id="height">-</b></div>
+  <div>Tip Hash: <code id="hash">-</code></div>
+  <div>Avg API Time: <b id="avgApi">-</b></div>
+  <div>Avg Mining Time: <b id="avgMining">-</b></div>
+</body>
+</html>
