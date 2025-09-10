@@ -53,6 +53,13 @@ const config = {
     // Network constants (future use)
     NETWORK_ID: process.env.NETWORK_ID || 'pharbitchain-local',
     MAX_PEERS: toInt(process.env.MAX_PEERS, 50),
+    // P2P
+    P2P_PORT: toInt(process.env.P2P_PORT, 6001),
+    BOOTSTRAP_NODES: (process.env.BOOTSTRAP_NODES || '').split(',').map(s => s.trim()).filter(Boolean),
+    HANDSHAKE_TIMEOUT_MS: toInt(process.env.HANDSHAKE_TIMEOUT_MS, 5000),
+    HEARTBEAT_INTERVAL_MS: toInt(process.env.HEARTBEAT_INTERVAL_MS, 15000),
+    RECONNECT_BACKOFF_MS: toInt(process.env.RECONNECT_BACKOFF_MS, 2000),
+    PROTOCOL_VERSION: toInt(process.env.PROTOCOL_VERSION, 1),
 
     // Security keys (if any future signing/secrets required)
     JWT_SECRET: process.env.JWT_SECRET || '',
