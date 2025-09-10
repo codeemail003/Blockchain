@@ -17,6 +17,8 @@ const SupplyChain = require('./supply-chain');
 const logger = require('./logger');
 const { metrics, attachResponseTime } = require('./metrics');
 const P2P = require('./p2p');
+const ContractEngine = require('./contracts/engine');
+const Templates = require('./contracts/templates');
 
 class BlockchainNode {
     constructor(port = config.PORT) {
@@ -35,6 +37,10 @@ class BlockchainNode {
         // Initialize P2P networking
         this.p2p = new P2P(this.blockchain, config);
         this.p2p.start();
+
+        // Contracts
+        this.contracts = new ContractEngine('./contract-state');
+        this.contracts.open();
     }
 
     /**
@@ -650,6 +656,36 @@ class BlockchainNode {
             } catch (error) {
                 res.status(400).json({ error: error.message });
             }
+        });
+
+        // ===== CONTRACTS API =====
+        // Deploy
+        this.app.post('/api/contracts/deploy', async (req, res) => {
+            try {
+                const { code, template, initState } = req.body || {};
+                const selected = template ? (Templates[template] && Templates[template].ops) : null;
+                const ops = code && code.ops ? code.ops : selected;
+                if (!ops) return res.status(400).json({ error: 'Provide code.ops or a valid template' });
+                const out = await this.contracts.deploy({ code: { ops }, initState: initState || {} });
+                res.json({ message: 'deployed', address: out.address });
+            } catch (e) { res.status(400).json({ error: e.message }); }
+        });
+        // Call
+        this.app.post('/api/contracts/call', async (req, res) => {
+            try {
+                const { address, ops, gasLimit } = req.body || {};
+                if (!address || !ops) return res.status(400).json({ error: 'address and ops required' });
+                const out = await this.contracts.call({ address, ops, gasLimit });
+                res.json(out);
+            } catch (e) { res.status(400).json({ error: e.message }); }
+        });
+        // State
+        this.app.get('/api/contracts/state/:address', async (req, res) => {
+            try {
+                const st = await this.contracts.getState(req.params.address);
+                if (!st) return res.status(404).json({ error: 'not_found' });
+                res.json(st);
+            } catch (e) { res.status(400).json({ error: e.message }); }
         });
 
         // ===== ADMIN / NODE MANAGEMENT API =====
