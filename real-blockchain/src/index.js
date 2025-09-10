@@ -108,7 +108,7 @@ class BlockchainNode {
             res.json(this.blockchain.pendingTransactions.map(tx => tx.toJSON()));
         });
 
-        // Create new transaction
+        // Create new transaction (legacy path; prefer MetaMask-signed endpoints)
         this.app.post('/api/transactions', (req, res) => {
             try {
                 const { from, to, amount, fee, privateKey } = req.body;
@@ -333,25 +333,53 @@ class BlockchainNode {
         });
 
         // Create new medicine batch
+        // Supports two modes:
+        // 1) Legacy: { batchInfo, manufacturerAddress, privateKey }
+        // 2) MetaMask: { batchInfo, address, signature } where signature authorizes creation
         this.app.post('/api/batch', (req, res) => {
             try {
-                const { batchInfo, manufacturerAddress, privateKey } = req.body;
-                
-                if (!batchInfo || !manufacturerAddress || !privateKey) {
-                    return res.status(400).json({ 
-                        error: 'Missing required fields: batchInfo, manufacturerAddress, privateKey' 
+                const { batchInfo, manufacturerAddress, privateKey, address, signature } = req.body;
+
+                let signerAddress = manufacturerAddress;
+                let signerPrivateKey = privateKey;
+
+                if (!batchInfo) {
+                    return res.status(400).json({ error: 'Missing required field: batchInfo' });
+                }
+
+                // MetaMask flow
+                if (signature && address) {
+                    // Canonical message to sign
+                    const message = JSON.stringify({
+                        type: 'CREATE_BATCH',
+                        batchInfo
                     });
+                    const recovered = CryptoUtils.recoverEthAddressFromMessage(message, signature);
+                    if (!recovered || recovered.toLowerCase() !== address.toLowerCase()) {
+                        return res.status(401).json({ error: 'Signature verification failed' });
+                    }
+                    if (!CryptoUtils.isValidAddress(address)) {
+                        return res.status(400).json({ error: 'Invalid Ethereum address' });
+                    }
+                    signerAddress = address;
+                    // No private key on server side; transaction object will be unsigned but authorized by signature
+                    signerPrivateKey = null;
+                } else {
+                    // Legacy flow
+                    if (!signerAddress || !signerPrivateKey) {
+                        return res.status(400).json({ 
+                            error: 'Missing required fields: manufacturerAddress, privateKey' 
+                        });
+                    }
+                    if (!CryptoUtils.isValidAddress(signerAddress)) {
+                        return res.status(400).json({ error: 'Invalid manufacturerAddress' });
+                    }
+                    if (!CryptoUtils.isValidPrivateKey(signerPrivateKey)) {
+                        return res.status(400).json({ error: 'Invalid privateKey' });
+                    }
                 }
-                
-                // Validate manufacturer address and private key
-                if (!CryptoUtils.isValidAddress(manufacturerAddress)) {
-                    return res.status(400).json({ error: 'Invalid manufacturerAddress' });
-                }
-                if (!CryptoUtils.isValidPrivateKey(privateKey)) {
-                    return res.status(400).json({ error: 'Invalid privateKey' });
-                }
-                
-                const result = this.supplyChain.createBatch(batchInfo, manufacturerAddress, privateKey);
+
+                const result = this.supplyChain.createBatch(batchInfo, signerAddress, signerPrivateKey);
                 
                 res.json({
                     message: 'Batch created successfully',
@@ -522,15 +550,40 @@ class BlockchainNode {
         // Transfer batch custody
         this.app.post('/api/supply-chain/transfer', (req, res) => {
             try {
-                const { batchId, fromStakeholder, toStakeholder, transferInfo, privateKey } = req.body;
+                const { batchId, fromStakeholder, toStakeholder, transferInfo, privateKey, address, signature } = req.body;
+
+                let signerPrivateKey = privateKey;
                 
-                if (!batchId || !fromStakeholder || !toStakeholder || !transferInfo || !privateKey) {
+                if (!batchId || !fromStakeholder || !toStakeholder || !transferInfo) {
                     return res.status(400).json({ 
-                        error: 'Missing required fields: batchId, fromStakeholder, toStakeholder, transferInfo, privateKey' 
+                        error: 'Missing required fields: batchId, fromStakeholder, toStakeholder, transferInfo' 
                     });
                 }
-                
-                const result = this.supplyChain.transferCustody(batchId, fromStakeholder, toStakeholder, transferInfo, privateKey);
+
+                // MetaMask flow
+                if (signature && address) {
+                    const message = JSON.stringify({
+                        type: 'TRANSFER_CUSTODY',
+                        batchId,
+                        fromStakeholder,
+                        toStakeholder,
+                        transferInfo
+                    });
+                    const recovered = CryptoUtils.recoverEthAddressFromMessage(message, signature);
+                    if (!recovered || recovered.toLowerCase() !== address.toLowerCase()) {
+                        return res.status(401).json({ error: 'Signature verification failed' });
+                    }
+                    signerPrivateKey = null;
+                } else {
+                    if (!signerPrivateKey) {
+                        return res.status(400).json({ error: 'Missing required field: privateKey' });
+                    }
+                    if (!CryptoUtils.isValidPrivateKey(signerPrivateKey)) {
+                        return res.status(400).json({ error: 'Invalid privateKey' });
+                    }
+                }
+
+                const result = this.supplyChain.transferCustody(batchId, fromStakeholder, toStakeholder, transferInfo, signerPrivateKey);
                 
                 res.json({
                     message: 'Custody transferred successfully',

@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 const EC = require('elliptic').ec;
+const { keccak256 } = require('ethers');
+const { computeAddress, recoverAddress } = require('ethers');
 
 // Initialize elliptic curve cryptography (secp256k1 - same as Bitcoin)
 const ec = new EC('secp256k1');
@@ -31,6 +33,20 @@ class CryptoUtils {
         const hash = crypto.createHash('sha256').update(publicKey).digest('hex');
         const ripemd160 = crypto.createHash('ripemd160').update(hash).digest('hex');
         return `0x${ripemd160}`;
+    }
+
+    /**
+     * Generate Ethereum-style address (0x + last 20 bytes of keccak256 of uncompressed pubkey)
+     * @param {string} publicKeyHex - Uncompressed public key hex
+     * @returns {string} Ethereum address (checksummed)
+     */
+    static generateEthereumAddress(publicKeyHex) {
+        try {
+            // ethers.computeAddress accepts public key or private key
+            return computeAddress('0x' + publicKeyHex.replace(/^0x/, ''));
+        } catch (e) {
+            return null;
+        }
     }
 
     /**
@@ -110,6 +126,24 @@ class CryptoUtils {
             return true;
         } catch (error) {
             return false;
+        }
+    }
+
+    /**
+     * Recover Ethereum address from a signed message (personal_sign semantics)
+     * @param {string} message - Original message string
+     * @param {string} signature - 0x-prefixed signature
+     * @returns {string|null} checksummed ethereum address or null if invalid
+     */
+    static recoverEthAddressFromMessage(message, signature) {
+        try {
+            const msgBytes = Buffer.from(message, 'utf8');
+            const prefix = `\x19Ethereum Signed Message:\n${msgBytes.length}`;
+            const prefixed = Buffer.concat([Buffer.from(prefix), msgBytes]);
+            const digest = '0x' + crypto.createHash('sha3-256').update(prefixed).digest('hex');
+            return recoverAddress(digest, signature);
+        } catch (e) {
+            return null;
         }
     }
 }
