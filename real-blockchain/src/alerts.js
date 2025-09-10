@@ -52,7 +52,13 @@ class AlertSystem {
         this.sendNotifications(alert);
         
         // Log alert
-        console.log(`🚨 ALERT: ${alert.severity.toUpperCase()} - ${alert.message}`);
+        try {
+            const logger = require('./logger');
+            const level = alert.severity === 'critical' ? 'error' : (alert.severity === 'warning' ? 'warn' : 'info');
+            logger[level](`Alert: ${alert.message}`, { id: alert.id, severity: alert.severity, type: alert.type, batchId: alert.batchId });
+        } catch (_) {
+            console.log(`🚨 ALERT: ${alert.severity.toUpperCase()} - ${alert.message}`);
+        }
         
         return alert;
     }
