@@ -16,6 +16,7 @@ const AlertSystem = require('./alerts');
 const SupplyChain = require('./supply-chain');
 const logger = require('./logger');
 const { metrics, attachResponseTime } = require('./metrics');
+const P2P = require('./p2p');
 
 class BlockchainNode {
     constructor(port = config.PORT) {
@@ -30,6 +31,10 @@ class BlockchainNode {
         
         this.setupMiddleware();
         this.setupRoutes();
+
+        // Initialize P2P networking
+        this.p2p = new P2P(this.blockchain, config);
+        this.p2p.start();
     }
 
     /**
@@ -221,6 +226,7 @@ class BlockchainNode {
                     
                     if (block) {
                         console.log(`✅ Block ${block.index} mined successfully!`);
+                        try { this.p2p.broadcast({ type: 'INV', objType: 'block', hashes: [block.hash] }); } catch (_) {}
                     }
                 } catch (error) {
                     console.error('Mining error:', error);

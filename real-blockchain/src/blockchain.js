@@ -20,6 +20,7 @@ class Blockchain {
         this.db = null;
         this.dbPath = dbPath;
         this.initialized = false;
+        this.orphanBlocks = new Map(); // hash -> block
         
         // Initialize database asynchronously
         this.initDatabase().catch(error => {
@@ -172,6 +173,40 @@ class Blockchain {
         this.chain.push(block);
         this.saveChain();
         return true;
+    }
+
+    /**
+     * Attempt to replace the chain if newChain is longer and valid
+     */
+    replaceChain(newChain) {
+        if (newChain.length <= this.chain.length) return false;
+        // Validate the incoming chain
+        for (let i = 1; i < newChain.length; i++) {
+            const current = newChain[i];
+            const prev = newChain[i - 1];
+            if (current.previousHash !== prev.hash || !current.isValid()) {
+                return false;
+            }
+        }
+        this.chain = newChain;
+        this.saveChain();
+        return true;
+    }
+
+    /**
+     * Add block received from peer; queue as orphan if parent missing
+     */
+    addBlockFromPeer(block) {
+        const previousBlock = this.getLatestBlock();
+        if (block.index === previousBlock.index + 1 && block.previousHash === previousBlock.hash) {
+            return this.addBlock(block);
+        }
+        // If parent not present, store as orphan
+        if (!this.chain.find(b => b.hash === block.previousHash)) {
+            this.orphanBlocks.set(block.hash, block);
+            return false;
+        }
+        return false;
     }
 
     /**
