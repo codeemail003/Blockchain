@@ -2,18 +2,19 @@ const Block = require('./block');
 const Transaction = require('./transaction');
 const CryptoUtils = require('./crypto');
 const { Level } = require('level');
+const config = require('./config');
 
 class Blockchain {
     /**
      * Initialize blockchain
      * @param {string} dbPath - Database path for persistence
      */
-    constructor(dbPath = './blockchain-db') {
+    constructor(dbPath = config.DB_PATH) {
         this.chain = [];
         this.pendingTransactions = [];
-        this.difficulty = 4;
-        this.miningReward = 50;
-        this.blockSize = 1000; // Maximum transactions per block
+        this.difficulty = config.DIFFICULTY;
+        this.miningReward = config.MINING_REWARD;
+        this.blockSize = config.BLOCK_SIZE; // Maximum transactions per block
         this.db = null;
         this.dbPath = dbPath;
         this.initialized = false;
