@@ -6,7 +6,7 @@ class P2P {
         this.blockchain = blockchain;
         this.config = config;
         this.server = null;
-        this.peers = new Map(); // url -> ws
+        this.peers = new Map(); // url -> { ws, score, lastSeen, inbound }
         this.nodeId = `${require('os').hostname()}-${process.pid}-${Math.random().toString(36).slice(2,8)}`;
     }
 
@@ -30,13 +30,14 @@ class P2P {
 
     connect(url) {
         if (this.peers.has(url)) return;
+        if (this.isBlacklisted(url)) return;
         try {
             const ws = new WebSocket(url);
             ws.on('open', () => this.onOpen(ws, url));
             ws.on('message', (data) => this.onMessage(ws, data));
             ws.on('close', () => this.onClose(url));
             ws.on('error', (err) => logger.warn('P2P peer error', { url, error: err.message }));
-            this.peers.set(url, ws);
+            this.peers.set(url, { ws, score: 0, lastSeen: Date.now(), inbound: false });
         } catch (e) {
             logger.warn('P2P connect failed', { url, error: e.message });
         }
@@ -46,6 +47,10 @@ class P2P {
         ws.on('message', (data) => this.onMessage(ws, data));
         ws.on('error', (err) => logger.warn('P2P inbound error', { error: err.message }));
         ws.on('close', () => {});
+        // mark inbound peer
+        for (const [url, peer] of this.peers) {
+            if (peer.ws === ws) { peer.inbound = true; }
+        }
         this.send(ws, { type: 'HELLO', nodeId: this.nodeId, networkId: this.config.NETWORK_ID, protocolVersion: this.config.PROTOCOL_VERSION });
         this.sendChainSummary(ws);
     }
@@ -57,7 +62,8 @@ class P2P {
     }
 
     heartbeat() {
-        for (const [url, ws] of this.peers) {
+        for (const [url, peer] of this.peers) {
+            const ws = peer.ws;
             if (ws.readyState === WebSocket.OPEN) {
                 this.send(ws, { type: 'PING', ts: Date.now() });
             }
@@ -78,7 +84,8 @@ class P2P {
     }
 
     broadcast(msg) {
-        for (const [, ws] of this.peers) {
+        for (const [, peer] of this.peers) {
+            const ws = peer.ws;
             if (ws.readyState === WebSocket.OPEN) this.send(ws, msg);
         }
     }
@@ -123,6 +130,28 @@ class P2P {
                 this.send(ws, { type: 'ERROR', code: 'UNKNOWN', message: 'Unknown message type' });
         }
     }
+
+    // Admin helpers
+    listPeers() {
+        const out = [];
+        for (const [url, peer] of this.peers) {
+            out.push({ url, inbound: peer.inbound, score: peer.score, ready: peer.ws.readyState });
+        }
+        return out;
+    }
+    disconnect(url) {
+        const peer = this.peers.get(url);
+        if (peer) { try { peer.ws.close(); } catch (_) {} this.peers.delete(url); return true; }
+        return false;
+    }
+    isBlacklisted(url) {
+        return (this.config.PEER_BLACKLIST || []).includes(url);
+    }
+    isWhitelisted(url) {
+        const list = (this.config.PEER_WHITELIST || []);
+        return list.length === 0 || list.includes(url);
+    }
+    addPeer(url) { if (!this.isBlacklisted(url) && this.isWhitelisted(url)) this.connect(url); }
 
     sendChainSummary(ws) {
         const tip = this.blockchain.getLatestBlock();
