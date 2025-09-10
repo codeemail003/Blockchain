@@ -731,6 +731,27 @@ class BlockchainNode {
             });
         });
 
+        // ===== MOBILE-OPTIMIZED ENDPOINTS =====
+        // Lightweight blockchain head
+        this.app.get('/m/chain/head', (req, res) => {
+            const tip = this.blockchain.getLatestBlock();
+            res.json({ h: tip.index, x: tip.hash, p: this.blockchain.pendingTransactions.length });
+        });
+        // Batch state (compact)
+        this.app.get('/m/batch/:id', (req, res) => {
+            try {
+                const b = this.supplyChain.getBatch(req.params.id);
+                if (!b) return res.status(404).json({ e: 'nf' });
+                res.json({ id: b.id, s: b.status, o: b.currentStakeholder, q: b.quantity, exp: b.expirationDate });
+            } catch (e) { res.status(400).json({ e: 'err' }); }
+        });
+        // Offline tx template
+        this.app.post('/m/tx/template', (req, res) => {
+            const { to, amount, fee } = req.body || {};
+            if (!to || !amount) return res.status(400).json({ e: 'bad' });
+            res.json({ to, amount, fee: fee||0.001, nonce: Date.now() });
+        });
+
         // Get supply chain journey
         this.app.get('/api/supply-chain/:batchId', (req, res) => {
             try {
