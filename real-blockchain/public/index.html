@@ -345,6 +345,74 @@
                 <div id="mining-status"></div>
             </div>
 
+            <!-- Batch Creation -->
+            <div class="card">
+                <h2>💊 Create Medicine Batch</h2>
+                <form id="batch-form">
+                    <div class="form-group">
+                        <label for="batch-name">Medicine Name</label>
+                        <input type="text" id="batch-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-manufacturer">Manufacturer</label>
+                        <input type="text" id="batch-manufacturer" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-type">Type (vaccine, insulin, antibiotic, tablet)</label>
+                        <input type="text" id="batch-type" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-expiration">Expiration (YYYY-MM-DD)</label>
+                        <input type="text" id="batch-expiration" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-quantity">Quantity</label>
+                        <input type="number" id="batch-quantity" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-location">Manufacturing Facility</label>
+                        <input type="text" id="batch-location" placeholder="e.g., SF Plant">
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-lat">Latitude</label>
+                        <input type="number" id="batch-lat" step="0.000001" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-lon">Longitude</label>
+                        <input type="number" id="batch-lon" step="0.000001" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-temp">Initial Temperature (°C)</label>
+                        <input type="number" id="batch-temp" step="0.1" value="4.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-humidity">Initial Humidity (%)</label>
+                        <input type="number" id="batch-humidity" step="1" value="45">
+                    </div>
+                    <div class="form-group">
+                        <label for="manufacturer-address">Manufacturer Address</label>
+                        <input type="text" id="manufacturer-address" placeholder="0x..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="manufacturer-key">Manufacturer Private Key</label>
+                        <input type="text" id="manufacturer-key" placeholder="hex private key" required>
+                    </div>
+                    <button type="submit" class="btn">🧪 Create Batch</button>
+                </form>
+                <div id="batch-status"></div>
+            </div>
+
+            <!-- Batch Verification -->
+            <div class="card">
+                <h2>🔎 Verify Batch</h2>
+                <div class="form-group">
+                    <label for="verify-batch-id">Batch ID</label>
+                    <input type="text" id="verify-batch-id" placeholder="BATCH_...">
+                </div>
+                <button class="btn" onclick="verifyBatch()">🔍 Verify</button>
+                <div id="verify-result" class="transactions-list" style="margin-top:10px;"></div>
+            </div>
+
             <!-- Blockchain Stats -->
             <div class="card">
                 <h2>📊 Blockchain Statistics</h2>
@@ -368,6 +436,107 @@
                 </div>
             </div>
         </div>
+
+        <!-- IoT Sensor Data -->
+        <div class="card" style="margin-top:20px;">
+            <h2>📡 IoT Sensor Data</h2>
+            <form id="sensor-form">
+                <div class="form-group">
+                    <label for="sensor-batch-id">Batch ID</label>
+                    <input type="text" id="sensor-batch-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="sensor-id">Sensor ID</label>
+                    <input type="text" id="sensor-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="sensor-temp">Temperature (°C)</label>
+                    <input type="number" id="sensor-temp" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="sensor-humidity">Humidity (%)</label>
+                    <input type="number" id="sensor-humidity" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="sensor-light">Light (lux)</label>
+                    <input type="number" id="sensor-light" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="sensor-lat">Latitude</label>
+                    <input type="number" id="sensor-lat" step="0.000001">
+                </div>
+                <div class="form-group">
+                    <label for="sensor-lon">Longitude</label>
+                    <input type="number" id="sensor-lon" step="0.000001">
+                </div>
+                <button type="submit" class="btn">📡 Submit Reading</button>
+            </form>
+            <div id="sensor-status"></div>
+        </div>
+
+        <!-- Supply Chain Transfer -->
+        <div class="card" style="margin-top:20px;">
+            <h2>🔄 Supply Chain Transfer</h2>
+            <form id="transfer-form">
+                <div class="form-group">
+                    <label for="transfer-batch-id">Batch ID</label>
+                    <input type="text" id="transfer-batch-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="from-stakeholder">From Stakeholder</label>
+                    <input type="text" id="from-stakeholder" placeholder="manufacturer" required>
+                </div>
+                <div class="form-group">
+                    <label for="to-stakeholder">To Stakeholder</label>
+                    <input type="text" id="to-stakeholder" placeholder="distributor" required>
+                </div>
+                <div class="form-group">
+                    <label for="transfer-action">Action</label>
+                    <input type="text" id="transfer-action" placeholder="shipped">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-facility">Facility</label>
+                    <input type="text" id="transfer-facility" placeholder="Distribution Center">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-lat">Latitude</label>
+                    <input type="number" id="transfer-lat" step="0.000001">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-lon">Longitude</label>
+                    <input type="number" id="transfer-lon" step="0.000001">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-temp">Temperature (°C)</label>
+                    <input type="number" id="transfer-temp" step="0.1" value="5">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-humidity">Humidity (%)</label>
+                    <input type="number" id="transfer-humidity" step="1" value="50">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-key">Private Key</label>
+                    <input type="text" id="transfer-key" placeholder="hex private key" required>
+                </div>
+                <button type="submit" class="btn">➡️ Transfer</button>
+            </form>
+            <div id="transfer-status"></div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="card" style="margin-top:20px;">
+            <h2>🚨 Alerts</h2>
+            <div class="form-group">
+                <label for="alerts-batch-id">Filter by Batch ID (optional)</label>
+                <input type="text" id="alerts-batch-id" placeholder="BATCH_...">
+            </div>
+            <div class="form-group">
+                <label for="alerts-severity">Severity (optional)</label>
+                <input type="text" id="alerts-severity" placeholder="warning|critical">
+            </div>
+            <button class="btn" onclick="loadAlerts()">🔄 Refresh Alerts</button>
+            <div id="alerts-list" class="transactions-list" style="margin-top:10px;"></div>
+        </div>
     </div>
 
     <script>
@@ -379,6 +548,7 @@
             refreshStats();
             loadTransactions();
             loadExistingWallet();
+            loadAlerts();
         });
 
         // Load existing wallet if available
@@ -397,6 +567,188 @@
                 }
             } catch (error) {
                 console.log('No existing wallet found or error loading wallet:', error);
+            }
+        }
+
+        // Handle batch creation
+        document.getElementById('batch-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                showStatus('batch-status', 'info', 'Creating batch...');
+                const payload = {
+                    batchInfo: {
+                        medicineInfo: {
+                            name: document.getElementById('batch-name').value,
+                            manufacturer: document.getElementById('batch-manufacturer').value,
+                            type: document.getElementById('batch-type').value,
+                            expiration: document.getElementById('batch-expiration').value
+                        },
+                        quantity: parseInt(document.getElementById('batch-quantity').value, 10),
+                        expirationDate: document.getElementById('batch-expiration').value,
+                        manufacturingLocation: {
+                            facility: document.getElementById('batch-location').value || 'Manufacturing Facility',
+                            lat: parseFloat(document.getElementById('batch-lat').value) || 0,
+                            lon: parseFloat(document.getElementById('batch-lon').value) || 0
+                        },
+                        initialTemperature: parseFloat(document.getElementById('batch-temp').value) || 4.0,
+                        initialHumidity: parseFloat(document.getElementById('batch-humidity').value) || 45
+                    },
+                    manufacturerAddress: document.getElementById('manufacturer-address').value,
+                    privateKey: document.getElementById('manufacturer-key').value
+                };
+                const response = await fetch(`${API_BASE}/batch`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('batch-status', 'success', `Batch created! ID: ${data.batchId}`);
+                    document.getElementById('verify-batch-id').value = data.batchId;
+                    verifyBatch();
+                } else {
+                    showStatus('batch-status', 'error', data.error || 'Failed to create batch');
+                }
+            } catch (error) {
+                showStatus('batch-status', 'error', 'Failed to create batch: ' + error.message);
+            }
+        });
+
+        // Verify batch
+        async function verifyBatch() {
+            const batchId = document.getElementById('verify-batch-id').value.trim();
+            if (!batchId) {
+                showStatus('verify-result', 'error', 'Enter a batch ID');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE}/batch/${encodeURIComponent(batchId)}`);
+                const data = await response.json();
+                if (response.ok) {
+                    const auth = data.authenticity || {};
+                    const history = data.history || [];
+                    const tempHistory = data.temperatureHistory || [];
+                    document.getElementById('verify-result').innerHTML = `
+                        <div class="status ${auth.authentic ? 'success' : 'error'}">
+                            Authentic: ${auth.authentic ? 'Yes' : 'No'}${auth.compromised ? ' (Compromised)' : ''}
+                            ${auth.reason ? ' - ' + auth.reason : ''}
+                        </div>
+                        <div><strong>Batch:</strong> ${batchId}</div>
+                        <div style="margin-top:8px;"><strong>Custody Chain (${history.length}):</strong>
+                            <ul>
+                                ${history.map(h => `<li>${new Date(h.timestamp).toLocaleString()} - ${h.action} ${h.fromStakeholder ? '('+h.fromStakeholder+' ➡ '+h.toStakeholder+')' : ''}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div style="margin-top:8px;"><strong>Temperature Readings (${tempHistory.length}):</strong>
+                            <ul>
+                                ${tempHistory.map(t => `<li>${new Date(t.timestamp).toLocaleString()} - ${t.temperature}°C @ ${t.location?.facility || 'N/A'}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('verify-result').innerHTML = `<div class="status error">${data.error || 'Batch not found'}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('verify-result').innerHTML = `<div class="status error">Failed to verify: ${error.message}</div>`;
+            }
+        }
+
+        // Handle IoT sensor submission
+        document.getElementById('sensor-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                showStatus('sensor-status', 'info', 'Submitting sensor data...');
+                const payload = {
+                    batchId: document.getElementById('sensor-batch-id').value,
+                    sensorId: document.getElementById('sensor-id').value,
+                    temperature: parseFloat(document.getElementById('sensor-temp').value),
+                    humidity: parseFloat(document.getElementById('sensor-humidity').value),
+                    light: parseFloat(document.getElementById('sensor-light').value),
+                    gps: {
+                        lat: parseFloat(document.getElementById('sensor-lat').value),
+                        lon: parseFloat(document.getElementById('sensor-lon').value)
+                    },
+                    timestamp: Date.now()
+                };
+                const response = await fetch(`${API_BASE}/sensor-data`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('sensor-status', 'success', `Sensor data processed. Tx: ${data.transactionId || 'N/A'}`);
+                    loadAlerts();
+                } else {
+                    showStatus('sensor-status', 'error', data.error || 'Failed to process sensor data');
+                }
+            } catch (error) {
+                showStatus('sensor-status', 'error', 'Failed to submit sensor data: ' + error.message);
+            }
+        });
+
+        // Handle supply chain transfer
+        document.getElementById('transfer-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                showStatus('transfer-status', 'info', 'Transferring custody...');
+                const payload = {
+                    batchId: document.getElementById('transfer-batch-id').value,
+                    fromStakeholder: document.getElementById('from-stakeholder').value,
+                    toStakeholder: document.getElementById('to-stakeholder').value,
+                    transferInfo: {
+                        action: document.getElementById('transfer-action').value || 'shipped',
+                        location: {
+                            facility: document.getElementById('transfer-facility').value || 'Distribution Center',
+                            lat: parseFloat(document.getElementById('transfer-lat').value) || 0,
+                            lon: parseFloat(document.getElementById('transfer-lon').value) || 0
+                        },
+                        sensorData: {
+                            temperature: parseFloat(document.getElementById('transfer-temp').value) || 5,
+                            humidity: parseFloat(document.getElementById('transfer-humidity').value) || 50,
+                            timestamp: Date.now()
+                        }
+                    },
+                    privateKey: document.getElementById('transfer-key').value
+                };
+                const response = await fetch(`${API_BASE}/supply-chain/transfer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('transfer-status', 'success', 'Custody transferred');
+                    verifyBatch();
+                    loadTransactions();
+                } else {
+                    showStatus('transfer-status', 'error', data.error || 'Failed to transfer');
+                }
+            } catch (error) {
+                showStatus('transfer-status', 'error', 'Failed to transfer: ' + error.message);
+            }
+        });
+
+        // Load alerts
+        async function loadAlerts() {
+            try {
+                const params = new URLSearchParams();
+                const batchId = document.getElementById('alerts-batch-id').value.trim();
+                const severity = document.getElementById('alerts-severity').value.trim();
+                if (batchId) params.append('batchId', batchId);
+                if (severity) params.append('severity', severity);
+                const response = await fetch(`${API_BASE}/alerts?${params.toString()}`);
+                const data = await response.json();
+                if (response.ok) {
+                    const alerts = data.alerts || [];
+                    document.getElementById('alerts-list').innerHTML = alerts.length === 0
+                        ? '<div class="status info">No alerts</div>'
+                        : alerts.map(a => `<div class="transaction-item ${a.severity === 'critical' ? '' : 'pending'}"><strong>[${a.severity}] ${a.type}</strong> - ${a.message}<div class="transaction-details"><div class="transaction-detail"><strong>Batch:</strong> ${a.batchId}</div><div class="transaction-detail"><strong>At:</strong> ${new Date(a.timestamp).toLocaleString()}</div></div></div>`).join('');
+                } else {
+                    document.getElementById('alerts-list').innerHTML = '<div class="status error">Failed to load alerts</div>';
+                }
+            } catch (error) {
+                document.getElementById('alerts-list').innerHTML = '<div class="status error">Failed to load alerts</div>';
             }
         }
 
