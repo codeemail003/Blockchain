@@ -14,6 +14,8 @@ const CryptoUtils = require('./crypto');
 const IoTIntegration = require('./iot-integration');
 const AlertSystem = require('./alerts');
 const SupplyChain = require('./supply-chain');
+const logger = require('./logger');
+const { metrics, attachResponseTime } = require('./metrics');
 
 class BlockchainNode {
     constructor(port = config.PORT) {
@@ -71,6 +73,9 @@ class BlockchainNode {
         this.app.use(bodyParser.json({ limit: jsonLimit }));
         this.app.use(bodyParser.urlencoded({ extended: true, limit: jsonLimit }));
 
+        // Response-time metrics
+        attachResponseTime(this.app);
+
         // Specific handler for JSON parse errors
         this.app.use((error, req, res, next) => {
             if (error && error.type === 'entity.parse.failed') {
@@ -90,7 +95,7 @@ class BlockchainNode {
         
         // Request logging middleware
         this.app.use((req, res, next) => {
-            console.log(`📡 ${req.method} ${req.path} - ${new Date().toISOString()}`);
+            logger.info(`${req.method} ${req.path}`, { ip: req.ip, userAgent: req.headers['user-agent'] });
             next();
         });
         
@@ -103,7 +108,9 @@ class BlockchainNode {
             const code = error.code || 'INTERNAL_ERROR';
             const msg = status === 500 ? 'Internal server error' : (error.message || 'Request failed');
             if (status >= 500) {
-                console.error('❌ Server Error:', error.message);
+                logger.error('Server Error', { message: error.message, stack: error.stack });
+            } else {
+                logger.warn('Request Error', { status, message: msg });
             }
             res.status(status).json({ error: msg, code, timestamp: new Date().toISOString() });
         });
@@ -173,6 +180,7 @@ class BlockchainNode {
                 }
 
                 this.blockchain.addTransaction(transaction);
+                metrics.recordTxProcessed();
                 
                 res.json({
                     message: 'Transaction added to pending transactions',
@@ -317,6 +325,7 @@ class BlockchainNode {
 
                 const transaction = this.wallet.createTransaction(to, amount, fee || 0.001);
                 this.blockchain.addTransaction(transaction);
+                metrics.recordTxProcessed();
 
                 res.json({
                     message: 'Transaction created and added to pending',
@@ -361,7 +370,10 @@ class BlockchainNode {
                     batches: this.supplyChain.getAllBatches().length,
                     activeAlerts: this.alertSystem.getActiveAlerts().length,
                     activeSensors: this.iotIntegration.getActiveSensors().size
-                }
+                },
+                db: { path: this.blockchain.dbPath, initialized: this.blockchain.initialized },
+                system: metrics.getSystemStats(),
+                metrics: metrics.summarize()
             });
         });
 

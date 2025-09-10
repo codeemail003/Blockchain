@@ -3,6 +3,8 @@ const Transaction = require('./transaction');
 const CryptoUtils = require('./crypto');
 const { Level } = require('level');
 const config = require('./config');
+const { metrics } = require('./metrics');
+const logger = require('./logger');
 
 class Blockchain {
     /**
@@ -137,6 +139,8 @@ class Blockchain {
         const startTime = Date.now();
         const success = block.mine();
         const miningTime = Date.now() - startTime;
+        metrics.recordMining(miningTime);
+        logger.info('Block mining completed', { index: block.index, miningTimeMs: miningTime, success });
 
         if (success) {
             console.log(`✅ Block mined in ${miningTime}ms! Hash: ${block.hash}`);
