@@ -1,7 +1,7 @@
 {
-  "name": "real-blockchain",
+  "name": "pharbitchain",
   "version": "1.0.0",
-  "description": "A real blockchain implementation with cryptographic security and consensus mechanisms",
+  "description": "PharbitChain: a production-grade blockchain with cryptographic security and PoW consensus, plus pharma supply chain features",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

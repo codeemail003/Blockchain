@@ -6,7 +6,7 @@ This comprehensive guide will help you understand and use both blockchain implem
 
 1. [Quick Start](#-quick-start)
 2. [Simple Blockchain Guide](#-simple-blockchain-guide)
-3. [Real Blockchain Guide](#-real-blockchain-guide)
+3. [PharbitChain Guide](#-pharbitchain-guide)
 4. [API Reference](#-api-reference)
 5. [Troubleshooting](#-troubleshooting)
 6. [Advanced Features](#-advanced-features)
@@ -24,7 +24,7 @@ This comprehensive guide will help you understand and use both blockchain implem
 #### **🎓 Beginner - Simple Blockchain**
 Perfect for learning blockchain concepts without complexity.
 
-#### **🔐 Advanced - Real Blockchain**
+#### **🔐 Advanced - PharbitChain**
 Production-ready with cryptographic security and advanced features.
 
 ---
@@ -126,9 +126,9 @@ cat accounts/accounts.json | jq .
 
 ---
 
-## 🔐 Real Blockchain Guide
+## 🔐 PharbitChain Guide
 
-### **What is Real Blockchain?**
+### **What is PharbitChain?**
 A production-ready blockchain implementation with cryptographic security, Proof of Work consensus, and a complete API server.
 
 ### **Key Features:**
@@ -161,7 +161,7 @@ cd real-blockchain
 - Shows detailed test results
 
 **Option 3: Open Web Interface**
-- Opens modern blockchain explorer
+- Opens modern PharbitChain explorer
 - Generate wallets and create transactions
 - Monitor blockchain statistics
 
@@ -281,7 +281,7 @@ curl http://localhost:3000/api/balance/YOUR_ADDRESS
 
 ## 🔧 API Reference
 
-### **Real Blockchain API Endpoints**
+### **PharbitChain API Endpoints**
 
 #### **Blockchain Operations**
 | Method | Endpoint | Description |
@@ -411,7 +411,7 @@ sudo apt-get install -y nodejs
 - Check browser console for errors
 - Ensure JavaScript is enabled
 
-#### **Real Blockchain Issues**
+#### **PharbitChain Issues**
 
 **Problem: "Port 3000 already in use"**
 ```bash
@@ -486,7 +486,7 @@ for i in {1..10}; do
 done
 ```
 
-### **Real Blockchain Advanced Usage**
+### **PharbitChain Advanced Usage**
 
 #### **Custom Mining Configuration**
 ```javascript
@@ -548,7 +548,7 @@ cd simple-blockchain
 
 #### **2. Cryptography Learning**
 ```bash
-# Real blockchain for security concepts
+# PharbitChain for security concepts
 cd real-blockchain
 ./launch.sh
 # Generate wallets and understand digital signatures
@@ -574,7 +574,7 @@ console.log('Generated wallet:', wallet.wallet.address);
 ### **Production Use Cases**
 
 #### **1. Cryptocurrency Development**
-- Use real blockchain as foundation
+- Use PharbitChain as foundation
 - Add custom consensus mechanisms
 - Implement smart contracts
 
