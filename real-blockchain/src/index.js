@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const Joi = require('joi');
 const Blockchain = require('./blockchain');
+const config = require('./config');
 const Wallet = require('./wallet');
 const PharmaceuticalTransaction = require('./transaction');
 const CryptoUtils = require('./crypto');
@@ -15,7 +16,7 @@ const AlertSystem = require('./alerts');
 const SupplyChain = require('./supply-chain');
 
 class BlockchainNode {
-    constructor(port = 3000) {
+    constructor(port = config.PORT) {
         this.port = port;
         this.blockchain = new Blockchain();
         this.wallet = new Wallet();
@@ -40,7 +41,7 @@ class BlockchainNode {
         }));
 
         // CORS configuration
-        const corsOrigins = (process.env.CORS_ORIGINS || '*').split(',').map(s => s.trim());
+        const corsOrigins = (config.CORS_ORIGINS || '*').split(',').map(s => s.trim());
         this.app.use(cors({
             origin: function(origin, callback) {
                 if (!origin || corsOrigins.includes('*') || corsOrigins.includes(origin)) {
@@ -57,8 +58,8 @@ class BlockchainNode {
 
         // Rate limiting for API routes
         const limiter = rateLimit({
-            windowMs: parseInt(process.env.RATE_WINDOW_MS || '60000', 10),
-            max: parseInt(process.env.RATE_MAX || '120', 10),
+            windowMs: config.RATE_WINDOW_MS,
+            max: config.RATE_MAX,
             standardHeaders: true,
             legacyHeaders: false,
             message: { error: 'Too many requests, please try again later.' }
@@ -66,7 +67,7 @@ class BlockchainNode {
         this.app.use('/api', limiter);
 
         // Body parsing middleware with limits
-        const jsonLimit = process.env.JSON_BODY_LIMIT || '1mb';
+        const jsonLimit = config.JSON_BODY_LIMIT;
         this.app.use(bodyParser.json({ limit: jsonLimit }));
         this.app.use(bodyParser.urlencoded({ extended: true, limit: jsonLimit }));
 
@@ -774,11 +775,11 @@ class BlockchainNode {
             await this.blockchain.waitForInitialization();
             
             const host = '0.0.0.0';
-            const httpsEnabled = process.env.HTTPS_ENABLED === 'true';
+            const httpsEnabled = config.HTTPS_ENABLED === true;
             if (httpsEnabled) {
                 try {
-                    const key = fs.readFileSync(process.env.HTTPS_KEY_PATH);
-                    const cert = fs.readFileSync(process.env.HTTPS_CERT_PATH);
+                    const key = fs.readFileSync(config.HTTPS_KEY_PATH);
+                    const cert = fs.readFileSync(config.HTTPS_CERT_PATH);
                     const server = https.createServer({ key, cert }, this.app);
                     server.listen(this.port, host, () => {
                         console.log(`\n✅ PharbitChain Server Successfully Started!`);
