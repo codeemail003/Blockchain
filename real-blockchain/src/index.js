@@ -35,6 +35,25 @@ class BlockchainNode {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
         
+        // Specific handler for JSON parse errors
+        this.app.use((error, req, res, next) => {
+            if (error && error.type === 'entity.parse.failed') {
+                return res.status(400).json({
+                    error: 'Invalid JSON payload',
+                    message: error.message,
+                    hint: 'Ensure your request body is valid JSON and content-type is application/json'
+                });
+            }
+            if (error instanceof SyntaxError && 'body' in error) {
+                return res.status(400).json({
+                    error: 'Invalid JSON payload',
+                    message: error.message,
+                    hint: 'Check for missing commas, quotes, or braces in JSON'
+                });
+            }
+            return next(error);
+        });
+        
         // Request logging middleware
         this.app.use((req, res, next) => {
             console.log(`📡 ${req.method} ${req.path} - ${new Date().toISOString()}`);
@@ -322,6 +341,14 @@ class BlockchainNode {
                     return res.status(400).json({ 
                         error: 'Missing required fields: batchInfo, manufacturerAddress, privateKey' 
                     });
+                }
+                
+                // Validate manufacturer address and private key
+                if (!CryptoUtils.isValidAddress(manufacturerAddress)) {
+                    return res.status(400).json({ error: 'Invalid manufacturerAddress' });
+                }
+                if (!CryptoUtils.isValidPrivateKey(privateKey)) {
+                    return res.status(400).json({ error: 'Invalid privateKey' });
                 }
                 
                 const result = this.supplyChain.createBatch(batchInfo, manufacturerAddress, privateKey);
