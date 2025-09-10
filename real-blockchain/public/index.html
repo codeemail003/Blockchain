@@ -280,6 +280,10 @@
             <!-- Wallet Section -->
             <div class="card wallet-section">
                 <h2>💰 Wallet Management</h2>
+                <div class="form-group">
+                    <button class="btn" onclick="connectMetaMask()">🦊 Connect MetaMask</button>
+                    <div id="metamask-account" class="status info" style="margin-top:10px;">MetaMask not connected</div>
+                </div>
                 <div class="wallet-info">
                     <div class="wallet-card">
                         <h3>Wallet 1</h3>
@@ -542,6 +546,7 @@
     <script>
         const API_BASE = 'http://localhost:3000/api';
         let wallets = {};
+        let metaMaskAccount = null;
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
@@ -570,13 +575,30 @@
             }
         }
 
+        // MetaMask connect
+        async function connectMetaMask() {
+            try {
+                if (!window.ethereum) {
+                    showStatus('wallet-status', 'error', 'MetaMask is not available in this browser');
+                    return;
+                }
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                metaMaskAccount = accounts[0];
+                document.getElementById('metamask-account').textContent = `Connected: ${metaMaskAccount}`;
+                // Pre-fill manufacturer address if empty
+                const addrInput = document.getElementById('manufacturer-address');
+                if (addrInput && !addrInput.value) addrInput.value = metaMaskAccount;
+            } catch (e) {
+                showStatus('wallet-status', 'error', 'MetaMask connection failed: ' + e.message);
+            }
+        }
+
         // Handle batch creation
         document.getElementById('batch-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             try {
                 showStatus('batch-status', 'info', 'Creating batch...');
-                const payload = {
-                    batchInfo: {
+                const batchInfo = {
                         medicineInfo: {
                             name: document.getElementById('batch-name').value,
                             manufacturer: document.getElementById('batch-manufacturer').value,
@@ -592,10 +614,27 @@
                         },
                         initialTemperature: parseFloat(document.getElementById('batch-temp').value) || 4.0,
                         initialHumidity: parseFloat(document.getElementById('batch-humidity').value) || 45
-                    },
-                    manufacturerAddress: document.getElementById('manufacturer-address').value,
-                    privateKey: document.getElementById('manufacturer-key').value
-                };
+                    };
+
+                let payload;
+                if (metaMaskAccount) {
+                    const message = JSON.stringify({ type: 'CREATE_BATCH', batchInfo });
+                    const signature = await window.ethereum.request({
+                        method: 'personal_sign',
+                        params: [message, metaMaskAccount]
+                    });
+                    payload = {
+                        batchInfo,
+                        address: metaMaskAccount,
+                        signature
+                    };
+                } else {
+                    payload = {
+                        batchInfo,
+                        manufacturerAddress: document.getElementById('manufacturer-address').value,
+                        privateKey: document.getElementById('manufacturer-key').value
+                    };
+                }
                 const response = await fetch(`${API_BASE}/batch`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -692,7 +731,7 @@
             e.preventDefault();
             try {
                 showStatus('transfer-status', 'info', 'Transferring custody...');
-                const payload = {
+                const basePayload = {
                     batchId: document.getElementById('transfer-batch-id').value,
                     fromStakeholder: document.getElementById('from-stakeholder').value,
                     toStakeholder: document.getElementById('to-stakeholder').value,
@@ -708,9 +747,19 @@
                             humidity: parseFloat(document.getElementById('transfer-humidity').value) || 50,
                             timestamp: Date.now()
                         }
-                    },
-                    privateKey: document.getElementById('transfer-key').value
+                    }
                 };
+                let payload;
+                if (metaMaskAccount) {
+                    const message = JSON.stringify({ type: 'TRANSFER_CUSTODY', ...basePayload });
+                    const signature = await window.ethereum.request({
+                        method: 'personal_sign',
+                        params: [message, metaMaskAccount]
+                    });
+                    payload = { ...basePayload, address: metaMaskAccount, signature };
+                } else {
+                    payload = { ...basePayload, privateKey: document.getElementById('transfer-key').value };
+                }
                 const response = await fetch(`${API_BASE}/supply-chain/transfer`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
