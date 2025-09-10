@@ -45,10 +45,18 @@ class SupplyChain {
         // Validate batch information
         this.validateBatchInfo(batchInfo);
         
+        // Normalize medicine info to ensure expiration is present for transaction validation
+        const normalizedMedicineInfo = {
+            ...batchInfo.medicineInfo,
+            // Use provided expiration on medicineInfo or fall back to top-level expirationDate
+            expiration: batchInfo.medicineInfo.expiration || batchInfo.expirationDate
+        };
+        
         // Create batch record
         const batch = {
             id: batchId,
             ...batchInfo,
+            medicineInfo: normalizedMedicineInfo,
             manufacturer: manufacturerAddress,
             createdAt: Date.now(),
             status: 'produced',
@@ -67,7 +75,7 @@ class SupplyChain {
             manufacturerAddress,
             manufacturerAddress,
             batchId,
-            batchInfo.medicineInfo,
+            normalizedMedicineInfo,
             'produced',
             'manufacturer',
             batch.location,
