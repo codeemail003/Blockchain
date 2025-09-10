@@ -1,6 +1,6 @@
-## 🔐 Pharbit Real Blockchain – Architecture, Structure, and Getting Started
+## 🔐 PharbitChain – Architecture, Structure, and Getting Started
 
-This document explains how the real blockchain works, its code structure, and how to run it locally.
+This document explains how PharbitChain works, its code structure, and how to run it locally.
 
 ### 1) What it is
 - **Purpose**: A production-style blockchain with cryptographic security, Proof of Work mining, REST API, wallet management, and LevelDB persistence.
@@ -133,7 +133,7 @@ curl http://localhost:3000/api/blockchain
 ```
 
 ### 8) Persistence & initialization notes
-- Data is stored in `./blockchain-db` (LevelDB). On first run, a genesis block is created.
+- Data is stored in `./blockchain-db` (LevelDB). On first run, a PharbitChain genesis block is created.
 - If LevelDB is locked by another process, the server will fall back to in-memory mode for development. Stop other instances or remove the lock to restore persistence.
 
 ### 9) Troubleshooting
@@ -157,5 +157,5 @@ curl http://localhost:3000/api/blockchain
 
 ---
 
-This real blockchain is suitable for demos, education, and as a foundation for domain-specific extensions (e.g., pharmaceutical supply chain).
+PharbitChain is suitable for demos, education, and as a foundation for domain-specific extensions (e.g., pharmaceutical supply chain).
 

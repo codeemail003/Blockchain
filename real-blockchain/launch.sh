@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Real Blockchain Launcher"
+echo "🚀 PharbitChain Launcher"
 echo "============================"
 echo ""
 
@@ -47,7 +47,7 @@ fi
 
 # Function to start the blockchain server
 start_server() {
-    print_info "Starting Real Blockchain Server..."
+    print_info "Starting PharbitChain Server..."
     print_info "The server will be available at: http://localhost:3000"
     print_info "Web interface will be available at: http://localhost:3000"
     print_info "API documentation will be shown in the console"
@@ -59,7 +59,7 @@ start_server() {
 
 # Function to run tests
 run_tests() {
-    print_info "Running Real Blockchain Tests..."
+    print_info "Running PharbitChain Tests..."
     echo ""
     node test-blockchain.js
 }
@@ -94,7 +94,7 @@ open_web_interface() {
 # Function to show API documentation
 show_api_docs() {
     echo ""
-    echo "🌐 Real Blockchain API Documentation"
+    echo "🌐 PharbitChain API Documentation"
     echo "===================================="
     echo ""
     echo "Base URL: http://localhost:3000/api"
@@ -148,7 +148,7 @@ show_api_docs() {
 # Function to show blockchain features
 show_features() {
     echo ""
-    echo "🎯 Real Blockchain Features"
+    echo "🎯 PharbitChain Features"
     echo "==========================="
     echo ""
     echo "🔐 Cryptographic Security:"
@@ -181,7 +181,7 @@ show_features() {
     echo "  ✅ RESTful API for all blockchain operations"
     echo "  ✅ Real-time Mining capabilities"
     echo "  ✅ Wallet Management endpoints"
-    echo "  ✅ Blockchain Explorer functionality"
+    echo "  ✅ PharbitChain Explorer functionality"
     echo ""
 }
 
@@ -189,7 +189,7 @@ show_features() {
 while true; do
     echo ""
     echo "Choose an option:"
-    echo "1. 🚀 Start Blockchain Server"
+    echo "1. 🚀 Start PharbitChain Server"
     echo "2. 🧪 Run Tests"
     echo "3. 🌐 Open Web Interface"
     echo "4. 📚 Show API Documentation"
@@ -216,7 +216,7 @@ while true; do
             show_features
             ;;
         6)
-            print_info "Thank you for using Real Blockchain!"
+            print_info "Thank you for using PharbitChain!"
             exit 0
             ;;
         *)

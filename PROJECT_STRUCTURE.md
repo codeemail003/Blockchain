@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 This repository contains a **dual blockchain architecture**:
-1. **Real Blockchain** - Production-grade PoW blockchain with cryptographic security
+1. **PharbitChain** - Production-grade PoW blockchain with cryptographic security
 2. **Pharma Contracts** - Smart contracts + backend with optional Hyperledger Fabric integration
 
 ## 📂 Root Structure
@@ -20,7 +20,7 @@ This repository contains a **dual blockchain architecture**:
 └── 📦 awscliv2.zip              # AWS CLI installer
 ```
 
-## 🔐 Real Blockchain (`real-blockchain/`)
+## 🔐 PharbitChain (`real-blockchain/`)
 **Production-grade blockchain with PoW consensus**
 
 ```
@@ -35,7 +35,7 @@ real-blockchain/
 │   ├── supply-chain.js           # Pharma supply chain logic
 │   ├── iot-integration.js        # IoT sensor data handling
 │   └── alerts.js                 # Alert system
-├── public/                       # Web interface (blockchain explorer)
+├── public/                       # Web interface (PharbitChain Explorer)
 ├── blockchain-db/                # LevelDB persistence
 ├── wallet/                       # Wallet storage
 ├── package.json                  # Dependencies (elliptic, level, express)
@@ -122,7 +122,7 @@ pharbit-contracts/
 
 ## 🌐 Service Endpoints
 
-### Real Blockchain (Port 3000)
+### PharbitChain (Port 3000)
 - **API Base:** `http://localhost:3000/api`
 - **Health:** `GET /api/health`
 - **Wallet:** `POST /api/wallet/generate`
@@ -157,7 +157,7 @@ FABRIC_KEY=./fabric/wallet/appUser-key.pem
 ## 📊 Current Status
 
 ### ✅ Completed
-- Real blockchain with PoW consensus
+- PharbitChain with PoW consensus
 - Smart contracts with comprehensive tests
 - Unified launcher for both services
 - Hyperledger Fabric integration scaffold
@@ -177,7 +177,7 @@ FABRIC_KEY=./fabric/wallet/appUser-key.pem
 
 ## 🎯 Use Cases
 
-### Real Blockchain
+### PharbitChain
 - Production cryptocurrency applications
 - Educational blockchain development
 - Proof of concept implementations

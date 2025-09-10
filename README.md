@@ -5,7 +5,7 @@ This repository now focuses on the production-ready real blockchain and the phar
 Quick start (from repo root):
 ```bash
 ./fullstack-launch.sh start-all
-# Real Blockchain API:   http://localhost:3000
+# PharbitChain API:   http://localhost:3000
 # Pharma Backend API:    http://localhost:4000
 ```
 
@@ -22,20 +22,20 @@ Legacy documentation below refers to the previous simple blockchain, which has b
 
 ## 🎯 Components
 
-### **🔐 Real Blockchain** (`real-blockchain/`)
+### **🔐 PharbitChain** (`real-blockchain/`)
 **Production-ready with cryptographic security**
 - ✅ **Cryptographic Security** - secp256k1 (same as Bitcoin)
 - ✅ **Proof of Work Consensus** - Mining with adjustable difficulty
 - ✅ **Digital Signatures** - Secure transaction verification
 - ✅ **RESTful API Server** - 15+ endpoints for integration
-- ✅ **Modern Web Interface** - Complete blockchain explorer
+- ✅ **Modern Web Interface** - PharbitChain Explorer
 - ✅ **Wallet Management** - Generate and manage cryptographic wallets
 - ✅ **LevelDB Persistence** - Secure data storage
 - ✅ **Merkle Trees** - Efficient transaction verification
 
 ## 🚀 Quick Start Guide
 
-### **Run Real Blockchain Manually (alternative)**
+### **Run PharbitChain Manually (alternative)**
 ```bash
 cd real-blockchain
 npm install
@@ -73,7 +73,7 @@ npm start
 
 ## 🎯 Use Cases
 
-### **🔐 Real Blockchain - Perfect For:**
+### **🔐 PharbitChain - Perfect For:**
 - **Production applications**
 - **Cryptocurrency development**
 - **Smart contract platforms**
@@ -82,17 +82,17 @@ npm start
 
 ## 🚀 Getting Started
 
-### **Real Blockchain (Developers)**
+### **PharbitChain (Developers)**
 
 ```bash
-# Navigate to real blockchain
+# Navigate to PharbitChain
 cd real-blockchain
 
 # Launch the application
 ./launch.sh
 
 # Choose from options:
-# 1. Start Blockchain Server
+# 1. Start PharbitChain Server
 # 2. Run Tests
 # 3. Open Web Interface
 # 4. Show API Documentation
@@ -101,12 +101,12 @@ cd real-blockchain
 
 **Features:**
 - 🔐 **Cryptographic Security**: Same as Bitcoin
-- ⛏️ **Proof of Work Mining**: Real blockchain consensus
+- ⛏️ **Proof of Work Mining**: PharbitChain consensus
 - 💰 **Wallet Management**: Generate and manage wallets
 - 🌐 **RESTful API**: 15+ endpoints for integration
-- 📊 **Blockchain Explorer**: Complete web interface
+- 📊 **PharbitChain Explorer**: Complete web interface
 
-## 🔧 API Reference (Real Blockchain)
+## 🔧 API Reference (PharbitChain)
 
 ### **Blockchain Operations**
 - `GET /api/blockchain` - Get complete blockchain
@@ -129,7 +129,7 @@ cd real-blockchain
 
 ## 🧪 Testing
 
-### **Test Real Blockchain:**
+### **Test PharbitChain:**
 ```bash
 cd real-blockchain
 node test-blockchain.js
@@ -137,7 +137,7 @@ node test-blockchain.js
 
 ## 📊 Performance Comparison
 
-| Feature | Simple Blockchain | Real Blockchain |
+| Feature | Simple Blockchain | PharbitChain |
 |---------|------------------|-----------------|
 | **Setup Complexity** | ⭐ Very Easy | ⭐⭐ Easy |
 | **Cryptographic Security** | ❌ No | ✅ Yes (secp256k1) |
@@ -158,7 +158,7 @@ node test-blockchain.js
 
 ## 🚀 Advanced Usage
 
-### **Real Blockchain API Examples:**
+### **PharbitChain API Examples:**
 
 ```bash
 # Generate a wallet
@@ -176,7 +176,7 @@ curl -X POST http://localhost:3000/api/mine \
 ```
 
 ## 🔍 Monitoring & Debugging
-### **Real Blockchain:**
+### **PharbitChain:**
 - Access web interface at `http://localhost:3000`
 - Use API endpoints for programmatic access
 - Check console logs for detailed information
@@ -184,7 +184,7 @@ curl -X POST http://localhost:3000/api/mine \
 
 ## 🛡️ Security Features
 
-### **Real Blockchain Security:**
+### **PharbitChain Security:**
 - **Elliptic Curve Cryptography** (secp256k1)
 - **Digital Signatures** for transaction verification
 - **SHA256 & Double SHA256** hashing
@@ -199,7 +199,7 @@ curl -X POST http://localhost:3000/api/mine \
 - **In-memory processing** - Fast for learning and testing
 - **No network overhead** - Perfect for local development
 
-### **Real Blockchain:**
+### **PharbitChain:**
 - **LevelDB storage** - Scalable for large datasets
 - **RESTful API** - Easy integration with other systems
 - **Modular architecture** - Easy to extend and modify
@@ -232,4 +232,4 @@ MIT License - see LICENSE file for details.
 
 Use the unified launcher to start services quickly.
 
-The real blockchain and pharma backend are complete, tested, and ready to use! 🎉
+PharbitChain and the pharma backend are complete, tested, and ready to use! 🎉

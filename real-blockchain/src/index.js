@@ -291,6 +291,7 @@ class BlockchainNode {
         this.app.get('/api/health', (req, res) => {
             res.json({
                 status: 'healthy',
+                brand: 'PharbitChain',
                 timestamp: new Date().toISOString(),
                 blockchain: {
                     blocks: this.blockchain.chain.length,
@@ -639,7 +640,7 @@ class BlockchainNode {
      */
     async start() {
         try {
-            console.log('🚀 Starting Pharbit Pharmaceutical Blockchain Server...');
+            console.log('🚀 Starting PharbitChain Server...');
             console.log(`📡 Server will listen on port ${this.port}`);
             console.log(`🌐 Dashboard will be available at: http://localhost:${this.port}`);
             
@@ -647,7 +648,7 @@ class BlockchainNode {
             await this.blockchain.waitForInitialization();
             
             this.app.listen(this.port, '0.0.0.0', () => {
-                console.log(`\n✅ Pharbit Blockchain Server Successfully Started!`);
+                console.log(`\n✅ PharbitChain Server Successfully Started!`);
                 console.log(`📍 Server URL: http://localhost:${this.port}`);
                 console.log(`📊 Blockchain Stats:`, this.blockchain.getStats());
                 
@@ -672,7 +673,7 @@ class BlockchainNode {
             console.log(`   GET  /api/blockchain/validate - Validate blockchain`);
             console.log(`   GET  /api/mining/status - Get mining status`);
             console.log(`   GET  /api/health - Health check`);
-            console.log(`\n💊 Pharmaceutical API Endpoints:`);
+            console.log(`\n💊 PharbitChain API Endpoints:`);
             console.log(`   GET  /api/batch/:batchId - Get batch information`);
             console.log(`   POST /api/batch - Create new medicine batch`);
             console.log(`   GET  /api/temperature/:batchId - Get temperature history`);
@@ -691,7 +692,7 @@ class BlockchainNode {
         });
         
         } catch (error) {
-            console.error('❌ Failed to start Pharbit Blockchain Server:', error);
+            console.error('❌ Failed to start PharbitChain Server:', error);
             process.exit(1);
         }
     }

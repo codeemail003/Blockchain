@@ -33,7 +33,7 @@ port_in_use() {
 }
 
 start_real_blockchain() {
-  print_header "Starting Real Blockchain (port 3000)"
+  print_header "Starting PharbitChain (port 3000)"
   check_cmd node
   cd "$REAL_DIR"
   if [ ! -d node_modules ]; then
@@ -49,9 +49,9 @@ start_real_blockchain() {
   fi
   echo "⏳ Waiting for health..."
   if wait_for_http "http://localhost:3000/api/health" 60 0.5; then
-    echo "✅ Real Blockchain ready: http://localhost:3000"
+    echo "✅ PharbitChain ready: http://localhost:3000"
   else
-    echo "❌ Real Blockchain failed to start. See $LOG_DIR/real-blockchain.log"
+    echo "❌ PharbitChain failed to start. See $LOG_DIR/real-blockchain.log"
     exit 1
   fi
 }
@@ -108,8 +108,8 @@ stop_pharma_backend() {
 
 open_urls() {
   echo "URLs:"
-  echo "- Real Blockchain API: http://localhost:3000/api"
-  echo "- Real Blockchain Health: http://localhost:3000/api/health"
+  echo "- PharbitChain API: http://localhost:3000/api"
+  echo "- PharbitChain Health: http://localhost:3000/api/health"
   echo "- Pharma Backend API: http://localhost:4000/api"
 }
 
@@ -124,8 +124,8 @@ usage() {
 Fullstack Launcher
 
 Usage:
-  $0 start-all        # Start real-blockchain (3000) and pharma backend (4000)
-  $0 start-real       # Start only real-blockchain
+  $0 start-all        # Start PharbitChain (3000) and pharma backend (4000)
+  $0 start-real       # Start only PharbitChain
   $0 start-pharma     # Start only pharma backend
   $0 stop             # Stop all started services
   $0 status           # Show health of services
@@ -134,12 +134,12 @@ Usage:
 Notes:
   - Requires Node.js and npm
   - Logs: $LOG_DIR
-  - Real blockchain guide: real-blockchain/REAL_BLOCKCHAIN_GUIDE.md
+  - PharbitChain guide: real-blockchain/REAL_BLOCKCHAIN_GUIDE.md
 EOF
 }
 
 status() {
-  echo "Real Blockchain:"
+  echo "PharbitChain:"
   if curl -fsS http://localhost:3000/api/health >/dev/null 2>&1; then echo "  ✅ up"; else echo "  ❌ down"; fi
   echo "Pharma Backend:"
   if curl -fsS http://localhost:4000/api/health >/dev/null 2>&1; then echo "  ✅ up"; else echo "  ❌ down"; fi
