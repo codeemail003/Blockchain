@@ -13,10 +13,10 @@
 // TODO: Implement health checks, metrics, and alerting
 
 class HealthChecker {
-    constructor() {
-        // Initialize health metrics and monitoring config
-    }
-    // Add methods for health checks, metrics export, and alerting
+  constructor() {
+    // Initialize health metrics and monitoring config
+  }
+  // Add methods for health checks, metrics export, and alerting
 }
 
 module.exports = HealthChecker;

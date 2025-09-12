@@ -1,7 +1,7 @@
 # 📚 Complete Usage Guide - Pharbit Blockchain
 
-This comprehensive guide will help you understand and use both blockchain implementations effectively.
----
+## This comprehensive guide will help you understand and use both blockchain implementations effectively.
+
 ## � Production-Ready Features & Enterprise Compliance
 
 Pharbit Blockchain is designed for pharmaceutical supply chain traceability, security, and regulatory compliance:
@@ -14,6 +14,7 @@ Pharbit Blockchain is designed for pharmaceutical supply chain traceability, sec
 - **Monitoring:** Health checks, metrics, alerting, log aggregation, performance tracking
 - **Testing:** 90%+ code coverage, integration/load/security/compliance/chaos tests
 - **Documentation:** Complete API docs, user guides, module READMEs
+
 ---
 
 ## �🎯 Table of Contents
@@ -29,6 +30,7 @@ Pharbit Blockchain is designed for pharmaceutical supply chain traceability, sec
 ## 🚀 Quick Start
 
 ### **Prerequisites:**
+
 - Node.js (v14 or higher)
 - npm (comes with Node.js)
 - Modern web browser
@@ -36,9 +38,11 @@ Pharbit Blockchain is designed for pharmaceutical supply chain traceability, sec
 ### **Choose Your Path:**
 
 #### **🎓 Beginner - Simple Blockchain**
+
 Perfect for learning blockchain concepts without complexity.
 
 #### **🔐 Advanced - PharbitChain**
+
 Production-ready with cryptographic security and advanced features.
 
 ---
@@ -46,9 +50,11 @@ Production-ready with cryptographic security and advanced features.
 ## 🎓 Simple Blockchain Guide
 
 ### **What is Simple Blockchain?**
+
 A lightweight blockchain implementation designed for learning and basic transactions. It simulates blockchain behavior without complex cryptographic operations.
 
 ### **Key Features:**
+
 - ✅ File-based storage
 - ✅ Web interface
 - ✅ Command line tools
@@ -58,6 +64,7 @@ A lightweight blockchain implementation designed for learning and basic transact
 ### **Getting Started:**
 
 #### **1. Launch the Application**
+
 ```bash
 cd simple-blockchain
 ./launch.sh
@@ -66,23 +73,27 @@ cd simple-blockchain
 #### **2. Choose Your Interface**
 
 **Option A: Web Interface (Recommended)**
+
 - Choose option 1 from the launcher
 - Opens a beautiful web interface
 - Enter sender, receiver, and amount
 - Click "Create Transaction Block"
 
 **Option B: Command Line**
+
 ```bash
 node process-transaction.js "sender" "receiver" "amount"
 ```
 
 **Option C: Direct Web Access**
+
 - Open `web-interface.html` in your browser
 - No server required
 
 #### **3. Understanding the Output**
 
 When you create a transaction, you'll see:
+
 ```
 ✅ Block 3 created with hash: 09f57233020d9860809226b4d70e47e7a3dcc7784a66c558d72776c0fc32b6ad
 ✅ Transaction completed successfully!
@@ -92,6 +103,7 @@ Receiver balance: 520
 ```
 
 #### **4. File Structure**
+
 ```
 simple-blockchain/
 ├── blocks/                 # Contains all blockchain blocks
@@ -105,18 +117,21 @@ simple-blockchain/
 #### **5. Monitoring Your Blockchain**
 
 **View Blocks:**
+
 ```bash
 ls blocks/
 cat blocks/block_1.json
 ```
 
 **View Transactions:**
+
 ```bash
 ls transactions/
 cat transactions/TX_1756728257723_evtplquus.json
 ```
 
 **Check Balances:**
+
 ```bash
 cat accounts/accounts.json
 ```
@@ -124,16 +139,19 @@ cat accounts/accounts.json
 ### **Example Usage:**
 
 #### **Create a Test Transaction:**
+
 ```bash
 node process-transaction.js "0x89f97Cb35236a1d0190FB25B31C5C0fF4107Ec1b" "6M3uvRFJSR3hcJab22fSAQGUgXxiMKgdg225k3Pq9qpR" "10"
 ```
 
 #### **View Transaction History:**
+
 ```bash
 ls -la transactions/
 ```
 
 #### **Check Account Balances:**
+
 ```bash
 cat accounts/accounts.json | jq .
 ```
@@ -143,9 +161,11 @@ cat accounts/accounts.json | jq .
 ## 🔐 PharbitChain Guide
 
 ### **What is PharbitChain?**
+
 A production-ready blockchain implementation with cryptographic security, Proof of Work consensus, and a complete API server.
 
 ### **Key Features:**
+
 - ✅ Cryptographic security (secp256k1)
 - ✅ Proof of Work mining
 - ✅ Digital signatures
@@ -157,6 +177,7 @@ A production-ready blockchain implementation with cryptographic security, Proof 
 ### **Getting Started:**
 
 #### **1. Launch the Application**
+
 ```bash
 cd real-blockchain
 ./launch.sh
@@ -165,26 +186,31 @@ cd real-blockchain
 #### **2. Choose Your Option**
 
 **Option 1: Start Blockchain Server**
+
 - Starts the API server on port 3000
 - Provides RESTful endpoints
 - Enables web interface access
 
 **Option 2: Run Tests**
+
 - Executes comprehensive test suite
 - Verifies all functionality
 - Shows detailed test results
 
 **Option 3: Open Web Interface**
+
 - Opens modern PharbitChain explorer
 - Generate wallets and create transactions
 - Monitor blockchain statistics
 
 **Option 4: Show API Documentation**
+
 - Displays all available endpoints
 - Shows example usage
 - Provides curl commands
 
 **Option 5: Show Features**
+
 - Lists all blockchain features
 - Explains capabilities
 - Shows security features
@@ -192,11 +218,13 @@ cd real-blockchain
 #### **3. Using the Web Interface**
 
 **Generate Wallets:**
+
 1. Click "Generate Wallet" for Wallet 1
 2. Click "Generate Wallet" for Wallet 2
 3. Note the wallet addresses
 
 **Create Transactions:**
+
 1. Select "From Wallet" (Wallet 1)
 2. Select "To Wallet" (Wallet 2)
 3. Enter amount (e.g., 10)
@@ -204,12 +232,14 @@ cd real-blockchain
 5. Click "Send Transaction"
 
 **Mine Blocks:**
+
 1. Select a miner wallet
 2. Click "Mine Block"
 3. Watch the mining process
 4. See the new block added
 
 **Monitor Statistics:**
+
 - View total blocks
 - See pending transactions
 - Check mining difficulty
@@ -218,11 +248,13 @@ cd real-blockchain
 #### **4. Using the API**
 
 **Generate a Wallet:**
+
 ```bash
 curl -X POST http://localhost:3000/api/wallet/generate
 ```
 
 **Create a Transaction:**
+
 ```bash
 curl -X POST http://localhost:3000/api/wallet/transaction \
   -H "Content-Type: application/json" \
@@ -234,6 +266,7 @@ curl -X POST http://localhost:3000/api/wallet/transaction \
 ```
 
 **Mine a Block:**
+
 ```bash
 curl -X POST http://localhost:3000/api/mine \
   -H "Content-Type: application/json" \
@@ -243,11 +276,13 @@ curl -X POST http://localhost:3000/api/mine \
 ```
 
 **Get Blockchain Info:**
+
 ```bash
 curl http://localhost:3000/api/blockchain
 ```
 
 **Get Balance:**
+
 ```bash
 curl http://localhost:3000/api/balance/YOUR_ADDRESS
 ```
@@ -255,6 +290,7 @@ curl http://localhost:3000/api/balance/YOUR_ADDRESS
 #### **5. Understanding the Output**
 
 **Wallet Generation:**
+
 ```json
 {
   "message": "Wallet generated successfully",
@@ -267,6 +303,7 @@ curl http://localhost:3000/api/balance/YOUR_ADDRESS
 ```
 
 **Transaction Creation:**
+
 ```json
 {
   "message": "Transaction created and added to pending",
@@ -283,6 +320,7 @@ curl http://localhost:3000/api/balance/YOUR_ADDRESS
 ```
 
 **Mining Result:**
+
 ```json
 {
   "message": "Mining started",
@@ -298,6 +336,7 @@ curl http://localhost:3000/api/balance/YOUR_ADDRESS
 ### **PharbitChain API Endpoints**
 
 ### New & Planned API Endpoints
+
 - `/api/network/peer-discovery` - Peer discovery
 - `/api/security/multi-sig-wallet` - Multi-signature wallet
 - `/api/monitoring/health-checker` - System health
@@ -310,52 +349,60 @@ curl http://localhost:3000/api/balance/YOUR_ADDRESS
 - `/api/pharma/expiry-manager` - Expiry tracking
 
 #### **Blockchain Operations**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/blockchain` | Get complete blockchain |
-| GET | `/api/blockchain/latest` | Get latest block |
-| GET | `/api/blockchain/block/:index` | Get block by index |
-| GET | `/api/blockchain/validate` | Validate blockchain integrity |
+
+| Method | Endpoint                       | Description                   |
+| ------ | ------------------------------ | ----------------------------- |
+| GET    | `/api/blockchain`              | Get complete blockchain       |
+| GET    | `/api/blockchain/latest`       | Get latest block              |
+| GET    | `/api/blockchain/block/:index` | Get block by index            |
+| GET    | `/api/blockchain/validate`     | Validate blockchain integrity |
 
 #### **Transaction Operations**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/transactions/pending` | Get pending transactions |
-| POST | `/api/transactions` | Create new transaction |
-| GET | `/api/transactions/:address` | Get transaction history |
+
+| Method | Endpoint                     | Description              |
+| ------ | ---------------------------- | ------------------------ |
+| GET    | `/api/transactions/pending`  | Get pending transactions |
+| POST   | `/api/transactions`          | Create new transaction   |
+| GET    | `/api/transactions/:address` | Get transaction history  |
 
 #### **Wallet Operations**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/wallet` | Get wallet information |
-| POST | `/api/wallet/generate` | Generate new wallet |
-| POST | `/api/wallet/import` | Import wallet from private key |
-| POST | `/api/wallet/transaction` | Create transaction from wallet |
+
+| Method | Endpoint                  | Description                    |
+| ------ | ------------------------- | ------------------------------ |
+| GET    | `/api/wallet`             | Get wallet information         |
+| POST   | `/api/wallet/generate`    | Generate new wallet            |
+| POST   | `/api/wallet/import`      | Import wallet from private key |
+| POST   | `/api/wallet/transaction` | Create transaction from wallet |
 
 #### **Account Operations**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/balance/:address` | Get address balance |
+
+| Method | Endpoint                | Description         |
+| ------ | ----------------------- | ------------------- |
+| GET    | `/api/balance/:address` | Get address balance |
 
 #### **Mining Operations**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/mine` | Mine pending transactions |
-| GET | `/api/mining/status` | Get mining status |
+
+| Method | Endpoint             | Description               |
+| ------ | -------------------- | ------------------------- |
+| POST   | `/api/mine`          | Mine pending transactions |
+| GET    | `/api/mining/status` | Get mining status         |
 
 #### **System Operations**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | Health check |
+
+| Method | Endpoint      | Description  |
+| ------ | ------------- | ------------ |
+| GET    | `/api/health` | Health check |
 
 ### **Request/Response Examples**
 
 #### **Generate Wallet**
+
 ```bash
 curl -X POST http://localhost:3000/api/wallet/generate
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Wallet generated successfully",
@@ -368,6 +415,7 @@ curl -X POST http://localhost:3000/api/wallet/generate
 ```
 
 #### **Create Transaction**
+
 ```bash
 curl -X POST http://localhost:3000/api/wallet/transaction \
   -H "Content-Type: application/json" \
@@ -379,6 +427,7 @@ curl -X POST http://localhost:3000/api/wallet/transaction \
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Transaction created and added to pending",
@@ -395,6 +444,7 @@ curl -X POST http://localhost:3000/api/wallet/transaction \
 ```
 
 #### **Mine Block**
+
 ```bash
 curl -X POST http://localhost:3000/api/mine \
   -H "Content-Type: application/json" \
@@ -404,6 +454,7 @@ curl -X POST http://localhost:3000/api/mine \
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Mining started",
@@ -421,11 +472,13 @@ curl -X POST http://localhost:3000/api/mine \
 #### **Simple Blockchain Issues**
 
 **Problem: "Permission denied" when running launch.sh**
+
 ```bash
 chmod +x launch.sh
 ```
 
 **Problem: "Node.js not found"**
+
 ```bash
 # Install Node.js
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
@@ -433,6 +486,7 @@ sudo apt-get install -y nodejs
 ```
 
 **Problem: Web interface not working**
+
 - Open `web-interface.html` directly in browser
 - Check browser console for errors
 - Ensure JavaScript is enabled
@@ -440,6 +494,7 @@ sudo apt-get install -y nodejs
 #### **PharbitChain Issues**
 
 **Problem: "Port 3000 already in use"**
+
 ```bash
 # Find process using port 3000
 lsof -i :3000
@@ -452,6 +507,7 @@ PORT=3001 npm start
 ```
 
 **Problem: "Database is not open"**
+
 ```bash
 # Remove existing database
 rm -rf blockchain-db/
@@ -461,12 +517,14 @@ npm start
 ```
 
 **Problem: "Cannot find module"**
+
 ```bash
 # Install dependencies
 npm install
 ```
 
 **Problem: "Mining failed"**
+
 - Check if there are pending transactions
 - Verify miner address is valid
 - Check mining difficulty settings
@@ -474,12 +532,14 @@ npm install
 #### **General Issues**
 
 **Problem: "Permission denied"**
+
 ```bash
 # Make scripts executable
 chmod +x */launch.sh
 ```
 
 **Problem: "Connection refused"**
+
 - Ensure the server is running
 - Check if the correct port is being used
 - Verify firewall settings
@@ -491,20 +551,22 @@ chmod +x */launch.sh
 ### **Simple Blockchain Advanced Usage**
 
 #### **Custom Transaction Processing**
+
 ```javascript
 // Create custom transaction
 const transaction = {
   sender: "custom-sender",
   receiver: "custom-receiver",
   amount: 100,
-  timestamp: Date.now()
+  timestamp: Date.now(),
 };
 
 // Process transaction
-require('./process-transaction.js')(transaction);
+require("./process-transaction.js")(transaction);
 ```
 
 #### **Batch Transaction Processing**
+
 ```bash
 # Process multiple transactions
 for i in {1..10}; do
@@ -515,6 +577,7 @@ done
 ### **PharbitChain Advanced Usage**
 
 #### **Custom Mining Configuration**
+
 ```javascript
 // Modify mining difficulty
 blockchain.difficulty = 5; // 5 leading zeros
@@ -527,34 +590,42 @@ blockchain.blockSize = 500;
 ```
 
 #### **Programmatic API Usage**
+
 ```javascript
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
 // Generate wallet
-const walletResponse = await fetch('http://localhost:3000/api/wallet/generate', {
-  method: 'POST'
-});
+const walletResponse = await fetch(
+  "http://localhost:3000/api/wallet/generate",
+  {
+    method: "POST",
+  }
+);
 const wallet = await walletResponse.json();
 
 // Create transaction
-const transactionResponse = await fetch('http://localhost:3000/api/wallet/transaction', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    to: wallet.wallet.address,
-    amount: 10,
-    fee: 0.001
-  })
-});
+const transactionResponse = await fetch(
+  "http://localhost:3000/api/wallet/transaction",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      to: wallet.wallet.address,
+      amount: 10,
+      fee: 0.001,
+    }),
+  }
+);
 ```
 
 #### **Custom Blockchain Configuration**
+
 ```javascript
 // Create blockchain with custom settings
-const blockchain = new Blockchain('./custom-db', {
+const blockchain = new Blockchain("./custom-db", {
   difficulty: 3,
   miningReward: 25,
-  blockSize: 100
+  blockSize: 100,
 });
 ```
 
@@ -565,6 +636,7 @@ const blockchain = new Blockchain('./custom-db', {
 ### **Educational Use Cases**
 
 #### **1. Blockchain Learning**
+
 ```bash
 # Simple blockchain for concepts
 cd simple-blockchain
@@ -573,6 +645,7 @@ cd simple-blockchain
 ```
 
 #### **2. Cryptography Learning**
+
 ```bash
 # PharbitChain for security concepts
 cd real-blockchain
@@ -583,6 +656,7 @@ cd real-blockchain
 ### **Development Use Cases**
 
 #### **1. API Testing**
+
 ```bash
 # Test blockchain API
 curl http://localhost:3000/api/health
@@ -590,26 +664,30 @@ curl http://localhost:3000/api/blockchain
 ```
 
 #### **2. Integration Testing**
+
 ```javascript
 // Test blockchain integration
-const response = await fetch('http://localhost:3000/api/wallet/generate');
+const response = await fetch("http://localhost:3000/api/wallet/generate");
 const wallet = await response.json();
-console.log('Generated wallet:', wallet.wallet.address);
+console.log("Generated wallet:", wallet.wallet.address);
 ```
 
 ### **Production Use Cases**
 
 #### **1. Cryptocurrency Development**
+
 - Use PharbitChain as foundation
 - Add custom consensus mechanisms
 - Implement smart contracts
 
 #### **2. Supply Chain Tracking**
+
 - Use blockchain for product tracking
 - Implement custom transaction types
 - Add verification mechanisms
 
 #### **3. Voting Systems**
+
 - Use blockchain for secure voting
 - Implement custom validation rules
 - Add anonymity features
@@ -617,6 +695,7 @@ console.log('Generated wallet:', wallet.wallet.address);
 ### **Testing Scenarios**
 
 #### **1. Load Testing**
+
 ```bash
 # Create many transactions
 for i in {1..100}; do
@@ -627,6 +706,7 @@ done
 ```
 
 #### **2. Mining Testing**
+
 ```bash
 # Mine multiple blocks
 for i in {1..10}; do
@@ -642,6 +722,7 @@ done
 ## 🎉 Success Checklist
 
 ### **Simple Blockchain:**
+
 - [ ] Launcher script works
 - [ ] Web interface opens
 - [ ] Transactions can be created
@@ -650,6 +731,7 @@ done
 - [ ] Transaction history is maintained
 
 ### **Real Blockchain:**
+
 - [ ] Dependencies installed
 - [ ] Server starts successfully
 - [ ] Wallets can be generated

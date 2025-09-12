@@ -1,11 +1,14 @@
 # 📁 Pharbit Blockchain - Project Structure
 
 ## 🎯 Overview
+
 This repository contains a **dual blockchain architecture**:
+
 1. **PharbitChain** - Production-grade PoW blockchain with cryptographic security
 2. **Pharma Contracts** - Smart contracts + backend with optional Hyperledger Fabric integration
 
 ## 📂 Root Structure
+
 ```
 📦 Pharbit Blockchain
 ├── 🔐 real-blockchain/           # Production PoW blockchain
@@ -45,6 +48,7 @@ This repository contains a **dual blockchain architecture**:
 ```
 
 ## 🔐 PharbitChain (`real-blockchain/`)
+
 **Production-grade blockchain with PoW consensus and enterprise modules**
 
 ```
@@ -76,6 +80,7 @@ real-blockchain/
 ```
 
 **Key Features:**
+
 - ✅ secp256k1 cryptography (same as Bitcoin)
 - ✅ Proof of Work mining with adjustable difficulty
 - ✅ LevelDB persistence
@@ -86,6 +91,7 @@ real-blockchain/
 - ✅ Enterprise modules for security, compliance, monitoring, integration, and more
 
 ## 🧪 Pharma Contracts (`pharbit-contracts/`)
+
 **Smart contracts + backend with Fabric integration**
 
 ```
@@ -123,6 +129,7 @@ pharbit-contracts/
 ```
 
 **Key Features:**
+
 - ✅ Solidity smart contracts for pharma supply chain
 - ✅ Hardhat development framework
 - ✅ Express.js backend API
@@ -133,6 +140,7 @@ pharbit-contracts/
 ## 🚀 Launchers & Scripts
 
 ### `fullstack-launch.sh` - Unified Launcher
+
 ```bash
 ./fullstack-launch.sh start-all    # Start both services
 ./fullstack-launch.sh start-real   # Start only real blockchain
@@ -143,6 +151,7 @@ pharbit-contracts/
 ```
 
 ### `setup-fabric-assets.sh` - Fabric Integration
+
 ```bash
 ./setup-fabric-assets.sh /path/to/fabric-samples/test-network
 # Copies connection profile and certificates from Fabric test-network
@@ -151,6 +160,7 @@ pharbit-contracts/
 ## 🌐 Service Endpoints
 
 ### PharbitChain (Port 3000)
+
 - **API Base:** `http://localhost:3000/api`
 - **Health:** `GET /api/health`
 - **Wallet:** `POST /api/wallet/generate`
@@ -159,6 +169,7 @@ pharbit-contracts/
 - **Blockchain:** `GET /api/blockchain`
 
 ### Pharma Backend (Port 4000)
+
 - **API Base:** `http://localhost:4000/api`
 - **Health:** `GET /api/health`
 - **Drugs:** `GET /api/drugs`, `POST /api/drugs/register`
@@ -169,6 +180,7 @@ pharbit-contracts/
 ## 🔧 Configuration
 
 ### Environment Variables
+
 ```bash
 # Real Blockchain
 PORT=3000
@@ -185,6 +197,7 @@ FABRIC_KEY=./fabric/wallet/appUser-key.pem
 ## 📊 Current Status
 
 ### ✅ Completed
+
 - PharbitChain with PoW consensus
 - Smart contracts with comprehensive tests
 - Unified launcher for both services
@@ -194,10 +207,12 @@ FABRIC_KEY=./fabric/wallet/appUser-key.pem
 - RESTful APIs for both systems
 
 ### 🔄 In Progress
+
 - Hyperledger Fabric asset setup (requires external test-network)
 - Documentation updates
 
 ### 📋 Next Steps
+
 1. Set up Fabric test-network
 2. Run `setup-fabric-assets.sh` to enable Fabric integration
 3. Test both blockchain systems together
@@ -206,18 +221,21 @@ FABRIC_KEY=./fabric/wallet/appUser-key.pem
 ## 🎯 Use Cases
 
 ### PharbitChain
+
 - Production cryptocurrency applications
 - Educational blockchain development
 - Proof of concept implementations
 - Supply chain tracking with PoW security
 
 ### Pharma Contracts
+
 - Pharmaceutical supply chain management
 - Smart contract-based drug tracking
 - Enterprise blockchain solutions
 - Integration with existing systems
 
 ## 🚀 Quick Start
+
 ```bash
 # Start everything
 ./fullstack-launch.sh start-all
@@ -231,4 +249,5 @@ curl http://localhost:4000/api/health
 ```
 
 ---
-*Last updated: $(date)*
+
+_Last updated: $(date)_
