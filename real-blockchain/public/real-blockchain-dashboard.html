@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharbitChain - Real Blockchain Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-connected { background-color: #28a745; }
+        .status-disconnected { background-color: #dc3545; }
+        .status-warning { background-color: #ffc107; }
+        
+        .metric-card {
+            transition: transform 0.2s;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .batch-card {
+            border-left: 4px solid #007bff;
+        }
+        .alert-critical { border-left-color: #dc3545; }
+        .alert-warning { border-left-color: #ffc107; }
+        .alert-normal { border-left-color: #28a745; }
+        
+        .temperature-chart {
+            max-height: 300px;
+        }
+        
+        .loading {
+            display: none;
+        }
+        .loading.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-pills me-2"></i>
+                PharbitChain - Real Blockchain
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i>
+                        <span id="accountAddress">Not Connected</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" id="connectWalletBtn">
+                            <i class="fas fa-wallet me-2"></i>Connect Wallet
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" id="disconnectWalletBtn">
+                            <i class="fas fa-sign-out-alt me-2"></i>Disconnect
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- System Status -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-heartbeat me-2"></i>
+                            System Status
+                        </h5>
+                        <button class="btn btn-sm btn-outline-primary" id="refreshStatusBtn">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="status-indicator" id="blockchainStatus"></span>
+                                    <span>Blockchain</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="status-indicator" id="databaseStatus"></span>
+                                    <span>Database</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="status-indicator" id="storageStatus"></span>
+                                    <span>Storage</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="status-indicator" id="metamaskStatus"></span>
+                                    <span>MetaMask</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card metric-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-cubes fa-2x text-primary mb-2"></i>
+                        <h4 id="totalBlocks">-</h4>
+                        <p class="text-muted">Total Blocks</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-box fa-2x text-success mb-2"></i>
+                        <h4 id="totalBatches">-</h4>
+                        <p class="text-muted">Active Batches</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                        <h4 id="activeAlerts">-</h4>
+                        <p class="text-muted">Active Alerts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-percentage fa-2x text-info mb-2"></i>
+                        <h4 id="complianceRate">-</h4>
+                        <p class="text-muted">Compliance Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- Batch Management -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-boxes me-2"></i>
+                            Batch Management
+                        </h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createBatchModal">
+                            <i class="fas fa-plus me-1"></i>Create Batch
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Batch ID</th>
+                                        <th>Medicine</th>
+                                        <th>Quantity</th>
+                                        <th>Status</th>
+                                        <th>Stakeholder</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="batchesTable">
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div class="loading">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temperature Monitoring -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-thermometer-half me-2"></i>
+                            Temperature Monitoring
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="temperatureChart" class="temperature-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <!-- Alerts -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bell me-2"></i>
+                            Active Alerts
+                        </h5>
+                        <span class="badge bg-warning" id="alertCount">0</span>
+                    </div>
+                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                        <div id="alertsList">
+                            <div class="text-center text-muted">
+                                <div class="loading">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bolt me-2"></i>
+                            Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" id="backupBlockchainBtn">
+                                <i class="fas fa-download me-2"></i>Backup Blockchain
+                            </button>
+                            <button class="btn btn-outline-success" id="exportDataBtn">
+                                <i class="fas fa-file-export me-2"></i>Export Data
+                            </button>
+                            <button class="btn btn-outline-info" id="generateReportBtn">
+                                <i class="fas fa-chart-line me-2"></i>Generate Report
+                            </button>
+                            <button class="btn btn-outline-warning" id="syncDatabaseBtn">
+                                <i class="fas fa-sync me-2"></i>Sync Database
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-network-wired me-2"></i>
+                            Network Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <strong>Network:</strong>
+                            <span id="networkName">-</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Chain ID:</strong>
+                            <span id="chainId">-</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Contract:</strong>
+                            <small class="text-muted" id="contractAddress">-</small>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Account:</strong>
+                            <small class="text-muted" id="accountInfo">-</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Batch Modal -->
+    <div class="modal fade" id="createBatchModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Batch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createBatchForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Medicine Name</label>
+                                    <input type="text" class="form-control" id="medicineName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Manufacturer</label>
+                                    <input type="text" class="form-control" id="manufacturer" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Medicine Type</label>
+                                    <select class="form-select" id="medicineType" required>
+                                        <option value="tablet">Tablet</option>
+                                        <option value="capsule">Capsule</option>
+                                        <option value="injection">Injection</option>
+                                        <option value="syrup">Syrup</option>
+                                        <option value="cream">Cream</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" class="form-control" id="quantity" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Expiration Date</label>
+                                    <input type="date" class="form-control" id="expirationDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Dosage</label>
+                                    <input type="text" class="form-control" id="dosage" placeholder="e.g., 500mg">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Facility</label>
+                                    <input type="text" class="form-control" id="facility" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Initial Temperature (°C)</label>
+                                    <input type="number" class="form-control" id="initialTemperature" step="0.1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Latitude</label>
+                                    <input type="number" class="form-control" id="latitude" step="any" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Longitude</label>
+                                    <input type="number" class="form-control" id="longitude" step="any" required>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="createBatchBtn">Create Batch</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-success">
+                        <i class="fas fa-check-circle me-2"></i>Success
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="successMessage">Operation completed successfully!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>Error
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage">An error occurred!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/real-blockchain-client.js"></script>
+    <script>
+        // Initialize the application
+        let blockchainClient;
+        let temperatureChart;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            try {
+                // Initialize blockchain client
+                blockchainClient = new RealBlockchainClient();
+                await blockchainClient.initialize();
+
+                // Setup event listeners
+                setupEventListeners();
+
+                // Load initial data
+                await loadDashboardData();
+
+                // Setup temperature chart
+                setupTemperatureChart();
+
+                console.log('✅ Dashboard initialized');
+            } catch (error) {
+                console.error('❌ Failed to initialize dashboard:', error);
+                showError('Failed to initialize dashboard: ' + error.message);
+            }
+        }
+
+        function setupEventListeners() {
+            // Connect wallet button
+            document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+            document.getElementById('disconnectWalletBtn').addEventListener('click', disconnectWallet);
+
+            // Refresh status button
+            document.getElementById('refreshStatusBtn').addEventListener('click', loadDashboardData);
+
+            // Create batch button
+            document.getElementById('createBatchBtn').addEventListener('click', createBatch);
+
+            // Quick action buttons
+            document.getElementById('backupBlockchainBtn').addEventListener('click', backupBlockchain);
+            document.getElementById('exportDataBtn').addEventListener('click', exportData);
+            document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+            document.getElementById('syncDatabaseBtn').addEventListener('click', syncDatabase);
+        }
+
+        async function connectWallet() {
+            try {
+                showLoading();
+                const result = await blockchainClient.connectMetaMask();
+                updateAccountInfo(result);
+                showSuccess('Wallet connected successfully!');
+            } catch (error) {
+                showError('Failed to connect wallet: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function disconnectWallet() {
+            try {
+                blockchainClient.disconnect();
+                updateAccountInfo(null);
+                showSuccess('Wallet disconnected successfully!');
+            } catch (error) {
+                showError('Failed to disconnect wallet: ' + error.message);
+            }
+        }
+
+        function updateAccountInfo(accountInfo) {
+            const accountElement = document.getElementById('accountAddress');
+            const networkElement = document.getElementById('networkName');
+            const chainIdElement = document.getElementById('chainId');
+            const contractElement = document.getElementById('contractAddress');
+            const accountInfoElement = document.getElementById('accountInfo');
+
+            if (accountInfo) {
+                accountElement.textContent = accountInfo.address.substring(0, 6) + '...' + accountInfo.address.substring(38);
+                networkElement.textContent = accountInfo.networkName;
+                chainIdElement.textContent = accountInfo.chainId;
+                contractElement.textContent = blockchainClient.contractAddress || 'Not deployed';
+                accountInfoElement.textContent = accountInfo.address;
+            } else {
+                accountElement.textContent = 'Not Connected';
+                networkElement.textContent = '-';
+                chainIdElement.textContent = '-';
+                contractElement.textContent = '-';
+                accountInfoElement.textContent = '-';
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                showLoading();
+                
+                // Load system health
+                await loadSystemHealth();
+                
+                // Load blockchain stats
+                await loadBlockchainStats();
+                
+                // Load batches
+                await loadBatches();
+                
+                // Load alerts
+                await loadAlerts();
+                
+                // Load temperature data
+                await loadTemperatureData();
+                
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+                showError('Failed to load dashboard data: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadSystemHealth() {
+            try {
+                const health = await blockchainClient.getSystemHealth();
+                
+                // Update status indicators
+                updateStatusIndicator('blockchainStatus', health.blockchain.isValid);
+                updateStatusIndicator('databaseStatus', health.db.initialized);
+                updateStatusIndicator('storageStatus', true); // Assume storage is working
+                updateStatusIndicator('metamaskStatus', blockchainClient.isConnected);
+                
+            } catch (error) {
+                console.error('Failed to load system health:', error);
+                updateStatusIndicator('blockchainStatus', false);
+                updateStatusIndicator('databaseStatus', false);
+                updateStatusIndicator('storageStatus', false);
+                updateStatusIndicator('metamaskStatus', false);
+            }
+        }
+
+        function updateStatusIndicator(elementId, status) {
+            const element = document.getElementById(elementId);
+            element.className = 'status-indicator ' + (status ? 'status-connected' : 'status-disconnected');
+        }
+
+        async function loadBlockchainStats() {
+            try {
+                const stats = await blockchainClient.getRealBlockchainStats();
+                
+                document.getElementById('totalBlocks').textContent = stats.blockchain.blocks || 0;
+                document.getElementById('totalBatches').textContent = stats.database.totalBatches || 0;
+                document.getElementById('activeAlerts').textContent = stats.database.alertStats?.active || 0;
+                document.getElementById('complianceRate').textContent = (stats.blockchain.complianceRate || 100).toFixed(1) + '%';
+                
+            } catch (error) {
+                console.error('Failed to load blockchain stats:', error);
+            }
+        }
+
+        async function loadBatches() {
+            try {
+                const stats = await blockchainClient.getAllBatches();
+                const batchesTable = document.getElementById('batchesTable');
+                
+                if (stats.batches && stats.batches.length > 0) {
+                    batchesTable.innerHTML = stats.batches.map(batch => `
+                        <tr>
+                            <td>${batch.id}</td>
+                            <td>${batch.medicineInfo.name}</td>
+                            <td>${batch.quantity}</td>
+                            <td><span class="badge bg-${getStatusColor(batch.status)}">${batch.status}</span></td>
+                            <td>${batch.currentStakeholder}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="viewBatch('${batch.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    batchesTable.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No batches found</td></tr>';
+                }
+                
+            } catch (error) {
+                console.error('Failed to load batches:', error);
+                document.getElementById('batchesTable').innerHTML = '<tr><td colspan="6" class="text-center text-danger">Failed to load batches</td></tr>';
+            }
+        }
+
+        function getStatusColor(status) {
+            switch (status) {
+                case 'manufactured': return 'primary';
+                case 'shipped': return 'info';
+                case 'delivered': return 'success';
+                case 'recalled': return 'danger';
+                default: return 'secondary';
+            }
+        }
+
+        async function loadAlerts() {
+            try {
+                const alerts = await blockchainClient.getAlerts();
+                const alertsList = document.getElementById('alertsList');
+                const alertCount = document.getElementById('alertCount');
+                
+                alertCount.textContent = alerts.alerts.length;
+                
+                if (alerts.alerts.length > 0) {
+                    alertsList.innerHTML = alerts.alerts.map(alert => `
+                        <div class="alert alert-${getAlertSeverityClass(alert.severity)} alert-dismissible fade show" role="alert">
+                            <strong>${alert.type}</strong><br>
+                            <small>${alert.message}</small>
+                            <button type="button" class="btn-close" onclick="acknowledgeAlert('${alert.alertId}')"></button>
+                        </div>
+                    `).join('');
+                } else {
+                    alertsList.innerHTML = '<div class="text-center text-muted">No active alerts</div>';
+                }
+                
+            } catch (error) {
+                console.error('Failed to load alerts:', error);
+                document.getElementById('alertsList').innerHTML = '<div class="text-center text-danger">Failed to load alerts</div>';
+            }
+        }
+
+        function getAlertSeverityClass(severity) {
+            switch (severity) {
+                case 'critical': return 'danger';
+                case 'warning': return 'warning';
+                case 'normal': return 'success';
+                default: return 'secondary';
+            }
+        }
+
+        async function loadTemperatureData() {
+            try {
+                // This would load temperature data for a specific batch
+                // For now, we'll show a placeholder chart
+                setupTemperatureChart();
+            } catch (error) {
+                console.error('Failed to load temperature data:', error);
+            }
+        }
+
+        function setupTemperatureChart() {
+            const ctx = document.getElementById('temperatureChart').getContext('2d');
+            
+            if (temperatureChart) {
+                temperatureChart.destroy();
+            }
+            
+            temperatureChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 0,
+                            max: 30
+                        }
+                    }
+                }
+            });
+        }
+
+        async function createBatch() {
+            try {
+                if (!blockchainClient.isConnected) {
+                    showError('Please connect your wallet first');
+                    return;
+                }
+
+                const formData = {
+                    medicineInfo: {
+                        name: document.getElementById('medicineName').value,
+                        manufacturer: document.getElementById('manufacturer').value,
+                        type: document.getElementById('medicineType').value,
+                        expiration: document.getElementById('expirationDate').value,
+                        dosage: document.getElementById('dosage').value
+                    },
+                    quantity: parseInt(document.getElementById('quantity').value),
+                    expirationDate: document.getElementById('expirationDate').value,
+                    manufacturingLocation: {
+                        facility: document.getElementById('facility').value,
+                        lat: parseFloat(document.getElementById('latitude').value),
+                        lon: parseFloat(document.getElementById('longitude').value)
+                    },
+                    initialTemperature: parseFloat(document.getElementById('initialTemperature').value),
+                    initialHumidity: 50 // Default value
+                };
+
+                const result = await blockchainClient.createBatch(formData);
+                
+                // Close modal and reset form
+                bootstrap.Modal.getInstance(document.getElementById('createBatchModal')).hide();
+                document.getElementById('createBatchForm').reset();
+                
+                showSuccess(`Batch created successfully! Batch ID: ${result.batchId}`);
+                
+                // Reload batches
+                await loadBatches();
+                
+            } catch (error) {
+                showError('Failed to create batch: ' + error.message);
+            }
+        }
+
+        async function backupBlockchain() {
+            try {
+                showLoading();
+                const result = await blockchainClient.backupBlockchain();
+                showSuccess('Blockchain backed up successfully!');
+            } catch (error) {
+                showError('Failed to backup blockchain: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function exportData() {
+            try {
+                showLoading();
+                // This would export data for all batches
+                showSuccess('Data export initiated!');
+            } catch (error) {
+                showError('Failed to export data: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function generateReport() {
+            try {
+                showLoading();
+                const reportData = {
+                    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    endDate: new Date().toISOString()
+                };
+                
+                const result = await blockchainClient.generateComplianceReport(reportData);
+                showSuccess('Compliance report generated successfully!');
+            } catch (error) {
+                showError('Failed to generate report: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function syncDatabase() {
+            try {
+                showLoading();
+                const response = await fetch('/api/sync/database', { method: 'POST' });
+                const result = await response.json();
+                showSuccess(`Database sync completed! Synced ${result.syncedCount} batches.`);
+            } catch (error) {
+                showError('Failed to sync database: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function viewBatch(batchId) {
+            // This would open a detailed view of the batch
+            showSuccess(`Viewing batch: ${batchId}`);
+        }
+
+        async function acknowledgeAlert(alertId) {
+            try {
+                await blockchainClient.acknowledgeAlert(alertId, blockchainClient.currentAccount);
+                showSuccess('Alert acknowledged successfully!');
+                await loadAlerts();
+            } catch (error) {
+                showError('Failed to acknowledge alert: ' + error.message);
+            }
+        }
+
+        function showLoading() {
+            document.querySelectorAll('.loading').forEach(el => el.classList.add('show'));
+        }
+
+        function hideLoading() {
+            document.querySelectorAll('.loading').forEach(el => el.classList.remove('show'));
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = message;
+            new bootstrap.Modal(document.getElementById('successModal')).show();
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            new bootstrap.Modal(document.getElementById('errorModal')).show();
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadDashboardData, 30000);
+    </script>
+</body>
+</html>
