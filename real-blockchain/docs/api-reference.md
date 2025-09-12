@@ -25,27 +25,29 @@ POST /api/batches
 Create a new pharmaceutical batch with multi-signature authorization.
 
 **Parameters:**
+
 ```json
 {
-    "product": "string",
-    "quantity": "number",
-    "manufacturer": "string",
-    "manufacturingDate": "ISO8601 date",
-    "expiryDate": "ISO8601 date",
-    "temperature": {
-        "min": "number",
-        "max": "number"
-    },
-    "signers": ["string"]
+  "product": "string",
+  "quantity": "number",
+  "manufacturer": "string",
+  "manufacturingDate": "ISO8601 date",
+  "expiryDate": "ISO8601 date",
+  "temperature": {
+    "min": "number",
+    "max": "number"
+  },
+  "signers": ["string"]
 }
 ```
 
 **Response:**
+
 ```json
 {
-    "batchId": "string",
-    "status": "pending",
-    "transactionId": "string"
+  "batchId": "string",
+  "status": "pending",
+  "transactionId": "string"
 }
 ```
 
@@ -58,16 +60,19 @@ GET /api/batches/{batchId}/verify
 Verify the authenticity and compliance of a batch.
 
 **Response:**
+
 ```json
 {
-    "authentic": "boolean",
-    "tempCompliance": "boolean",
-    "locationTracking": "boolean",
-    "validationResults": [{
-        "check": "string",
-        "passed": "boolean",
-        "details": "object"
-    }]
+  "authentic": "boolean",
+  "tempCompliance": "boolean",
+  "locationTracking": "boolean",
+  "validationResults": [
+    {
+      "check": "string",
+      "passed": "boolean",
+      "details": "object"
+    }
+  ]
 }
 ```
 
@@ -82,11 +87,12 @@ POST /api/batches/{batchId}/location
 Update the current location and status of a batch.
 
 **Parameters:**
+
 ```json
 {
-    "location": "string",
-    "status": "string",
-    "timestamp": "ISO8601 date"
+  "location": "string",
+  "status": "string",
+  "timestamp": "ISO8601 date"
 }
 ```
 
@@ -109,11 +115,12 @@ POST /api/batches/{batchId}/temperature
 Add a new temperature reading for a batch.
 
 **Parameters:**
+
 ```json
 {
-    "temperature": "number",
-    "timestamp": "ISO8601 date",
-    "deviceId": "string"
+  "temperature": "number",
+  "timestamp": "ISO8601 date",
+  "deviceId": "string"
 }
 ```
 
@@ -136,12 +143,13 @@ POST /api/wallets
 Create a new multi-signature wallet.
 
 **Parameters:**
+
 ```json
 {
-    "name": "string",
-    "owners": ["string"],
-    "requiredSignatures": "number",
-    "policy": "string"
+  "name": "string",
+  "owners": ["string"],
+  "requiredSignatures": "number",
+  "policy": "string"
 }
 ```
 
@@ -154,12 +162,13 @@ POST /api/wallets/{walletId}/transactions
 Create a new multi-signature transaction.
 
 **Parameters:**
+
 ```json
 {
-    "type": "string",
-    "recipient": "string",
-    "amount": "number",
-    "metadata": "object"
+  "type": "string",
+  "recipient": "string",
+  "amount": "number",
+  "metadata": "object"
 }
 ```
 
@@ -172,10 +181,11 @@ POST /api/transactions/{txId}/signatures
 Add a signature to a pending transaction.
 
 **Parameters:**
+
 ```json
 {
-    "signerId": "string",
-    "signature": "string"
+  "signerId": "string",
+  "signature": "string"
 }
 ```
 
@@ -190,12 +200,13 @@ POST /api/compliance/reports
 Generate a compliance report for specified criteria.
 
 **Parameters:**
+
 ```json
 {
-    "type": "string",
-    "startDate": "ISO8601 date",
-    "endDate": "ISO8601 date",
-    "criteria": ["string"]
+  "type": "string",
+  "startDate": "ISO8601 date",
+  "endDate": "ISO8601 date",
+  "criteria": ["string"]
 }
 ```
 
@@ -208,10 +219,11 @@ POST /api/compliance/validate
 Validate compliance against specific regulations.
 
 **Parameters:**
+
 ```json
 {
-    "regulation": "string",
-    "data": "object"
+  "regulation": "string",
+  "data": "object"
 }
 ```
 
@@ -226,25 +238,26 @@ GET /api/health
 Get current system health status including all components.
 
 **Response:**
+
 ```json
 {
-    "status": "string",
-    "components": {
-        "blockchain": {
-            "status": "string",
-            "lastCheck": "ISO8601 date",
-            "details": "object"
-        },
-        "database": {
-            "status": "string",
-            "lastCheck": "ISO8601 date",
-            "details": "object"
-        }
+  "status": "string",
+  "components": {
+    "blockchain": {
+      "status": "string",
+      "lastCheck": "ISO8601 date",
+      "details": "object"
     },
-    "metrics": {
-        "system": "object",
-        "performance": "object"
+    "database": {
+      "status": "string",
+      "lastCheck": "ISO8601 date",
+      "details": "object"
     }
+  },
+  "metrics": {
+    "system": "object",
+    "performance": "object"
+  }
 }
 ```
 
@@ -279,22 +292,22 @@ Get analytical data about batch processing and compliance.
 Real-time updates are available through WebSocket connections:
 
 ```javascript
-const ws = new WebSocket('ws://api.pharbitchain.com/ws');
+const ws = new WebSocket("ws://api.pharbitchain.com/ws");
 
-ws.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    // Handle different event types
-    switch(data.type) {
-        case 'TEMPERATURE_ALERT':
-            // Handle temperature alert
-            break;
-        case 'NEW_BATCH':
-            // Handle new batch
-            break;
-        case 'COMPLIANCE_UPDATE':
-            // Handle compliance update
-            break;
-    }
+ws.onmessage = function (event) {
+  const data = JSON.parse(event.data);
+  // Handle different event types
+  switch (data.type) {
+    case "TEMPERATURE_ALERT":
+      // Handle temperature alert
+      break;
+    case "NEW_BATCH":
+      // Handle new batch
+      break;
+    case "COMPLIANCE_UPDATE":
+      // Handle compliance update
+      break;
+  }
 };
 ```
 
@@ -304,15 +317,16 @@ API errors follow a standard format:
 
 ```json
 {
-    "error": {
-        "code": "string",
-        "message": "string",
-        "details": "object"
-    }
+  "error": {
+    "code": "string",
+    "message": "string",
+    "details": "object"
+  }
 }
 ```
 
 Common error codes:
+
 - `401`: Unauthorized
 - `403`: Forbidden
 - `404`: Not Found
@@ -334,23 +348,23 @@ X-RateLimit-Reset: 1632150000
 ### Node.js
 
 ```javascript
-const PharbitChain = require('pharbitchain-sdk');
+const PharbitChain = require("pharbitchain-sdk");
 
 const client = new PharbitChain({
-    apiKey: 'your-api-key',
-    environment: 'production'
+  apiKey: "your-api-key",
+  environment: "production",
 });
 
 // Create a batch
 const batch = await client.batches.create({
-    product: 'Test Medicine',
-    quantity: 1000,
-    manufacturer: 'Test Labs'
+  product: "Test Medicine",
+  quantity: 1000,
+  manufacturer: "Test Labs",
 });
 
 // Monitor temperature
 client.batches.onTemperatureAlert(batchId, (alert) => {
-    console.log('Temperature violation:', alert);
+  console.log("Temperature violation:", alert);
 });
 ```
 
@@ -389,6 +403,7 @@ client.batches.on_temperature_alert(batch_id, handle_temperature_alert)
 ## Support
 
 For API support, contact:
+
 - Email: api-support@pharbitchain.com
 - Documentation: https://docs.pharbitchain.com
 - Status Page: https://status.pharbitchain.com

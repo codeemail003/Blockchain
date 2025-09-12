@@ -3,11 +3,13 @@
 This repository contains a comprehensive, production-ready pharmaceutical blockchain platform with full FDA compliance and supply chain management capabilities. This platform provides end-to-end traceability, temperature monitoring, and regulatory compliance for pharmaceutical products.
 
 ---
+
 ## 🏭 Enterprise Pharmaceutical Features
 
 Pharbit Blockchain is a fully-implemented, enterprise-grade pharmaceutical platform with the following key features:
 
 - **Pharmaceutical Management:**
+
   - Complete batch lifecycle tracking
   - Quality control workflows
   - Temperature and humidity monitoring
@@ -15,6 +17,7 @@ Pharbit Blockchain is a fully-implemented, enterprise-grade pharmaceutical platf
   - Recall management system
 
 - **Security & Compliance:**
+
   - FDA 21 CFR Part 11 compliance
   - GDPR compliance implementation
   - Multi-signature transactions
@@ -22,6 +25,7 @@ Pharbit Blockchain is a fully-implemented, enterprise-grade pharmaceutical platf
   - Comprehensive audit logging
 
 - **IoT Integration:**
+
   - Real-time temperature monitoring
   - Humidity tracking
   - GPS location tracking
@@ -29,6 +33,7 @@ Pharbit Blockchain is a fully-implemented, enterprise-grade pharmaceutical platf
   - Automated data collection
 
 - **Monitoring & Analytics:**
+
   - Real-time blockchain metrics
   - System health monitoring
   - Performance analytics
@@ -45,22 +50,26 @@ Pharbit Blockchain is a fully-implemented, enterprise-grade pharmaceutical platf
 ## 🚀 Quick Start Guide
 
 1. Clone the repository and navigate to the project:
+
 ```bash
 git clone https://github.com/Maitreyapharbit/Blockchain.git
 cd Blockchain/real-blockchain
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Start the application:
+
 ```bash
 npm start
 ```
 
 4. Access the web interface:
+
 ```
 http://localhost:3000
 ```
@@ -83,6 +92,7 @@ Legacy documentation below refers to the previous simple blockchain, which has b
 ## 🔧 Core Components
 
 ### **� Pharmaceutical Management**
+
 - Complete batch data structure
 - Quality control workflow
 - Temperature monitoring
@@ -90,6 +100,7 @@ Legacy documentation below refers to the previous simple blockchain, which has b
 - Recall management
 
 ### **🔒 Security & Access Control**
+
 - Role-based authentication
 - Multi-signature transactions
 - User management
@@ -97,6 +108,7 @@ Legacy documentation below refers to the previous simple blockchain, which has b
 - Audit logging
 
 ### **🌡️ IoT Integration**
+
 - Temperature sensor simulation
 - Humidity monitoring
 - GPS tracking
@@ -104,6 +116,7 @@ Legacy documentation below refers to the previous simple blockchain, which has b
 - Automated data collection
 
 ### **📊 Monitoring & Analytics**
+
 - Real-time health monitoring
 - Performance metrics
 - Temperature compliance
@@ -111,23 +124,28 @@ Legacy documentation below refers to the previous simple blockchain, which has b
 - Alert management
 
 ### **📋 Compliance Management**
+
 - FDA 21 CFR Part 11
 - GDPR compliance
 - Electronic records
 - Digital signatures
 - Audit trails
+
 ---
 
 ## 🚀 Quick Start Guide
 
 ### **Run PharbitChain Manually (alternative)**
+
 ```bash
 cd real-blockchain
 npm install
 npm start
 # Health: curl http://localhost:3000/api/health
 ```
+
 ---
+
 ## 🛡️ Compliance & Security
 
 - **FDA 21 CFR Part 11**: Electronic records, audit trails, data integrity
@@ -189,6 +207,7 @@ npm start
 ## 🎯 Use Cases
 
 ### **🔐 PharbitChain - Perfect For:**
+
 - **Production applications**
 - **Cryptocurrency development**
 - **Smart contract platforms**
@@ -215,6 +234,7 @@ cd real-blockchain
 ```
 
 **Features:**
+
 - 🔐 **Cryptographic Security**: Same as Bitcoin
 - ⛏️ **Proof of Work Mining**: PharbitChain consensus
 - 💰 **Wallet Management**: Generate and manage wallets
@@ -224,42 +244,47 @@ cd real-blockchain
 ## 🔧 API Reference (PharbitChain)
 
 ### **Blockchain Operations**
+
 - `GET /api/blockchain` - Get complete blockchain
 - `GET /api/blockchain/latest` - Get latest block
 - `GET /api/blockchain/validate` - Validate blockchain integrity
 
 ### **Transaction Operations**
+
 - `POST /api/transactions` - Create new transaction
 - `GET /api/transactions/pending` - Get pending transactions
 - `GET /api/transactions/:address` - Get transaction history
 
 ### **Wallet Operations**
+
 - `POST /api/wallet/generate` - Generate new wallet
 - `POST /api/wallet/transaction` - Create transaction from wallet
 - `GET /api/balance/:address` - Get address balance
 
 ### **Mining Operations**
+
 - `POST /api/mine` - Mine pending transactions
 - `GET /api/mining/status` - Get mining status
 
 ## 📊 Key Features & Capabilities
 
-| Feature | Description |
-|---------|------------|
-| **Batch Management** | Complete lifecycle tracking, quality control, expiry management |
-| **Temperature Monitoring** | Real-time tracking, alerts, compliance reporting |
-| **Security** | Multi-signature transactions, role-based access, audit logging |
-| **Compliance** | FDA 21 CFR Part 11, GDPR, electronic records |
-| **IoT Integration** | Temperature sensors, humidity monitoring, GPS tracking |
-| **Analytics** | Real-time metrics, performance monitoring, compliance reports |
-| **User Interface** | Modern dashboard, batch management, blockchain explorer |
-| **API Access** | RESTful endpoints, webhook integration |
-| **Data Storage** | Blockchain-based immutable records |
-| **Scalability** | Enterprise-ready architecture |
+| Feature                    | Description                                                     |
+| -------------------------- | --------------------------------------------------------------- |
+| **Batch Management**       | Complete lifecycle tracking, quality control, expiry management |
+| **Temperature Monitoring** | Real-time tracking, alerts, compliance reporting                |
+| **Security**               | Multi-signature transactions, role-based access, audit logging  |
+| **Compliance**             | FDA 21 CFR Part 11, GDPR, electronic records                    |
+| **IoT Integration**        | Temperature sensors, humidity monitoring, GPS tracking          |
+| **Analytics**              | Real-time metrics, performance monitoring, compliance reports   |
+| **User Interface**         | Modern dashboard, batch management, blockchain explorer         |
+| **API Access**             | RESTful endpoints, webhook integration                          |
+| **Data Storage**           | Blockchain-based immutable records                              |
+| **Scalability**            | Enterprise-ready architecture                                   |
 
 ## 🎯 API Examples
 
 ### **Batch Management:**
+
 ```bash
 # Create new batch
 curl -X POST http://localhost:3000/api/batch/create \
@@ -289,6 +314,7 @@ curl http://localhost:3000/api/batch/BATCH001/temperature
 ## 🔍 Monitoring & Analytics
 
 ### **Available Dashboards:**
+
 - **Main Dashboard:** System overview and key metrics
 - **Batch Management:** Track and manage pharmaceutical batches
 - **Temperature Monitoring:** Real-time temperature data and alerts
@@ -296,6 +322,7 @@ curl http://localhost:3000/api/batch/BATCH001/temperature
 - **Compliance Dashboard:** FDA and GDPR compliance status
 
 ### **Key Metrics:**
+
 - Blockchain health and performance
 - Temperature compliance statistics
 - Batch processing metrics
@@ -305,6 +332,7 @@ curl http://localhost:3000/api/batch/BATCH001/temperature
 ## 🛡️ Security & Compliance
 
 ### **Security Features:**
+
 - **Role-Based Access Control:** Granular permission management
 - **Multi-Signature Support:** Required for critical operations
 - **Audit Logging:** Comprehensive activity tracking
@@ -312,6 +340,7 @@ curl http://localhost:3000/api/batch/BATCH001/temperature
 - **Session Management:** Secure authentication
 
 ### **Compliance Features:**
+
 - **FDA 21 CFR Part 11:** Electronic records and signatures
 - **GDPR:** Data privacy and protection
 - **Temperature Compliance:** Real-time monitoring
@@ -321,6 +350,7 @@ curl http://localhost:3000/api/batch/BATCH001/temperature
 ## 📈 Technical Specifications
 
 ### **Architecture:**
+
 - Single-page web application
 - Modular component design
 - Real-time data processing
@@ -328,6 +358,7 @@ curl http://localhost:3000/api/batch/BATCH001/temperature
 - RESTful API integration
 
 ### **Technologies:**
+
 - **Frontend:** HTML5, CSS3, JavaScript (ES6+)
 - **Visualization:** Chart.js for analytics
 - **Cryptography:** Web Crypto API
@@ -335,6 +366,7 @@ curl http://localhost:3000/api/batch/BATCH001/temperature
 - **Real-time:** WebSocket for live updates
 
 ### **System Requirements:**
+
 - Modern web browser with JavaScript enabled
 - Network connectivity for real-time features
 - Minimum 4GB RAM recommended
@@ -344,6 +376,7 @@ curl http://localhost:3000/api/batch/BATCH001/temperature
 ## 🤝 Support & Contributing
 
 ### **Getting Help:**
+
 - Review the documentation
 - Check API reference
 - Contact system administrator
@@ -351,6 +384,7 @@ curl http://localhost:3000/api/batch/BATCH001/temperature
 - Request feature enhancements
 
 ### **Contributing:**
+
 1. Fork the repository
 2. Create a feature branch
 3. Implement changes
@@ -360,19 +394,21 @@ curl http://localhost:3000/api/batch/BATCH001/temperature
 ## 🎯 Implementation Success Criteria
 
 ### **Core Functionality:**
+
 ✅ **Batch Management** - Complete lifecycle tracking  
 ✅ **Temperature Monitoring** - Real-time tracking and alerts  
 ✅ **Security System** - Role-based access and multi-sig  
 ✅ **Compliance** - FDA and GDPR requirements met  
 ✅ **IoT Integration** - Sensor simulation and monitoring  
 ✅ **Analytics** - Comprehensive reporting system  
-✅ **User Interface** - Modern, responsive design  
+✅ **User Interface** - Modern, responsive design
 
 ## � License & Legal
 
 This software is licensed under the MIT License. See the LICENSE file for details.
 
 The system is designed to comply with:
+
 - FDA 21 CFR Part 11
 - GDPR requirements
 - Pharmaceutical industry standards

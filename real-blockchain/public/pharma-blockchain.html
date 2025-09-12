@@ -1,430 +1,447 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pharmaceutical Blockchain Platform</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/chart.js" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/chart.js" rel="stylesheet" />
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #2ecc71;
-            --danger-color: #e74c3c;
-            --warning-color: #f1c40f;
-            --text-color: #ecf0f1;
-            --background-color: #1a1a1a;
-            --card-background: #2d2d2d;
-            --hover-color: #34495e;
-        }
+      :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #2ecc71;
+        --danger-color: #e74c3c;
+        --warning-color: #f1c40f;
+        --text-color: #ecf0f1;
+        --background-color: #1a1a1a;
+        --card-background: #2d2d2d;
+        --hover-color: #34495e;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
 
-        .container {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            min-height: 100vh;
-        }
+      .container {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        min-height: 100vh;
+      }
 
-        /* Sidebar Styles */
-        .sidebar {
-            background-color: var(--primary-color);
-            padding: 1rem;
-            position: fixed;
-            height: 100vh;
-            width: 250px;
-            overflow-y: auto;
-        }
+      /* Sidebar Styles */
+      .sidebar {
+        background-color: var(--primary-color);
+        padding: 1rem;
+        position: fixed;
+        height: 100vh;
+        width: 250px;
+        overflow-y: auto;
+      }
 
-        .sidebar-header {
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--text-color);
-            margin-bottom: 1rem;
-        }
+      .sidebar-header {
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--text-color);
+        margin-bottom: 1rem;
+      }
 
-        .nav-item {
-            padding: 0.75rem 1rem;
-            margin: 0.5rem 0;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+      .nav-item {
+        padding: 0.75rem 1rem;
+        margin: 0.5rem 0;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
 
-        .nav-item:hover {
-            background-color: var(--hover-color);
-        }
+      .nav-item:hover {
+        background-color: var(--hover-color);
+      }
 
-        .nav-item i {
-            margin-right: 0.5rem;
-        }
+      .nav-item i {
+        margin-right: 0.5rem;
+      }
 
-        /* Main Content Styles */
-        .main-content {
-            margin-left: 250px;
-            padding: 2rem;
-        }
+      /* Main Content Styles */
+      .main-content {
+        margin-left: 250px;
+        padding: 2rem;
+      }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
 
-        .card {
-            background-color: var(--card-background);
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+      .card {
+        background-color: var(--card-background);
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
 
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
 
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 1rem;
-        }
+      /* Form Styles */
+      .form-group {
+        margin-bottom: 1rem;
+      }
 
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
 
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 5px;
-            border: 1px solid var(--primary-color);
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
+      .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 5px;
+        border: 1px solid var(--primary-color);
+        background-color: var(--background-color);
+        color: var(--text-color);
+      }
 
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s;
-        }
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s;
+      }
 
-        .btn-primary {
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-        }
+      .btn-primary {
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+      }
 
-        .btn-primary:hover {
-            background-color: var(--hover-color);
-        }
+      .btn-primary:hover {
+        background-color: var(--hover-color);
+      }
 
-        /* Table Styles */
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
+      /* Table Styles */
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+      }
 
-        .table th,
-        .table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--primary-color);
-        }
+      .table th,
+      .table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--primary-color);
+      }
 
-        .table th {
-            background-color: var(--primary-color);
-        }
+      .table th {
+        background-color: var(--primary-color);
+      }
 
-        /* Alert Styles */
-        .alert {
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
+      /* Alert Styles */
+      .alert {
+        padding: 1rem;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+      }
 
-        .alert-danger {
-            background-color: var(--danger-color);
-            color: var(--text-color);
-        }
+      .alert-danger {
+        background-color: var(--danger-color);
+        color: var(--text-color);
+      }
 
-        .alert-warning {
-            background-color: var(--warning-color);
-            color: var(--background-color);
-        }
+      .alert-warning {
+        background-color: var(--warning-color);
+        color: var(--background-color);
+      }
 
-        .alert-success {
-            background-color: var(--accent-color);
-            color: var(--text-color);
-        }
+      .alert-success {
+        background-color: var(--accent-color);
+        color: var(--text-color);
+      }
 
-        /* Chart Container */
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin: 1rem 0;
-        }
+      /* Chart Container */
+      .chart-container {
+        position: relative;
+        height: 300px;
+        margin: 1rem 0;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>PharmaChain</h2>
-            </div>
-            <nav>
-                <div class="nav-item" data-page="dashboard">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </div>
-                <div class="nav-item" data-page="batch-management">
-                    <i class="fas fa-boxes"></i> Batch Management
-                </div>
-                <div class="nav-item" data-page="temperature">
-                    <i class="fas fa-thermometer-half"></i> Temperature Monitoring
-                </div>
-                <div class="nav-item" data-page="explorer">
-                    <i class="fas fa-search"></i> Blockchain Explorer
-                </div>
-                <div class="nav-item" data-page="wallet">
-                    <i class="fas fa-wallet"></i> Multi-Sig Wallet
-                </div>
-                <div class="nav-item" data-page="compliance">
-                    <i class="fas fa-clipboard-check"></i> Compliance
-                </div>
-                <div class="nav-item" data-page="analytics">
-                    <i class="fas fa-chart-line"></i> Analytics
-                </div>
-            </nav>
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h2>PharmaChain</h2>
         </div>
+        <nav>
+          <div class="nav-item" data-page="dashboard">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </div>
+          <div class="nav-item" data-page="batch-management">
+            <i class="fas fa-boxes"></i> Batch Management
+          </div>
+          <div class="nav-item" data-page="temperature">
+            <i class="fas fa-thermometer-half"></i> Temperature Monitoring
+          </div>
+          <div class="nav-item" data-page="explorer">
+            <i class="fas fa-search"></i> Blockchain Explorer
+          </div>
+          <div class="nav-item" data-page="wallet">
+            <i class="fas fa-wallet"></i> Multi-Sig Wallet
+          </div>
+          <div class="nav-item" data-page="compliance">
+            <i class="fas fa-clipboard-check"></i> Compliance
+          </div>
+          <div class="nav-item" data-page="analytics">
+            <i class="fas fa-chart-line"></i> Analytics
+          </div>
+        </nav>
+      </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Content will be dynamically loaded here -->
-        </div>
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Content will be dynamically loaded here -->
+      </div>
     </div>
 
     <!-- Core JavaScript -->
     <script>
-        // Core Blockchain Implementation
-        class Block {
-            constructor(index, timestamp, data, previousHash = '') {
-                this.index = index;
-                this.timestamp = timestamp;
-                this.data = data;
-                this.previousHash = previousHash;
-                this.hash = this.calculateHash();
-                this.nonce = 0;
-            }
-
-            calculateHash() {
-                return crypto.subtle.digest('SHA-256', 
-                    new TextEncoder().encode(
-                        this.index + 
-                        this.timestamp + 
-                        JSON.stringify(this.data) + 
-                        this.previousHash + 
-                        this.nonce
-                    )
-                ).then(buffer => {
-                    return Array.from(new Uint8Array(buffer))
-                        .map(b => b.toString(16).padStart(2, '0'))
-                        .join('');
-                });
-            }
-
-            async mineBlock(difficulty) {
-                while ((await this.calculateHash()).substring(0, difficulty) !== Array(difficulty + 1).join('0')) {
-                    this.nonce++;
-                }
-                this.hash = await this.calculateHash();
-            }
+      // Core Blockchain Implementation
+      class Block {
+        constructor(index, timestamp, data, previousHash = "") {
+          this.index = index;
+          this.timestamp = timestamp;
+          this.data = data;
+          this.previousHash = previousHash;
+          this.hash = this.calculateHash();
+          this.nonce = 0;
         }
 
-        class Blockchain {
-            constructor() {
-                this.chain = [this.createGenesisBlock()];
-                this.difficulty = 4;
-                this.pendingTransactions = [];
-            }
-
-            async createGenesisBlock() {
-                const genesisData = {
-                    type: 'genesis',
-                    description: 'Pharmaceutical Blockchain Genesis Block',
-                    timestamp: new Date().toISOString(),
-                    regulatoryInfo: {
-                        version: '1.0',
-                        compliance: 'FDA 21 CFR Part 11',
-                        validationStatus: 'Approved'
-                    }
-                };
-
-                const block = new Block(0, Date.now(), genesisData);
-                await block.mineBlock(this.difficulty);
-                return block;
-            }
-
-            async getLatestBlock() {
-                return this.chain[this.chain.length - 1];
-            }
-
-            async addBlock(newBlock) {
-                newBlock.previousHash = (await this.getLatestBlock()).hash;
-                await newBlock.mineBlock(this.difficulty);
-                this.chain.push(newBlock);
-            }
-
-            async isChainValid() {
-                for (let i = 1; i < this.chain.length; i++) {
-                    const currentBlock = this.chain[i];
-                    const previousBlock = this.chain[i - 1];
-
-                    if (currentBlock.hash !== await currentBlock.calculateHash()) {
-                        return false;
-                    }
-
-                    if (currentBlock.previousHash !== previousBlock.hash) {
-                        return false;
-                    }
-                }
-                return true;
-            }
+        calculateHash() {
+          return crypto.subtle
+            .digest(
+              "SHA-256",
+              new TextEncoder().encode(
+                this.index +
+                  this.timestamp +
+                  JSON.stringify(this.data) +
+                  this.previousHash +
+                  this.nonce
+              )
+            )
+            .then((buffer) => {
+              return Array.from(new Uint8Array(buffer))
+                .map((b) => b.toString(16).padStart(2, "0"))
+                .join("");
+            });
         }
 
-        // Pharmaceutical Batch Class
-        class PharmaBatch {
-            constructor(batchId, product, manufacturer, manufacturingDate, expiryDate, quantity, storageConditions) {
-                this.batchId = batchId;
-                this.product = product;
-                this.manufacturer = manufacturer;
-                this.manufacturingDate = manufacturingDate;
-                this.expiryDate = expiryDate;
-                this.quantity = quantity;
-                this.storageConditions = storageConditions;
-                this.qualityTests = [];
-                this.approvals = [];
-                this.temperatureHistory = [];
-                this.status = 'created';
-                this.createdAt = new Date().toISOString();
-            }
+        async mineBlock(difficulty) {
+          while (
+            (await this.calculateHash()).substring(0, difficulty) !==
+            Array(difficulty + 1).join("0")
+          ) {
+            this.nonce++;
+          }
+          this.hash = await this.calculateHash();
+        }
+      }
 
-            addQualityTest(test) {
-                this.qualityTests.push({
-                    ...test,
-                    timestamp: new Date().toISOString()
-                });
-            }
-
-            addApproval(approval) {
-                this.approvals.push({
-                    ...approval,
-                    timestamp: new Date().toISOString()
-                });
-            }
-
-            addTemperatureReading(reading) {
-                this.temperatureHistory.push({
-                    ...reading,
-                    timestamp: new Date().toISOString()
-                });
-                this.checkTemperatureCompliance(reading);
-            }
-
-            checkTemperatureCompliance(reading) {
-                const { temperature } = reading;
-                const { minTemp, maxTemp } = this.storageConditions;
-
-                if (temperature < minTemp || temperature > maxTemp) {
-                    // Trigger temperature violation alert
-                    this.triggerAlert('temperature_violation', {
-                        batchId: this.batchId,
-                        temperature,
-                        limits: { minTemp, maxTemp },
-                        timestamp: new Date().toISOString()
-                    });
-                }
-            }
-
-            triggerAlert(type, data) {
-                // Implementation for alert system
-                console.log('Alert:', type, data);
-                // Here we would typically send to a notification system
-            }
+      class Blockchain {
+        constructor() {
+          this.chain = [this.createGenesisBlock()];
+          this.difficulty = 4;
+          this.pendingTransactions = [];
         }
 
-        // UI Controller
-        class UIController {
-            constructor() {
-                this.blockchain = new Blockchain();
-                this.currentPage = 'dashboard';
-                this.initializeEventListeners();
+        async createGenesisBlock() {
+          const genesisData = {
+            type: "genesis",
+            description: "Pharmaceutical Blockchain Genesis Block",
+            timestamp: new Date().toISOString(),
+            regulatoryInfo: {
+              version: "1.0",
+              compliance: "FDA 21 CFR Part 11",
+              validationStatus: "Approved",
+            },
+          };
+
+          const block = new Block(0, Date.now(), genesisData);
+          await block.mineBlock(this.difficulty);
+          return block;
+        }
+
+        async getLatestBlock() {
+          return this.chain[this.chain.length - 1];
+        }
+
+        async addBlock(newBlock) {
+          newBlock.previousHash = (await this.getLatestBlock()).hash;
+          await newBlock.mineBlock(this.difficulty);
+          this.chain.push(newBlock);
+        }
+
+        async isChainValid() {
+          for (let i = 1; i < this.chain.length; i++) {
+            const currentBlock = this.chain[i];
+            const previousBlock = this.chain[i - 1];
+
+            if (currentBlock.hash !== (await currentBlock.calculateHash())) {
+              return false;
             }
 
-            initializeEventListeners() {
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        this.navigateToPage(e.currentTarget.dataset.page);
-                    });
-                });
+            if (currentBlock.previousHash !== previousBlock.hash) {
+              return false;
             }
+          }
+          return true;
+        }
+      }
 
-            navigateToPage(page) {
-                this.currentPage = page;
-                this.renderPage();
-            }
+      // Pharmaceutical Batch Class
+      class PharmaBatch {
+        constructor(
+          batchId,
+          product,
+          manufacturer,
+          manufacturingDate,
+          expiryDate,
+          quantity,
+          storageConditions
+        ) {
+          this.batchId = batchId;
+          this.product = product;
+          this.manufacturer = manufacturer;
+          this.manufacturingDate = manufacturingDate;
+          this.expiryDate = expiryDate;
+          this.quantity = quantity;
+          this.storageConditions = storageConditions;
+          this.qualityTests = [];
+          this.approvals = [];
+          this.temperatureHistory = [];
+          this.status = "created";
+          this.createdAt = new Date().toISOString();
+        }
 
-            async renderPage() {
-                const mainContent = document.querySelector('.main-content');
-                mainContent.innerHTML = await this.getPageContent();
-            }
+        addQualityTest(test) {
+          this.qualityTests.push({
+            ...test,
+            timestamp: new Date().toISOString(),
+          });
+        }
 
-            async getPageContent() {
-                switch (this.currentPage) {
-                    case 'dashboard':
-                        return this.renderDashboard();
-                    case 'batch-management':
-                        return this.renderBatchManagement();
-                    case 'temperature':
-                        return this.renderTemperatureMonitoring();
-                    case 'explorer':
-                        return this.renderBlockchainExplorer();
-                    case 'wallet':
-                        return this.renderMultiSigWallet();
-                    case 'compliance':
-                        return this.renderCompliance();
-                    case 'analytics':
-                        return this.renderAnalytics();
-                    default:
-                        return '<h1>Page not found</h1>';
-                }
-            }
+        addApproval(approval) {
+          this.approvals.push({
+            ...approval,
+            timestamp: new Date().toISOString(),
+          });
+        }
 
-            // Individual page renderers
-            async renderDashboard() {
-                const latestBlock = await this.blockchain.getLatestBlock();
-                return `
+        addTemperatureReading(reading) {
+          this.temperatureHistory.push({
+            ...reading,
+            timestamp: new Date().toISOString(),
+          });
+          this.checkTemperatureCompliance(reading);
+        }
+
+        checkTemperatureCompliance(reading) {
+          const { temperature } = reading;
+          const { minTemp, maxTemp } = this.storageConditions;
+
+          if (temperature < minTemp || temperature > maxTemp) {
+            // Trigger temperature violation alert
+            this.triggerAlert("temperature_violation", {
+              batchId: this.batchId,
+              temperature,
+              limits: { minTemp, maxTemp },
+              timestamp: new Date().toISOString(),
+            });
+          }
+        }
+
+        triggerAlert(type, data) {
+          // Implementation for alert system
+          console.log("Alert:", type, data);
+          // Here we would typically send to a notification system
+        }
+      }
+
+      // UI Controller
+      class UIController {
+        constructor() {
+          this.blockchain = new Blockchain();
+          this.currentPage = "dashboard";
+          this.initializeEventListeners();
+        }
+
+        initializeEventListeners() {
+          document.querySelectorAll(".nav-item").forEach((item) => {
+            item.addEventListener("click", (e) => {
+              this.navigateToPage(e.currentTarget.dataset.page);
+            });
+          });
+        }
+
+        navigateToPage(page) {
+          this.currentPage = page;
+          this.renderPage();
+        }
+
+        async renderPage() {
+          const mainContent = document.querySelector(".main-content");
+          mainContent.innerHTML = await this.getPageContent();
+        }
+
+        async getPageContent() {
+          switch (this.currentPage) {
+            case "dashboard":
+              return this.renderDashboard();
+            case "batch-management":
+              return this.renderBatchManagement();
+            case "temperature":
+              return this.renderTemperatureMonitoring();
+            case "explorer":
+              return this.renderBlockchainExplorer();
+            case "wallet":
+              return this.renderMultiSigWallet();
+            case "compliance":
+              return this.renderCompliance();
+            case "analytics":
+              return this.renderAnalytics();
+            default:
+              return "<h1>Page not found</h1>";
+          }
+        }
+
+        // Individual page renderers
+        async renderDashboard() {
+          const latestBlock = await this.blockchain.getLatestBlock();
+          return `
                     <h1>Dashboard</h1>
                     <div class="dashboard-grid">
                         <div class="card">
@@ -453,10 +470,10 @@
                         </div>
                     </div>
                 `;
-            }
+        }
 
-            renderBatchManagement() {
-                return `
+        renderBatchManagement() {
+          return `
                     <h1>Batch Management</h1>
                     <div class="card">
                         <div class="card-header">
@@ -479,10 +496,10 @@
                         </form>
                     </div>
                 `;
-            }
+        }
 
-            renderTemperatureMonitoring() {
-                return `
+        renderTemperatureMonitoring() {
+          return `
                     <h1>Temperature Monitoring</h1>
                     <div class="dashboard-grid">
                         <div class="card">
@@ -501,11 +518,11 @@
                         </div>
                     </div>
                 `;
-            }
+        }
 
-            async renderBlockchainExplorer() {
-                const blocks = this.blockchain.chain;
-                return `
+        async renderBlockchainExplorer() {
+          const blocks = this.blockchain.chain;
+          return `
                     <h1>Blockchain Explorer</h1>
                     <div class="card">
                         <div class="card-header">
@@ -521,22 +538,34 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                ${blocks.map(block => `
+                                ${blocks
+                                  .map(
+                                    (block) => `
                                     <tr>
                                         <td>${block.index}</td>
-                                        <td>${new Date(block.timestamp).toLocaleString()}</td>
-                                        <td>${block.hash.substring(0, 10)}...</td>
-                                        <td>${block.previousHash.substring(0, 10)}...</td>
+                                        <td>${new Date(
+                                          block.timestamp
+                                        ).toLocaleString()}</td>
+                                        <td>${block.hash.substring(
+                                          0,
+                                          10
+                                        )}...</td>
+                                        <td>${block.previousHash.substring(
+                                          0,
+                                          10
+                                        )}...</td>
                                     </tr>
-                                `).join('')}
+                                `
+                                  )
+                                  .join("")}
                             </tbody>
                         </table>
                     </div>
                 `;
-            }
+        }
 
-            renderMultiSigWallet() {
-                return `
+        renderMultiSigWallet() {
+          return `
                     <h1>Multi-Signature Wallet</h1>
                     <div class="card">
                         <div class="card-header">
@@ -555,10 +584,10 @@
                         </form>
                     </div>
                 `;
-            }
+        }
 
-            renderCompliance() {
-                return `
+        renderCompliance() {
+          return `
                     <h1>Compliance Dashboard</h1>
                     <div class="dashboard-grid">
                         <div class="card">
@@ -575,10 +604,10 @@
                         </div>
                     </div>
                 `;
-            }
+        }
 
-            renderAnalytics() {
-                return `
+        renderAnalytics() {
+          return `
                     <h1>Analytics</h1>
                     <div class="dashboard-grid">
                         <div class="card">
@@ -599,14 +628,14 @@
                         </div>
                     </div>
                 `;
-            }
         }
+      }
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', () => {
-            const app = new UIController();
-            app.renderPage();
-        });
+      // Initialize the application
+      document.addEventListener("DOMContentLoaded", () => {
+        const app = new UIController();
+        app.renderPage();
+      });
     </script>
-</body>
+  </body>
 </html>
