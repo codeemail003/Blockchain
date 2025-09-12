@@ -1,10 +1,18 @@
 PharbitChain - Production Docker Deployment Guide
 
 Prerequisites
-- Docker 24+
-- Docker Compose v2
-- Open ports (default 3000)
-- Optional TLS certs if enabling HTTPS
+---
+## 🏭 Production Deployment Best Practices
+
+- **Environment Management:** Use environment-specific configs (dev, staging, production) and secrets management integration.
+- **Secrets:** Store secrets securely (do not hardcode in compose files). Use Docker secrets or environment vaults.
+- **Backups:** Schedule automated backups and validate integrity. Use `./deploy/scripts/backup.sh` and `restore.sh`.
+- **Monitoring:** Integrate health checks, metrics, and log aggregation. Use `./deploy/scripts/health.sh` and external monitoring tools.
+- **Compliance:** Ensure FDA/GDPR compliance with audit trails, data retention, and regulatory validation.
+- **Zero-Downtime Updates:** Use rolling updates and backup manager for safe upgrades.
+- **Security:** Enable TLS, multi-sig wallets, audit logging, and role-based access control.
+- **Documentation:** Document all deployment steps and environment variables.
+---
 
 Environment
 - App reads config from environment variables (see .env.example).
@@ -48,6 +56,14 @@ Backups
 ./deploy/scripts/backup.sh
 ./deploy/scripts/restore.sh ./backups/LATEST.tar.gz
 ```
+---
+## 🛡️ Compliance & Security
+
+- **FDA 21 CFR Part 11**: Electronic records, audit trails, data integrity
+- **GDPR**: Data privacy, right-to-erasure, retention management
+- **Zero-Trust Architecture**: End-to-end encryption, multi-factor authentication
+- **Enterprise Security**: Multi-sig, HSM, key recovery, role-based access, audit logging
+- **Traceability**: Immutable batch tracking, recall, serialization, cold chain, expiry
 
 Health Checks
 ```bash

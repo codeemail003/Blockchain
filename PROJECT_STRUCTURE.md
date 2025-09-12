@@ -9,9 +9,33 @@ This repository contains a **dual blockchain architecture**:
 ```
 📦 Pharbit Blockchain
 ├── 🔐 real-blockchain/           # Production PoW blockchain
-├── 🧪 pharbit-contracts/         # Smart contracts + backend
+│   ├── src/
+│   │   ├── network/              # Peer discovery, P2P, sync, gossip, config
+│   │   ├── consensus/            # Mining pool, dynamic difficulty, fork resolution, validator set
+│   │   ├── security/             # Multi-sig wallet, HSM, key recovery, audit logger, field encryption, access control
+│   │   ├── identity/             # SSO, RBAC, certificate store, DID resolver
+│   │   ├── integration/          # ERP connectors, IoT gateway, legacy adapters, message broker, API gateway
+│   │   ├── storage/              # Database sharding, IPFS, backup validator, archive manager, data encryption
+│   │   ├── monitoring/           # Health checker, metrics collector, alert manager, log aggregator, performance monitor
+│   │   ├── admin/                # Node management, backup manager, upgrade manager, config manager
+│   │   ├── compliance/           # GDPR manager, FDA reporter, audit trail, data retention, regulatory validator
+│   │   ├── pharma/               # Batch lifecycle, recall manager, QA, serialization, temperature chain, expiry manager
+│   │   ├── api/                  # GraphQL, webhooks, rate limiting, documentation, versioning
+│   │   └── ...                   # Existing modules (blockchain.js, wallet.js, etc.)
+│   ├── public/                   # Web interface (PharbitChain Explorer)
+│   ├── blockchain-db/            # LevelDB persistence
+│   ├── wallet/                   # Wallet storage
+│   ├── package.json              # Dependencies (elliptic, level, express)
+│   ├── launch.sh                 # Interactive launcher
+│   ├── start-server.sh           # Server startup script
+│   ├── test-blockchain.js        # Test suite
+│   ├── test-pharma-endpoints.js  # Pharma API tests
+│   ├── test-wallet.js            # Wallet tests
+│   ├── README.md                 # Real blockchain documentation
+│   └── REAL_BLOCKCHAIN_GUIDE.md  # Architecture & usage guide
+├── � pharbit-contracts/         # Smart contracts + backend
 ├── 🚀 fullstack-launch.sh        # Unified launcher (start/stop/status)
-├── 🔧 setup-fabric-assets.sh     # Fabric integration helper
+├── � setup-fabric-assets.sh     # Fabric integration helper
 ├── 📚 FABRIC_README.md           # Hyperledger Fabric adoption guide
 ├── 📖 README.md                  # Main project documentation
 ├── 📋 USAGE_GUIDE.md             # Detailed usage instructions
@@ -21,31 +45,34 @@ This repository contains a **dual blockchain architecture**:
 ```
 
 ## 🔐 PharbitChain (`real-blockchain/`)
-**Production-grade blockchain with PoW consensus**
+**Production-grade blockchain with PoW consensus and enterprise modules**
 
 ```
 real-blockchain/
-├── src/                          # Core blockchain implementation
-│   ├── index.js                  # Express API server (port 3000)
-│   ├── blockchain.js             # Main blockchain class with LevelDB
-│   ├── block.js                  # Block class with PoW mining
-│   ├── transaction.js            # Transaction model & validation
-│   ├── wallet.js                 # Wallet management (secp256k1)
-│   ├── crypto.js                 # Cryptographic utilities
-│   ├── supply-chain.js           # Pharma supply chain logic
-│   ├── iot-integration.js        # IoT sensor data handling
-│   └── alerts.js                 # Alert system
-├── public/                       # Web interface (PharbitChain Explorer)
-├── blockchain-db/                # LevelDB persistence
-├── wallet/                       # Wallet storage
-├── package.json                  # Dependencies (elliptic, level, express)
-├── launch.sh                     # Interactive launcher
-├── start-server.sh               # Server startup script
-├── test-blockchain.js            # Test suite
-├── test-pharma-endpoints.js      # Pharma API tests
-├── test-wallet.js                # Wallet tests
-├── README.md                     # Real blockchain documentation
-└── REAL_BLOCKCHAIN_GUIDE.md      # Architecture & usage guide
+├── src/
+│   ├── network/        # Peer discovery, P2P, sync, gossip, config
+│   ├── consensus/      # Mining pool, dynamic difficulty, fork resolution, validator set
+│   ├── security/       # Multi-sig wallet, HSM, key recovery, audit logger, field encryption, access control
+│   ├── identity/       # SSO, RBAC, certificate store, DID resolver
+│   ├── integration/    # ERP connectors, IoT gateway, legacy adapters, message broker, API gateway
+│   ├── storage/        # Database sharding, IPFS, backup validator, archive manager, data encryption
+│   ├── monitoring/     # Health checker, metrics collector, alert manager, log aggregator, performance monitor
+│   ├── admin/          # Node management, backup manager, upgrade manager, config manager
+│   ├── compliance/     # GDPR manager, FDA reporter, audit trail, data retention, regulatory validator
+│   ├── pharma/         # Batch lifecycle, recall manager, QA, serialization, temperature chain, expiry manager
+│   ├── api/            # GraphQL, webhooks, rate limiting, documentation, versioning
+│   └── ...             # Existing modules (blockchain.js, wallet.js, etc.)
+├── public/             # Web interface (PharbitChain Explorer)
+├── blockchain-db/      # LevelDB persistence
+├── wallet/             # Wallet storage
+├── package.json        # Dependencies (elliptic, level, express)
+├── launch.sh           # Interactive launcher
+├── start-server.sh     # Server startup script
+├── test-blockchain.js  # Test suite
+├── test-pharma-endpoints.js # Pharma API tests
+├── test-wallet.js      # Wallet tests
+├── README.md           # Real blockchain documentation
+└── REAL_BLOCKCHAIN_GUIDE.md # Architecture & usage guide
 ```
 
 **Key Features:**
@@ -56,6 +83,7 @@ real-blockchain/
 - ✅ Wallet management
 - ✅ Fee-priority transaction selection
 - ✅ Pharmaceutical supply chain tracking
+- ✅ Enterprise modules for security, compliance, monitoring, integration, and more
 
 ## 🧪 Pharma Contracts (`pharbit-contracts/`)
 **Smart contracts + backend with Fabric integration**
