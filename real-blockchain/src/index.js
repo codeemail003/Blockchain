@@ -20,6 +20,11 @@ const P2P = require('./p2p');
 const ContractEngine = require('./contracts/engine');
 const Templates = require('./contracts/templates');
 
+// Real blockchain integrations
+const SupabaseDatabase = require('./database/supabase');
+const S3Storage = require('./storage/s3');
+const MetaMaskIntegration = require('./wallet/metamask-integration');
+
 class BlockchainNode {
     constructor(port = config.PORT) {
         this.port = port;
@@ -30,6 +35,11 @@ class BlockchainNode {
         this.supplyChain = new SupplyChain(this.blockchain, this.alertSystem);
         this.app = express();
         this.isMining = false;
+        
+        // Initialize real blockchain services
+        this.database = new SupabaseDatabase();
+        this.storage = new S3Storage();
+        this.metaMask = new MetaMaskIntegration();
         
         this.setupMiddleware();
         this.setupRoutes();
@@ -878,6 +888,214 @@ class BlockchainNode {
                 res.status(400).json({ error: error.message });
             }
         });
+
+        // ===== REAL BLOCKCHAIN API ENDPOINTS =====
+
+        // MetaMask connection
+        this.app.post('/api/metamask/connect', async (req, res) => {
+            try {
+                const result = await this.metaMask.connect();
+                res.json({
+                    message: 'MetaMask connected successfully',
+                    ...result
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // MetaMask account info
+        this.app.get('/api/metamask/account', async (req, res) => {
+            try {
+                const accountInfo = await this.metaMask.getAccountInfo();
+                res.json(accountInfo);
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // MetaMask health check
+        this.app.get('/api/metamask/health', async (req, res) => {
+            try {
+                const health = await this.metaMask.healthCheck();
+                res.json(health);
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Database health check
+        this.app.get('/api/database/health', async (req, res) => {
+            try {
+                const health = await this.database.healthCheck();
+                res.json(health);
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Storage health check
+        this.app.get('/api/storage/health', async (req, res) => {
+            try {
+                const health = await this.storage.healthCheck();
+                res.json(health);
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Backup blockchain to S3
+        this.app.post('/api/backup/blockchain', async (req, res) => {
+            try {
+                const blockchainData = this.blockchain.toJSON();
+                const result = await this.storage.backupBlockchain(blockchainData);
+                res.json({
+                    message: 'Blockchain backed up successfully',
+                    backupUrl: result.Location
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Backup batch data to S3
+        this.app.post('/api/backup/batch/:batchId', async (req, res) => {
+            try {
+                const { batchId } = req.params;
+                const batch = this.supplyChain.getBatch(batchId);
+                
+                if (!batch) {
+                    return res.status(404).json({ error: 'Batch not found' });
+                }
+
+                const result = await this.storage.backupBatchData(batchId, batch);
+                res.json({
+                    message: 'Batch data backed up successfully',
+                    backupUrl: result.Location
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Export temperature data to S3
+        this.app.post('/api/export/temperature/:batchId', async (req, res) => {
+            try {
+                const { batchId } = req.params;
+                const { hours = 24 } = req.query;
+                
+                const temperatureData = this.iotIntegration.getTemperatureHistory(batchId, parseInt(hours));
+                const result = await this.storage.storeTemperatureExport(batchId, temperatureData);
+                
+                res.json({
+                    message: 'Temperature data exported successfully',
+                    exportUrl: result.Location,
+                    recordCount: temperatureData.length
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Generate compliance report
+        this.app.post('/api/reports/compliance', async (req, res) => {
+            try {
+                const { startDate, endDate, batchIds } = req.body;
+                
+                // Generate compliance report data
+                const reportData = {
+                    startDate,
+                    endDate,
+                    batchIds: batchIds || [],
+                    totalBatches: this.supplyChain.getAllBatches().length,
+                    activeAlerts: this.alertSystem.getActiveAlerts().length,
+                    complianceRate: this.calculateComplianceRate(),
+                    violations: this.alertSystem.getAlerts({ severity: 'critical' }),
+                    generatedAt: new Date().toISOString()
+                };
+
+                const result = await this.storage.storeComplianceReport(reportData);
+                
+                res.json({
+                    message: 'Compliance report generated successfully',
+                    reportUrl: result.Location,
+                    reportData
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Get real blockchain statistics
+        this.app.get('/api/real-blockchain/stats', async (req, res) => {
+            try {
+                const blockchainStats = this.blockchain.getStats();
+                const databaseStats = await this.database.getBlockchainStats();
+                const storageHealth = await this.storage.healthCheck();
+                const metaMaskHealth = await this.metaMask.healthCheck();
+
+                res.json({
+                    blockchain: blockchainStats,
+                    database: databaseStats,
+                    storage: storageHealth,
+                    metaMask: metaMaskHealth,
+                    timestamp: new Date().toISOString()
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+
+        // Sync data to database
+        this.app.post('/api/sync/database', async (req, res) => {
+            try {
+                const { batchId } = req.body;
+                
+                if (batchId) {
+                    // Sync specific batch
+                    const batch = this.supplyChain.getBatch(batchId);
+                    if (batch) {
+                        await this.database.saveBatch(batch);
+                        res.json({ message: `Batch ${batchId} synced to database` });
+                    } else {
+                        res.status(404).json({ error: 'Batch not found' });
+                    }
+                } else {
+                    // Sync all batches
+                    const batches = this.supplyChain.getAllBatches();
+                    let syncedCount = 0;
+                    
+                    for (const batch of batches) {
+                        try {
+                            await this.database.saveBatch(batch);
+                            syncedCount++;
+                        } catch (error) {
+                            logger.warn(`Failed to sync batch ${batch.id}:`, error.message);
+                        }
+                    }
+                    
+                    res.json({ 
+                        message: `Synced ${syncedCount} batches to database`,
+                        totalBatches: batches.length,
+                        syncedCount
+                    });
+                }
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+    }
+
+    /**
+     * Calculate compliance rate
+     */
+    calculateComplianceRate() {
+        const totalBatches = this.supplyChain.getAllBatches().length;
+        const criticalAlerts = this.alertSystem.getAlerts({ severity: 'critical' }).length;
+        
+        if (totalBatches === 0) return 100;
+        
+        return Math.max(0, ((totalBatches - criticalAlerts) / totalBatches) * 100);
     }
 
     /**
@@ -888,6 +1106,24 @@ class BlockchainNode {
             console.log('🚀 Starting PharbitChain Server...');
             console.log(`📡 Server will listen on port ${this.port}`);
             console.log(`🌐 Dashboard will be available at: http://localhost:${this.port}`);
+            
+            // Initialize real blockchain services
+            console.log('🔗 Initializing real blockchain services...');
+            try {
+                await this.database.initialize();
+                console.log('✅ Supabase database connected');
+            } catch (error) {
+                console.log('⚠️ Supabase database not available:', error.message);
+            }
+
+            try {
+                await this.storage.initialize();
+                console.log('✅ S3 storage connected');
+            } catch (error) {
+                console.log('⚠️ S3 storage not available:', error.message);
+            }
+
+            console.log('✅ MetaMask integration ready');
             
             // Wait for blockchain initialization
             await this.blockchain.waitForInitialization();
