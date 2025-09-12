@@ -1,12 +1,69 @@
 ## 🔐 PharbitChain – Architecture, Structure, and Getting Started
 
 This document explains how PharbitChain works, its code structure, and how to run it locally.
+---
+## 🏭 Production-Ready Roadmap & Enterprise Features
+
+PharbitChain is evolving into an enterprise-grade, pharmaceutical-compliant blockchain platform. Key priorities:
+
+- **Security:** Multi-sig wallets, HSM integration, audit logging, field encryption, role-based access control
+- **Compliance:** FDA 21 CFR Part 11, GDPR, immutable audit trails, data retention, regulatory validation
+- **Traceability:** End-to-end batch lifecycle, recall management, serialization, cold chain monitoring
+- **Performance:** 10,000+ TPS, sub-second confirmation, horizontal scaling, query optimization, caching
+- **Integration:** RESTful & GraphQL APIs, webhooks, message queues, ERP/IoT connectors
+- **Monitoring:** Health checks, metrics, alerting, log aggregation, performance tracking
+- **Testing:** 90%+ code coverage, integration/load/security/compliance/chaos tests
+- **Documentation:** Complete API docs, user guides, module READMEs
+
+### New Enterprise Modules (see `src/`)
+- `network/` - Peer discovery, P2P messaging, sync, gossip, config
+- `consensus/` - Mining pool, dynamic difficulty, fork resolution, validator set
+- `security/` - Multi-sig wallet, HSM, key recovery, audit logger, field encryption, access control
+- `identity/` - SSO, RBAC, certificate store, DID resolver
+- `integration/` - ERP connectors, IoT gateway, legacy adapters, message broker, API gateway
+- `storage/` - Database sharding, IPFS, backup validator, archive manager, data encryption
+- `monitoring/` - Health checker, metrics collector, alert manager, log aggregator, performance monitor
+- `admin/` - Node management, backup manager, upgrade manager, config manager
+- `compliance/` - GDPR manager, FDA reporter, audit trail, data retention, regulatory validator
+- `pharma/` - Batch lifecycle, recall manager, QA, serialization, temperature chain, expiry manager
+- `api/` - GraphQL, webhooks, rate limiting, documentation, versioning
+---
 
 ### 1) What it is
 - **Purpose**: A production-style blockchain with cryptographic security, Proof of Work mining, REST API, wallet management, and LevelDB persistence.
 - **Tech**: Node.js, Express, `elliptic` (secp256k1), SHA-256, LevelDB.
 
 ### 2) High-level architecture
+---
+## 🛡️ Compliance & Security
+
+- **FDA 21 CFR Part 11**: Electronic records, audit trails, data integrity
+- **GDPR**: Data privacy, right-to-erasure, retention management
+- **Zero-Trust Architecture**: End-to-end encryption, multi-factor authentication
+- **Enterprise Security**: Multi-sig, HSM, key recovery, role-based access, audit logging
+- **Traceability**: Immutable batch tracking, recall, serialization, cold chain, expiry
+
+## 🧑‍💻 Development Workflow & Code Quality
+
+- Use **TypeScript** for new modules (type safety)
+- Add **JSDoc** for all functions
+- Implement **comprehensive error handling and logging**
+- Write **unit tests** for all new modules
+- Use **environment variables** for configuration
+- Document every module (README + API docs)
+- Create **database migrations** for schema changes
+- Set up **CI/CD pipelines** early
+
+## ✅ Success Criteria
+
+- Multi-node deployment with automatic peer discovery
+- Enterprise-grade authentication and encryption
+- Handle pharmaceutical transaction volumes
+- Meet FDA, GDPR, and pharma regulations
+- Connect with existing pharmaceutical systems
+- Comprehensive observability and alerting
+- 90%+ code coverage with all test types
+- Complete API docs and user guides
 - **Wallet (`src/wallet.js`)**
   - Generates/imports wallets using secp256k1 keys
   - Derives address from public key (SHA-256 → RIPEMD-160 → 0x-address)

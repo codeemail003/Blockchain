@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Blockchain Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container { max-width: 1200px; padding-top: 2rem; }
+        .block-card { margin-bottom: 1rem; }
+        .block-hash { font-family: monospace; word-break: break-all; }
+        pre { background: #f8f9fa; padding: 1rem; border-radius: 0.25rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Blockchain Explorer</h1>
+
+        <!-- Blockchain Stats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Blockchain Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>Total Blocks</h6>
+                        <p id="totalBlocks" class="h3">-</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Chain Status</h6>
+                        <p id="chainStatus" class="h3">-</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Last Updated</h6>
+                        <p id="lastUpdated" class="h3">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Search Blocks</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search by batch ID, manufacturer, etc.">
+                    </div>
+                    <div class="col-md-4">
+                        <select id="searchField" class="form-select">
+                            <option value="batchId">Batch ID</option>
+                            <option value="manufacturer">Manufacturer</option>
+                            <option value="product">Product</option>
+                            <option value="shipmentId">Shipment ID</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button id="searchButton" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blocks Container -->
+        <div id="blocksContainer">
+            <!-- Blocks will be added here -->
+        </div>
+    </div>
+
+    <!-- Block Template -->
+    <template id="blockTemplate">
+        <div class="card block-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Block #<span class="block-index"></span></h5>
+                <small class="text-muted block-timestamp"></small>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Hash:</strong>
+                    <span class="block-hash"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Previous Hash:</strong>
+                    <span class="block-prev-hash"></span>
+                </div>
+                <div>
+                    <strong>Data:</strong>
+                    <pre class="block-data"></pre>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Blockchain interface
+        class BlockchainExplorer {
+            constructor() {
+                this.blockchain = null;
+                this.setupEventListeners();
+                this.loadBlockchain();
+            }
+
+            setupEventListeners() {
+                document.getElementById('searchButton').addEventListener('click', () => {
+                    this.searchBlocks();
+                });
+
+                document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.searchBlocks();
+                    }
+                });
+            }
+
+            async loadBlockchain() {
+                try {
+                    const response = await fetch('/api/blockchain');
+                    this.blockchain = await response.json();
+                    this.updateStats();
+                    this.displayBlocks(this.blockchain);
+                } catch (error) {
+                    console.error('Failed to load blockchain:', error);
+                }
+            }
+
+            updateStats() {
+                document.getElementById('totalBlocks').textContent = this.blockchain.length;
+                document.getElementById('chainStatus').textContent = 'Valid';
+                document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+            }
+
+            displayBlocks(blocks) {
+                const container = document.getElementById('blocksContainer');
+                container.innerHTML = '';
+                const template = document.getElementById('blockTemplate');
+
+                blocks.reverse().forEach(block => {
+                    const blockElement = template.content.cloneNode(true);
+                    
+                    blockElement.querySelector('.block-index').textContent = block.index;
+                    blockElement.querySelector('.block-timestamp').textContent = 
+                        new Date(block.timestamp).toLocaleString();
+                    blockElement.querySelector('.block-hash').textContent = block.hash;
+                    blockElement.querySelector('.block-prev-hash').textContent = block.previousHash;
+                    blockElement.querySelector('.block-data').textContent = 
+                        JSON.stringify(block.data, null, 2);
+
+                    container.appendChild(blockElement);
+                });
+            }
+
+            searchBlocks() {
+                const searchTerm = document.getElementById('searchInput').value;
+                const searchField = document.getElementById('searchField').value;
+
+                if (!searchTerm) {
+                    this.displayBlocks(this.blockchain);
+                    return;
+                }
+
+                const filteredBlocks = this.blockchain.filter(block => {
+                    if (block.data && block.data[searchField]) {
+                        return block.data[searchField].toString()
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase());
+                    }
+                    return false;
+                });
+
+                this.displayBlocks(filteredBlocks);
+            }
+        }
+
+        // Initialize explorer when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.explorer = new BlockchainExplorer();
+        });
+    </script>
+</body>
+</html>

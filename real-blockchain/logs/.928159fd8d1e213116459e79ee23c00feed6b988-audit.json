@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/workspaces/Blockchain/real-blockchain/logs/.928159fd8d1e213116459e79ee23c00feed6b988-audit.json",
+    "files": [
+        {
+            "date": 1757681686775,
+            "name": "/workspaces/Blockchain/real-blockchain/logs/pharbitchain-2025-09-12.log",
+            "hash": "101c1773408185d8af9bfaadd16c5206eafb61600dd9df6e5bc39554f2873787"
+        }
+    ],
+    "hashType": "sha256"
+}
