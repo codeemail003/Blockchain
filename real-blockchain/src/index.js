@@ -22,6 +22,7 @@ const Templates = require('./contracts/templates');
 
 // Real blockchain integrations
 const SupabaseDatabase = require('./database/supabase');
+const MemoryDatabase = require('./database/memory');
 const S3Storage = require('./storage/s3');
 const MetaMaskIntegration = require('./wallet/metamask-integration');
 
@@ -37,9 +38,26 @@ class BlockchainNode {
         this.isMining = false;
         
         // Initialize real blockchain services
-        this.database = new SupabaseDatabase();
-        this.storage = new S3Storage();
-        this.metaMask = new MetaMaskIntegration();
+        try {
+            this.database = new SupabaseDatabase();
+        } catch (error) {
+            console.log('⚠️ Supabase not available, using memory database:', error.message);
+            this.database = new MemoryDatabase();
+        }
+        
+        try {
+            this.storage = new S3Storage();
+        } catch (error) {
+            console.log('⚠️ S3 storage not available:', error.message);
+            this.storage = null;
+        }
+        
+        try {
+            this.metaMask = new MetaMaskIntegration();
+        } catch (error) {
+            console.log('⚠️ MetaMask integration not available:', error.message);
+            this.metaMask = null;
+        }
         
         this.setupMiddleware();
         this.setupRoutes();
