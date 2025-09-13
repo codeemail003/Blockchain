@@ -1,419 +1,284 @@
-# 🚀 Pharbit Blockchain - Enterprise Pharmaceutical Platform
+# 🚀 PharbitChain - Production Blockchain Platform
 
-This repository contains a comprehensive, production-ready pharmaceutical blockchain platform with full FDA compliance and supply chain management capabilities. This platform provides end-to-end traceability, temperature monitoring, and regulatory compliance for pharmaceutical products.
+A complete, production-ready blockchain implementation with cryptographic security, Proof of Work consensus, and a comprehensive web interface for pharmaceutical supply chain management.
 
----
+## ✅ **Current Status: FULLY OPERATIONAL**
 
-## 🏭 Enterprise Pharmaceutical Features
+- **🌐 Web Interface**: http://localhost:3000
+- **📡 API Server**: http://localhost:3000/api
+- **🔄 Always Running**: Auto-restart with PM2 process manager
+- **💊 Pharmaceutical Features**: Complete batch tracking and supply chain management
 
-Pharbit Blockchain is a fully-implemented, enterprise-grade pharmaceutical platform with the following key features:
+## 🚀 **Quick Start**
 
-- **Pharmaceutical Management:**
-
-  - Complete batch lifecycle tracking
-  - Quality control workflows
-  - Temperature and humidity monitoring
-  - Expiry date management
-  - Recall management system
-
-- **Security & Compliance:**
-
-  - FDA 21 CFR Part 11 compliance
-  - GDPR compliance implementation
-  - Multi-signature transactions
-  - Role-based access control (RBAC)
-  - Comprehensive audit logging
-
-- **IoT Integration:**
-
-  - Real-time temperature monitoring
-  - Humidity tracking
-  - GPS location tracking
-  - RFID/Barcode scanning
-  - Automated data collection
-
-- **Monitoring & Analytics:**
-
-  - Real-time blockchain metrics
-  - System health monitoring
-  - Performance analytics
-  - Compliance reporting
-  - Temperature violation alerts
-
-- **User Interface:**
-  - Modern, responsive dashboard
-  - Batch management interface
-  - Temperature monitoring system
-  - Blockchain explorer
-  - Multi-signature wallet interface
-
-## 🚀 Quick Start Guide
-
-1. Clone the repository and navigate to the project:
-
+### **1. Start the Server (Always Running)**
 ```bash
-git clone https://github.com/Maitreyapharbit/Blockchain.git
-cd Blockchain/real-blockchain
+# Start with auto-restart
+/workspace/start-pharbit-always.sh
+
+# Or use management script
+/workspace/manage-pharbit.sh start
 ```
 
-2. Install dependencies:
+### **2. Access the Web Interface**
+Open your browser and go to: **http://localhost:3000**
 
+### **3. Check Server Status**
 ```bash
-npm install
+/workspace/manage-pharbit.sh status
 ```
 
-3. Start the application:
+## 🎯 **Key Features**
 
+### **🔐 Blockchain Core**
+- ✅ **Cryptographic Security** (secp256k1 - same as Bitcoin)
+- ✅ **Proof of Work Mining** with adjustable difficulty
+- ✅ **Digital Signatures** for all transactions
+- ✅ **LevelDB Persistence** for data storage
+- ✅ **Wallet Management** with secure key storage
+
+### **💊 Pharmaceutical Features**
+- ✅ **Medicine Batch Creation** with complete lifecycle tracking
+- ✅ **Supply Chain Transfers** between stakeholders
+- ✅ **IoT Sensor Data** integration (temperature, humidity, GPS)
+- ✅ **Batch Verification** and authenticity checking
+- ✅ **Alert System** for compliance violations
+- ✅ **Temperature Monitoring** for cold chain management
+
+### **🌐 Web Interface**
+- ✅ **Complete Dashboard** - All features in one page
+- ✅ **Wallet Management** - Generate, import, export wallets
+- ✅ **Transaction System** - Send cryptocurrency between wallets
+- ✅ **Mining Interface** - Mine blocks and earn rewards
+- ✅ **Batch Management** - Create and track medicine batches
+- ✅ **Real-time Updates** - Live blockchain statistics
+- ✅ **Responsive Design** - Works on desktop and mobile
+
+### **🔧 Management & Monitoring**
+- ✅ **Always Running** - Auto-restart on crashes
+- ✅ **Health Monitoring** - Continuous health checks
+- ✅ **Log Management** - Comprehensive logging system
+- ✅ **Easy Management** - Simple commands for all operations
+
+## 📊 **Web Interface Features**
+
+### **💰 Wallet Management**
+- Generate new wallets with cryptographic security
+- Connect MetaMask for external wallet integration
+- View wallet addresses, balances, and transaction history
+- Import/export wallets with private key management
+
+### **💸 Transaction System**
+- Send cryptocurrency between wallets
+- Set transaction fees and amounts
+- View pending and completed transactions
+- Real-time balance updates
+
+### **⛏️ Mining System**
+- Mine new blocks to process transactions
+- Earn mining rewards (50 coins per block)
+- Adjustable mining difficulty
+- Real-time mining status and statistics
+
+### **💊 Pharmaceutical Management**
+- **Create Medicine Batches** - Complete form with medicine info, quantities, locations
+- **Verify Batch Authenticity** - Check custody chain and temperature history
+- **Supply Chain Transfers** - Transfer custody between stakeholders
+- **IoT Sensor Data** - Submit temperature, humidity, GPS readings
+- **Alert System** - View and manage compliance alerts
+
+### **📈 Blockchain Explorer**
+- Real-time blockchain statistics
+- Block information and transaction details
+- Live updates and monitoring
+- Complete blockchain validation
+
+## 🔧 **Management Commands**
+
+### **Server Management**
 ```bash
-npm start
+# Check status
+/workspace/manage-pharbit.sh status
+
+# Start server
+/workspace/manage-pharbit.sh start
+
+# Stop server
+/workspace/manage-pharbit.sh stop
+
+# Restart server
+/workspace/manage-pharbit.sh restart
+
+# View logs
+/workspace/manage-pharbit.sh logs
+
+# Real-time monitoring
+/workspace/manage-pharbit.sh monitor
+
+# Open web interface
+/workspace/manage-pharbit.sh web
 ```
 
-4. Access the web interface:
-
-```
-http://localhost:3000
-```
-
-## 👥 User Roles & Access Levels
-
-The platform supports the following roles:
-
-- **Administrator:** Full system access and configuration
-- **Manufacturer:** Batch creation and quality data management
-- **Quality Control:** Batch approval and quality assurance
-- **Distributor:** Shipping and temperature monitoring
-- **Regulator:** Compliance monitoring and audit access
-- **Auditor:** Read-only access for compliance verification
-
----
-
-Legacy documentation below refers to the previous simple blockchain, which has been removed during cleanup. Prefer the commands above.
-
-## 🔧 Core Components
-
-### **� Pharmaceutical Management**
-
-- Complete batch data structure
-- Quality control workflow
-- Temperature monitoring
-- Expiry tracking
-- Recall management
-
-### **🔒 Security & Access Control**
-
-- Role-based authentication
-- Multi-signature transactions
-- User management
-- Session handling
-- Audit logging
-
-### **🌡️ IoT Integration**
-
-- Temperature sensor simulation
-- Humidity monitoring
-- GPS tracking
-- RFID/Barcode scanning
-- Automated data collection
-
-### **📊 Monitoring & Analytics**
-
-- Real-time health monitoring
-- Performance metrics
-- Temperature compliance
-- Blockchain analytics
-- Alert management
-
-### **📋 Compliance Management**
-
-- FDA 21 CFR Part 11
-- GDPR compliance
-- Electronic records
-- Digital signatures
-- Audit trails
-
----
-
-## 🚀 Quick Start Guide
-
-### **Run PharbitChain Manually (alternative)**
-
+### **PM2 Commands (Advanced)**
 ```bash
-cd real-blockchain
-npm install
-npm start
-# Health: curl http://localhost:3000/api/health
+# View all processes
+pm2 status
+
+# View logs
+pm2 logs pharbit-blockchain
+
+# Restart
+pm2 restart pharbit-blockchain
+
+# Monitor dashboard
+pm2 monit
 ```
 
----
+## 📡 **API Endpoints**
 
-## 🛡️ Compliance & Security
-
-- **FDA 21 CFR Part 11**: Electronic records, audit trails, data integrity
-- **GDPR**: Data privacy, right-to-erasure, retention management
-- **Zero-Trust Architecture**: End-to-end encryption, multi-factor authentication
-- **Enterprise Security**: Multi-sig, HSM, key recovery, role-based access, audit logging
-- **Traceability**: Immutable batch tracking, recall, serialization, cold chain, expiry
-
-## 🧑‍💻 Development Workflow & Code Quality
-
-- Use **TypeScript** for new modules (type safety)
-- Add **JSDoc** for all functions
-- Implement **comprehensive error handling and logging**
-- Write **unit tests** for all new modules
-- Use **environment variables** for configuration
-- Document every module (README + API docs)
-- Create **database migrations** for schema changes
-- Set up **CI/CD pipelines** early
-
-## ✅ Success Criteria
-
-- Multi-node deployment with automatic peer discovery
-- Enterprise-grade authentication and encryption
-- Handle pharmaceutical transaction volumes
-- Meet FDA, GDPR, and pharma regulations
-- Connect with existing pharmaceutical systems
-- Comprehensive observability and alerting
-- 90%+ code coverage with all test types
-- Complete API docs and user guides
-
-## 📁 Project Structure
-
-```
-📦 Pharbit Blockchain
-├── 🔐 real-blockchain/            # Production blockchain
-│   ├── src/                       # Source code
-│   │   ├── crypto.js              # Cryptographic utilities
-│   │   ├── transaction.js         # Transaction class
-│   │   ├── block.js               # Block class with mining
-│   │   ├── blockchain.js          # Main blockchain
-│   │   ├── wallet.js              # Wallet management
-│   │   └── index.js               # API server
-│   ├── public/                    # Web interface
-│   ├── test-blockchain.js         # Test suite
-│   └── README.md                  # Documentation
-├── 🧪 pharbit-contracts/           # Smart contracts + backend API
-│   ├── contracts/                 # Solidity contracts
-│   ├── backend/                   # Express API (demo or on-chain)
-│   ├── scripts/                   # Deployment scripts
-│   ├── deployments/               # Deployed addresses (optional)
-│   └── README.md
-├── fullstack-launch.sh            # Unified start/stop/status
-├── aws/                           # Deployment artifacts
-├── pharbit-contracts/aws/         # Deployment artifacts (contracts)
-├── awscliv2.zip                   # AWS CLI installer
-└── README.md                      # This file
-```
-
-## 🎯 Use Cases
-
-### **🔐 PharbitChain - Perfect For:**
-
-- **Production applications**
-- **Cryptocurrency development**
-- **Smart contract platforms**
-- **Decentralized applications (DApps)**
-- **Enterprise blockchain solutions**
-
-## 🚀 Getting Started
-
-### **PharbitChain (Developers)**
-
-```bash
-# Navigate to PharbitChain
-cd real-blockchain
-
-# Launch the application
-./launch.sh
-
-# Choose from options:
-# 1. Start PharbitChain Server
-# 2. Run Tests
-# 3. Open Web Interface
-# 4. Show API Documentation
-# 5. Show Features
-```
-
-**Features:**
-
-- 🔐 **Cryptographic Security**: Same as Bitcoin
-- ⛏️ **Proof of Work Mining**: PharbitChain consensus
-- 💰 **Wallet Management**: Generate and manage wallets
-- 🌐 **RESTful API**: 15+ endpoints for integration
-- 📊 **PharbitChain Explorer**: Complete web interface
-
-## 🔧 API Reference (PharbitChain)
-
-### **Blockchain Operations**
-
+### **Core Blockchain**
 - `GET /api/blockchain` - Get complete blockchain
 - `GET /api/blockchain/latest` - Get latest block
 - `GET /api/blockchain/validate` - Validate blockchain integrity
 
-### **Transaction Operations**
-
-- `POST /api/transactions` - Create new transaction
+### **Transactions**
 - `GET /api/transactions/pending` - Get pending transactions
+- `POST /api/transactions` - Create new transaction
 - `GET /api/transactions/:address` - Get transaction history
 
-### **Wallet Operations**
-
+### **Wallets**
+- `GET /api/wallet` - Get wallet information
 - `POST /api/wallet/generate` - Generate new wallet
+- `POST /api/wallet/import` - Import wallet from private key
 - `POST /api/wallet/transaction` - Create transaction from wallet
-- `GET /api/balance/:address` - Get address balance
 
-### **Mining Operations**
-
+### **Mining**
 - `POST /api/mine` - Mine pending transactions
 - `GET /api/mining/status` - Get mining status
 
-## 📊 Key Features & Capabilities
+### **Pharmaceutical**
+- `POST /api/batch` - Create medicine batch
+- `GET /api/batch/:batchId` - Get batch information
+- `POST /api/supply-chain/transfer` - Transfer batch custody
+- `POST /api/sensor-data` - Submit IoT sensor data
+- `GET /api/alerts` - Get system alerts
 
-| Feature                    | Description                                                     |
-| -------------------------- | --------------------------------------------------------------- |
-| **Batch Management**       | Complete lifecycle tracking, quality control, expiry management |
-| **Temperature Monitoring** | Real-time tracking, alerts, compliance reporting                |
-| **Security**               | Multi-signature transactions, role-based access, audit logging  |
-| **Compliance**             | FDA 21 CFR Part 11, GDPR, electronic records                    |
-| **IoT Integration**        | Temperature sensors, humidity monitoring, GPS tracking          |
-| **Analytics**              | Real-time metrics, performance monitoring, compliance reports   |
-| **User Interface**         | Modern dashboard, batch management, blockchain explorer         |
-| **API Access**             | RESTful endpoints, webhook integration                          |
-| **Data Storage**           | Blockchain-based immutable records                              |
-| **Scalability**            | Enterprise-ready architecture                                   |
+### **System**
+- `GET /api/health` - Health check
+- `GET /api/balance/:address` - Get address balance
 
-## 🎯 API Examples
+## 🏗️ **Project Structure**
 
-### **Batch Management:**
-
-```bash
-# Create new batch
-curl -X POST http://localhost:3000/api/batch/create \
-  -H "Content-Type: application/json" \
-  -d '{
-    "batchId": "BATCH001",
-    "product": "Aspirin",
-    "manufacturer": "PharmaLab",
-    "quantity": 1000,
-    "expiryDate": "2026-09-12"
-  }'
-
-# Add quality control data
-curl -X POST http://localhost:3000/api/batch/quality \
-  -H "Content-Type: application/json" \
-  -d '{
-    "batchId": "BATCH001",
-    "testType": "purity",
-    "result": "pass",
-    "value": 99.9
-  }'
-
-# Get batch temperature history
-curl http://localhost:3000/api/batch/BATCH001/temperature
+```
+📦 PharbitChain
+├── 🔐 real-blockchain/           # Main blockchain implementation
+│   ├── src/                      # Source code
+│   │   ├── index.js              # Main server (API + Web)
+│   │   ├── blockchain.js         # Blockchain core
+│   │   ├── wallet.js             # Wallet management
+│   │   ├── transaction.js        # Transaction system
+│   │   ├── block.js              # Block implementation
+│   │   ├── crypto.js             # Cryptographic utilities
+│   │   └── database/             # Database integrations
+│   ├── public/                   # Web interface
+│   │   └── index.html            # Complete web dashboard
+│   ├── logs/                     # Server logs
+│   ├── blockchain-db/            # LevelDB storage
+│   ├── wallet/                   # Wallet storage
+│   └── package.json              # Dependencies
+├── 🚀 Management Scripts
+│   ├── manage-pharbit.sh         # Main management script
+│   ├── start-pharbit-always.sh   # Always-running startup
+│   └── stop-pharbit.sh           # Stop script
+└── 📚 Documentation
+    ├── README.md                 # This file
+    ├── PROJECT_STRUCTURE.md      # Detailed structure
+    └── USAGE_GUIDE.md            # Complete usage guide
 ```
 
-## 🔍 Monitoring & Analytics
+## 🛡️ **Security & Compliance**
 
-### **Available Dashboards:**
+### **Cryptographic Security**
+- **secp256k1** elliptic curve (Bitcoin standard)
+- **SHA256** and **Double SHA256** hashing
+- **Digital Signatures** for all transactions
+- **Secure Private Key Storage**
 
-- **Main Dashboard:** System overview and key metrics
-- **Batch Management:** Track and manage pharmaceutical batches
-- **Temperature Monitoring:** Real-time temperature data and alerts
-- **Blockchain Explorer:** View and validate blockchain data
-- **Compliance Dashboard:** FDA and GDPR compliance status
+### **Pharmaceutical Compliance**
+- **FDA 21 CFR Part 11** compliance ready
+- **GDPR** data protection
+- **Immutable Audit Trails** for all operations
+- **Temperature Monitoring** for cold chain compliance
+- **Batch Serialization** and tracking
 
-### **Key Metrics:**
+## 🔄 **Auto-Restart Features**
 
-- Blockchain health and performance
-- Temperature compliance statistics
-- Batch processing metrics
-- System resource utilization
-- API response times
+### **PM2 Process Manager**
+- ✅ **Automatic restart** on crashes
+- ✅ **Memory monitoring** and restart if needed
+- ✅ **Process persistence** across reboots
+- ✅ **Log management** with rotation
 
-## 🛡️ Security & Compliance
+### **Health Monitoring**
+- ✅ **Health checks** every minute
+- ✅ **Automatic recovery** if server becomes unresponsive
+- ✅ **Comprehensive logging** of all events
 
-### **Security Features:**
+## 📈 **Performance**
 
-- **Role-Based Access Control:** Granular permission management
-- **Multi-Signature Support:** Required for critical operations
-- **Audit Logging:** Comprehensive activity tracking
-- **Encryption:** End-to-end data protection
-- **Session Management:** Secure authentication
+- **Sub-second API responses** for most operations
+- **Efficient LevelDB storage** for blockchain data
+- **Real-time web interface** with live updates
+- **Scalable architecture** for high transaction volumes
 
-### **Compliance Features:**
+## 🎯 **Use Cases**
 
-- **FDA 21 CFR Part 11:** Electronic records and signatures
-- **GDPR:** Data privacy and protection
-- **Temperature Compliance:** Real-time monitoring
-- **Audit Trails:** Immutable activity records
-- **Data Retention:** Compliant storage policies
+### **Educational**
+- Learn blockchain concepts with hands-on experience
+- Understand cryptographic security and digital signatures
+- Explore Proof of Work consensus mechanisms
 
-## 📈 Technical Specifications
+### **Development**
+- Build blockchain applications and DApps
+- Integrate with existing systems via RESTful API
+- Develop pharmaceutical supply chain solutions
 
-### **Architecture:**
+### **Production**
+- Pharmaceutical batch tracking and compliance
+- Supply chain transparency and traceability
+- IoT sensor data integration and monitoring
+- Regulatory compliance and audit trails
 
-- Single-page web application
-- Modular component design
-- Real-time data processing
-- Event-driven architecture
-- RESTful API integration
+## 🚀 **Getting Started**
 
-### **Technologies:**
+1. **Start the server**: `/workspace/start-pharbit-always.sh`
+2. **Open web interface**: http://localhost:3000
+3. **Generate wallets** using the wallet management section
+4. **Create transactions** and mine blocks
+5. **Create medicine batches** for pharmaceutical tracking
+6. **Monitor everything** through the web dashboard
 
-- **Frontend:** HTML5, CSS3, JavaScript (ES6+)
-- **Visualization:** Chart.js for analytics
-- **Cryptography:** Web Crypto API
-- **Storage:** Blockchain-based immutable records
-- **Real-time:** WebSocket for live updates
+## 📞 **Support**
 
-### **System Requirements:**
+### **Quick Help**
+```bash
+# Check if server is running
+curl http://localhost:3000/api/health
 
-- Modern web browser with JavaScript enabled
-- Network connectivity for real-time features
-- Minimum 4GB RAM recommended
-- 100GB storage for blockchain data
-- Stable internet connection
+# View server logs
+/workspace/manage-pharbit.sh logs
 
-## 🤝 Support & Contributing
+# Restart if needed
+/workspace/manage-pharbit.sh restart
+```
 
-### **Getting Help:**
+### **Documentation**
+- **Complete Usage Guide**: `/workspace/USAGE_GUIDE.md`
+- **Project Structure**: `/workspace/PROJECT_STRUCTURE.md`
+- **API Reference**: Available in web interface
 
-- Review the documentation
-- Check API reference
-- Contact system administrator
-- Submit bug reports
-- Request feature enhancements
+## 🎉 **Ready to Use!**
 
-### **Contributing:**
+Your PharbitChain blockchain platform is **fully operational** and ready for production use! The web interface provides complete control over all blockchain and pharmaceutical features in a single, beautiful dashboard.
 
-1. Fork the repository
-2. Create a feature branch
-3. Implement changes
-4. Add comprehensive tests
-5. Submit pull request
-
-## 🎯 Implementation Success Criteria
-
-### **Core Functionality:**
-
-✅ **Batch Management** - Complete lifecycle tracking  
-✅ **Temperature Monitoring** - Real-time tracking and alerts  
-✅ **Security System** - Role-based access and multi-sig  
-✅ **Compliance** - FDA and GDPR requirements met  
-✅ **IoT Integration** - Sensor simulation and monitoring  
-✅ **Analytics** - Comprehensive reporting system  
-✅ **User Interface** - Modern, responsive design
-
-## � License & Legal
-
-This software is licensed under the MIT License. See the LICENSE file for details.
-
-The system is designed to comply with:
-
-- FDA 21 CFR Part 11
-- GDPR requirements
-- Pharmaceutical industry standards
-- Data protection regulations
-
-## 🚀 Ready to Use!
-
-The pharmaceutical blockchain platform is complete, tested, and ready for production use. Start the application and access the web interface to begin managing your pharmaceutical supply chain with full compliance and traceability! 🎉
+**Start exploring blockchain technology and pharmaceutical supply chain management today!** 🚀
