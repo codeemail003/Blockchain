@@ -1,0 +1,67 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IStakeholderContract",
+  "sourceName": "contracts/SupplyChainContract.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "wallet",
+          "type": "address"
+        }
+      ],
+      "name": "getCompany",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "enum IStakeholderContract.Role",
+              "name": "role",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bool",
+              "name": "kycCompleted",
+              "type": "bool"
+            },
+            {
+              "internalType": "string",
+              "name": "kycReference",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "wallet",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "registeredAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "active",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct IStakeholderContract.Company",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

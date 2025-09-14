@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  pharbitchain:
+    build:
+      context: ./real-blockchain
+      dockerfile: Dockerfile
+    image: pharbitchain:latest
+    container_name: pharbitchain
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_PATH=/app/blockchain-db
+      - DIFFICULTY=4
+      - MINING_REWARD=50
+      - BLOCK_SIZE=1000
+      - CORS_ORIGINS=*
+      - RATE_WINDOW_MS=60000
+      - RATE_MAX=120
+      - JSON_BODY_LIMIT=1mb
+      # HTTPS (mount certs and enable if desired)
+      # - HTTPS_ENABLED=true
+      # - HTTPS_KEY_PATH=/certs/tls.key
+      # - HTTPS_CERT_PATH=/certs/tls.crt
+    volumes:
+      - pharbitchain_data:/app/blockchain-db
+      # If enabling HTTPS, mount certs:
+      # - ./certs:/certs:ro
+
+volumes:
+  pharbitchain_data:
+    driver: local
+

@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 PharbitChain Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .wallet-section {
+            grid-column: 1 / -1;
+        }
+
+        .wallet-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .wallet-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .wallet-address {
+            font-family: monospace;
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+
+        .balance {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .blockchain-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .transactions-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .transaction-item.pending {
+            border-left-color: #ffc107;
+        }
+
+        .transaction-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .transaction-detail {
+            font-size: 0.9rem;
+        }
+
+        .transaction-detail strong {
+            color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .wallet-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .transaction-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 PharbitChain Explorer</h1>
+            <p>A complete blockchain implementation with cryptographic security and Proof of Work consensus</p>
+        </div>
+
+        <div class="dashboard">
+            <!-- Wallet Section -->
+            <div class="card wallet-section">
+                <h2>💰 Wallet Management</h2>
+                <div class="form-group">
+                    <button class="btn" onclick="connectMetaMask()">🦊 Connect MetaMask</button>
+                    <div id="metamask-account" class="status info" style="margin-top:10px;">MetaMask not connected</div>
+                </div>
+                <div class="wallet-info">
+                    <div class="wallet-card">
+                        <h3>Wallet 1</h3>
+                        <div class="wallet-address" id="wallet1-address">Not generated</div>
+                        <div class="balance" id="wallet1-balance">0</div>
+                        <button class="btn" onclick="generateWallet(1)">Generate Wallet</button>
+                    </div>
+                    <div class="wallet-card">
+                        <h3>Wallet 2</h3>
+                        <div class="wallet-address" id="wallet2-address">Not generated</div>
+                        <div class="balance" id="wallet2-balance">0</div>
+                        <button class="btn" onclick="generateWallet(2)">Generate Wallet</button>
+                    </div>
+                </div>
+                <div id="wallet-status"></div>
+            </div>
+
+            <!-- Transaction Section -->
+            <div class="card">
+                <h2>💸 Create Transaction</h2>
+                <form id="transaction-form">
+                    <div class="form-group">
+                        <label for="from-wallet">From Wallet:</label>
+                        <select id="from-wallet" required>
+                            <option value="">Select wallet</option>
+                            <option value="1">Wallet 1</option>
+                            <option value="2">Wallet 2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="to-wallet">To Wallet:</label>
+                        <select id="to-wallet" required>
+                            <option value="">Select wallet</option>
+                            <option value="1">Wallet 1</option>
+                            <option value="2">Wallet 2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount:</label>
+                        <input type="number" id="amount" min="0.001" step="0.001" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fee">Fee:</label>
+                        <input type="number" id="fee" min="0" step="0.001" value="0.001" required>
+                    </div>
+                    <button type="submit" class="btn">🚀 Send Transaction</button>
+                </form>
+                <div id="transaction-status"></div>
+            </div>
+
+            <!-- Mining Section -->
+            <div class="card">
+                <h2>⛏️ Mining</h2>
+                <div class="form-group">
+                    <label for="miner-wallet">Miner Wallet:</label>
+                    <select id="miner-wallet" required>
+                        <option value="">Select wallet</option>
+                        <option value="1">Wallet 1</option>
+                        <option value="2">Wallet 2</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="mineBlock()">⛏️ Mine Block</button>
+                <div id="mining-status"></div>
+            </div>
+
+            <!-- Batch Creation -->
+            <div class="card">
+                <h2>💊 Create Medicine Batch</h2>
+                <form id="batch-form">
+                    <div class="form-group">
+                        <label for="batch-name">Medicine Name</label>
+                        <input type="text" id="batch-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-manufacturer">Manufacturer</label>
+                        <input type="text" id="batch-manufacturer" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-type">Type (vaccine, insulin, antibiotic, tablet)</label>
+                        <input type="text" id="batch-type" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-expiration">Expiration (YYYY-MM-DD)</label>
+                        <input type="text" id="batch-expiration" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-quantity">Quantity</label>
+                        <input type="number" id="batch-quantity" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-location">Manufacturing Facility</label>
+                        <input type="text" id="batch-location" placeholder="e.g., SF Plant">
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-lat">Latitude</label>
+                        <input type="number" id="batch-lat" step="0.000001" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-lon">Longitude</label>
+                        <input type="number" id="batch-lon" step="0.000001" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-temp">Initial Temperature (°C)</label>
+                        <input type="number" id="batch-temp" step="0.1" value="4.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-humidity">Initial Humidity (%)</label>
+                        <input type="number" id="batch-humidity" step="1" value="45">
+                    </div>
+                    <div class="form-group">
+                        <label for="manufacturer-address">Manufacturer Address</label>
+                        <input type="text" id="manufacturer-address" placeholder="0x..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="manufacturer-key">Manufacturer Private Key</label>
+                        <input type="text" id="manufacturer-key" placeholder="hex private key" required>
+                    </div>
+                    <button type="submit" class="btn">🧪 Create Batch</button>
+                </form>
+                <div id="batch-status"></div>
+            </div>
+
+            <!-- Batch Verification -->
+            <div class="card">
+                <h2>🔎 Verify Batch</h2>
+                <div class="form-group">
+                    <label for="verify-batch-id">Batch ID</label>
+                    <input type="text" id="verify-batch-id" placeholder="BATCH_...">
+                </div>
+                <button class="btn" onclick="verifyBatch()">🔍 Verify</button>
+                <div id="verify-result" class="transactions-list" style="margin-top:10px;"></div>
+            </div>
+
+            <!-- Blockchain Stats -->
+            <div class="card">
+                <h2>📊 Blockchain Statistics</h2>
+                <div class="blockchain-stats" id="blockchain-stats">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading blockchain data...
+                    </div>
+                </div>
+                <button class="btn" onclick="refreshStats()">🔄 Refresh Stats</button>
+            </div>
+        </div>
+
+        <!-- Transactions List -->
+        <div class="card">
+            <h2>📋 Recent Transactions</h2>
+            <div class="transactions-list" id="transactions-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading transactions...
+                </div>
+            </div>
+        </div>
+
+        <!-- IoT Sensor Data -->
+        <div class="card" style="margin-top:20px;">
+            <h2>📡 IoT Sensor Data</h2>
+            <form id="sensor-form">
+                <div class="form-group">
+                    <label for="sensor-batch-id">Batch ID</label>
+                    <input type="text" id="sensor-batch-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="sensor-id">Sensor ID</label>
+                    <input type="text" id="sensor-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="sensor-temp">Temperature (°C)</label>
+                    <input type="number" id="sensor-temp" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="sensor-humidity">Humidity (%)</label>
+                    <input type="number" id="sensor-humidity" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="sensor-light">Light (lux)</label>
+                    <input type="number" id="sensor-light" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="sensor-lat">Latitude</label>
+                    <input type="number" id="sensor-lat" step="0.000001">
+                </div>
+                <div class="form-group">
+                    <label for="sensor-lon">Longitude</label>
+                    <input type="number" id="sensor-lon" step="0.000001">
+                </div>
+                <button type="submit" class="btn">📡 Submit Reading</button>
+            </form>
+            <div id="sensor-status"></div>
+        </div>
+
+        <!-- Supply Chain Transfer -->
+        <div class="card" style="margin-top:20px;">
+            <h2>🔄 Supply Chain Transfer</h2>
+            <form id="transfer-form">
+                <div class="form-group">
+                    <label for="transfer-batch-id">Batch ID</label>
+                    <input type="text" id="transfer-batch-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="from-stakeholder">From Stakeholder</label>
+                    <input type="text" id="from-stakeholder" placeholder="manufacturer" required>
+                </div>
+                <div class="form-group">
+                    <label for="to-stakeholder">To Stakeholder</label>
+                    <input type="text" id="to-stakeholder" placeholder="distributor" required>
+                </div>
+                <div class="form-group">
+                    <label for="transfer-action">Action</label>
+                    <input type="text" id="transfer-action" placeholder="shipped">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-facility">Facility</label>
+                    <input type="text" id="transfer-facility" placeholder="Distribution Center">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-lat">Latitude</label>
+                    <input type="number" id="transfer-lat" step="0.000001">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-lon">Longitude</label>
+                    <input type="number" id="transfer-lon" step="0.000001">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-temp">Temperature (°C)</label>
+                    <input type="number" id="transfer-temp" step="0.1" value="5">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-humidity">Humidity (%)</label>
+                    <input type="number" id="transfer-humidity" step="1" value="50">
+                </div>
+                <div class="form-group">
+                    <label for="transfer-key">Private Key</label>
+                    <input type="text" id="transfer-key" placeholder="hex private key" required>
+                </div>
+                <button type="submit" class="btn">➡️ Transfer</button>
+            </form>
+            <div id="transfer-status"></div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="card" style="margin-top:20px;">
+            <h2>🚨 Alerts</h2>
+            <div class="form-group">
+                <label for="alerts-batch-id">Filter by Batch ID (optional)</label>
+                <input type="text" id="alerts-batch-id" placeholder="BATCH_...">
+            </div>
+            <div class="form-group">
+                <label for="alerts-severity">Severity (optional)</label>
+                <input type="text" id="alerts-severity" placeholder="warning|critical">
+            </div>
+            <button class="btn" onclick="loadAlerts()">🔄 Refresh Alerts</button>
+            <div id="alerts-list" class="transactions-list" style="margin-top:10px;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let wallets = {};
+        let metaMaskAccount = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshStats();
+            loadTransactions();
+            loadExistingWallet();
+            loadAlerts();
+        });
+
+        // Load existing wallet if available
+        async function loadExistingWallet() {
+            try {
+                const response = await fetch(`${API_BASE}/wallet`);
+                const data = await response.json();
+                
+                if (data && data.address) {
+                    // Store the wallet for both wallet slots
+                    wallets[1] = data;
+                    wallets[2] = data;
+                    updateWalletDisplay(1, data);
+                    updateWalletDisplay(2, data);
+                    showStatus('wallet-status', 'success', 'Existing wallet loaded successfully!');
+                }
+            } catch (error) {
+                console.log('No existing wallet found or error loading wallet:', error);
+            }
+        }
+
+        // MetaMask connect
+        async function connectMetaMask() {
+            try {
+                if (!window.ethereum) {
+                    showStatus('wallet-status', 'error', 'MetaMask is not available in this browser');
+                    return;
+                }
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                metaMaskAccount = accounts[0];
+                document.getElementById('metamask-account').textContent = `Connected: ${metaMaskAccount}`;
+                // Pre-fill manufacturer address if empty
+                const addrInput = document.getElementById('manufacturer-address');
+                if (addrInput && !addrInput.value) addrInput.value = metaMaskAccount;
+            } catch (e) {
+                showStatus('wallet-status', 'error', 'MetaMask connection failed: ' + e.message);
+            }
+        }
+
+        // Handle batch creation
+        document.getElementById('batch-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                showStatus('batch-status', 'info', 'Creating batch...');
+                const batchInfo = {
+                        medicineInfo: {
+                            name: document.getElementById('batch-name').value,
+                            manufacturer: document.getElementById('batch-manufacturer').value,
+                            type: document.getElementById('batch-type').value,
+                            expiration: document.getElementById('batch-expiration').value
+                        },
+                        quantity: parseInt(document.getElementById('batch-quantity').value, 10),
+                        expirationDate: document.getElementById('batch-expiration').value,
+                        manufacturingLocation: {
+                            facility: document.getElementById('batch-location').value || 'Manufacturing Facility',
+                            lat: parseFloat(document.getElementById('batch-lat').value) || 0,
+                            lon: parseFloat(document.getElementById('batch-lon').value) || 0
+                        },
+                        initialTemperature: parseFloat(document.getElementById('batch-temp').value) || 4.0,
+                        initialHumidity: parseFloat(document.getElementById('batch-humidity').value) || 45
+                    };
+
+                let payload;
+                if (metaMaskAccount) {
+                    const message = JSON.stringify({ type: 'CREATE_BATCH', batchInfo });
+                    const signature = await window.ethereum.request({
+                        method: 'personal_sign',
+                        params: [message, metaMaskAccount]
+                    });
+                    payload = {
+                        batchInfo,
+                        address: metaMaskAccount,
+                        signature
+                    };
+                } else {
+                    payload = {
+                        batchInfo,
+                        manufacturerAddress: document.getElementById('manufacturer-address').value,
+                        privateKey: document.getElementById('manufacturer-key').value
+                    };
+                }
+                const response = await fetch(`${API_BASE}/batch`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('batch-status', 'success', `Batch created! ID: ${data.batchId}`);
+                    document.getElementById('verify-batch-id').value = data.batchId;
+                    verifyBatch();
+                } else {
+                    showStatus('batch-status', 'error', data.error || 'Failed to create batch');
+                }
+            } catch (error) {
+                showStatus('batch-status', 'error', 'Failed to create batch: ' + error.message);
+            }
+        });
+
+        // Verify batch
+        async function verifyBatch() {
+            const batchId = document.getElementById('verify-batch-id').value.trim();
+            if (!batchId) {
+                showStatus('verify-result', 'error', 'Enter a batch ID');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE}/batch/${encodeURIComponent(batchId)}`);
+                const data = await response.json();
+                if (response.ok) {
+                    const auth = data.authenticity || {};
+                    const history = data.history || [];
+                    const tempHistory = data.temperatureHistory || [];
+                    document.getElementById('verify-result').innerHTML = `
+                        <div class="status ${auth.authentic ? 'success' : 'error'}">
+                            Authentic: ${auth.authentic ? 'Yes' : 'No'}${auth.compromised ? ' (Compromised)' : ''}
+                            ${auth.reason ? ' - ' + auth.reason : ''}
+                        </div>
+                        <div><strong>Batch:</strong> ${batchId}</div>
+                        <div style="margin-top:8px;"><strong>Custody Chain (${history.length}):</strong>
+                            <ul>
+                                ${history.map(h => `<li>${new Date(h.timestamp).toLocaleString()} - ${h.action} ${h.fromStakeholder ? '('+h.fromStakeholder+' ➡ '+h.toStakeholder+')' : ''}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div style="margin-top:8px;"><strong>Temperature Readings (${tempHistory.length}):</strong>
+                            <ul>
+                                ${tempHistory.map(t => `<li>${new Date(t.timestamp).toLocaleString()} - ${t.temperature}°C @ ${t.location?.facility || 'N/A'}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('verify-result').innerHTML = `<div class="status error">${data.error || 'Batch not found'}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('verify-result').innerHTML = `<div class="status error">Failed to verify: ${error.message}</div>`;
+            }
+        }
+
+        // Handle IoT sensor submission
+        document.getElementById('sensor-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                showStatus('sensor-status', 'info', 'Submitting sensor data...');
+                const payload = {
+                    batchId: document.getElementById('sensor-batch-id').value,
+                    sensorId: document.getElementById('sensor-id').value,
+                    temperature: parseFloat(document.getElementById('sensor-temp').value),
+                    humidity: parseFloat(document.getElementById('sensor-humidity').value),
+                    light: parseFloat(document.getElementById('sensor-light').value),
+                    gps: {
+                        lat: parseFloat(document.getElementById('sensor-lat').value),
+                        lon: parseFloat(document.getElementById('sensor-lon').value)
+                    },
+                    timestamp: Date.now()
+                };
+                const response = await fetch(`${API_BASE}/sensor-data`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('sensor-status', 'success', `Sensor data processed. Tx: ${data.transactionId || 'N/A'}`);
+                    loadAlerts();
+                } else {
+                    showStatus('sensor-status', 'error', data.error || 'Failed to process sensor data');
+                }
+            } catch (error) {
+                showStatus('sensor-status', 'error', 'Failed to submit sensor data: ' + error.message);
+            }
+        });
+
+        // Handle supply chain transfer
+        document.getElementById('transfer-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                showStatus('transfer-status', 'info', 'Transferring custody...');
+                const basePayload = {
+                    batchId: document.getElementById('transfer-batch-id').value,
+                    fromStakeholder: document.getElementById('from-stakeholder').value,
+                    toStakeholder: document.getElementById('to-stakeholder').value,
+                    transferInfo: {
+                        action: document.getElementById('transfer-action').value || 'shipped',
+                        location: {
+                            facility: document.getElementById('transfer-facility').value || 'Distribution Center',
+                            lat: parseFloat(document.getElementById('transfer-lat').value) || 0,
+                            lon: parseFloat(document.getElementById('transfer-lon').value) || 0
+                        },
+                        sensorData: {
+                            temperature: parseFloat(document.getElementById('transfer-temp').value) || 5,
+                            humidity: parseFloat(document.getElementById('transfer-humidity').value) || 50,
+                            timestamp: Date.now()
+                        }
+                    }
+                };
+                let payload;
+                if (metaMaskAccount) {
+                    const message = JSON.stringify({ type: 'TRANSFER_CUSTODY', ...basePayload });
+                    const signature = await window.ethereum.request({
+                        method: 'personal_sign',
+                        params: [message, metaMaskAccount]
+                    });
+                    payload = { ...basePayload, address: metaMaskAccount, signature };
+                } else {
+                    payload = { ...basePayload, privateKey: document.getElementById('transfer-key').value };
+                }
+                const response = await fetch(`${API_BASE}/supply-chain/transfer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('transfer-status', 'success', 'Custody transferred');
+                    verifyBatch();
+                    loadTransactions();
+                } else {
+                    showStatus('transfer-status', 'error', data.error || 'Failed to transfer');
+                }
+            } catch (error) {
+                showStatus('transfer-status', 'error', 'Failed to transfer: ' + error.message);
+            }
+        });
+
+        // Load alerts
+        async function loadAlerts() {
+            try {
+                const params = new URLSearchParams();
+                const batchId = document.getElementById('alerts-batch-id').value.trim();
+                const severity = document.getElementById('alerts-severity').value.trim();
+                if (batchId) params.append('batchId', batchId);
+                if (severity) params.append('severity', severity);
+                const response = await fetch(`${API_BASE}/alerts?${params.toString()}`);
+                const data = await response.json();
+                if (response.ok) {
+                    const alerts = data.alerts || [];
+                    document.getElementById('alerts-list').innerHTML = alerts.length === 0
+                        ? '<div class="status info">No alerts</div>'
+                        : alerts.map(a => `<div class="transaction-item ${a.severity === 'critical' ? '' : 'pending'}"><strong>[${a.severity}] ${a.type}</strong> - ${a.message}<div class="transaction-details"><div class="transaction-detail"><strong>Batch:</strong> ${a.batchId}</div><div class="transaction-detail"><strong>At:</strong> ${new Date(a.timestamp).toLocaleString()}</div></div></div>`).join('');
+                } else {
+                    document.getElementById('alerts-list').innerHTML = '<div class="status error">Failed to load alerts</div>';
+                }
+            } catch (error) {
+                document.getElementById('alerts-list').innerHTML = '<div class="status error">Failed to load alerts</div>';
+            }
+        }
+
+        // Generate wallet
+        async function generateWallet(walletNum) {
+            try {
+                showStatus('wallet-status', 'info', `Generating wallet ${walletNum}...`);
+                
+                // For demo purposes, we'll generate different wallets for each slot
+                // In a real implementation, you'd have separate wallet instances
+                if (walletNum === 1) {
+                    const response = await fetch(`${API_BASE}/wallet/generate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        wallets[1] = data.wallet;
+                        updateWalletDisplay(1, data.wallet);
+                        showStatus('wallet-status', 'success', `Wallet 1 generated successfully!`);
+                        refreshStats();
+                    } else {
+                        showStatus('wallet-status', 'error', data.error);
+                    }
+                } else if (walletNum === 2) {
+                    // For wallet 2, we'll create a different wallet by importing a different private key
+                    // This is a demo approach - in production you'd have proper multi-wallet support
+                    const demoPrivateKey = '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+                    
+                    const response = await fetch(`${API_BASE}/wallet/import`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ privateKey: demoPrivateKey })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        wallets[2] = data.wallet;
+                        updateWalletDisplay(2, data.wallet);
+                        showStatus('wallet-status', 'success', `Wallet 2 generated successfully!`);
+                        refreshStats();
+                    } else {
+                        showStatus('wallet-status', 'error', data.error);
+                    }
+                }
+            } catch (error) {
+                showStatus('wallet-status', 'error', 'Failed to generate wallet: ' + error.message);
+            }
+        }
+
+        // Update wallet display
+        function updateWalletDisplay(walletNum, wallet) {
+            document.getElementById(`wallet${walletNum}-address`).textContent = wallet.address;
+            document.getElementById(`wallet${walletNum}-balance`).textContent = '0';
+            
+            // Update balance
+            updateBalance(walletNum);
+        }
+
+        // Update wallet balance
+        async function updateBalance(walletNum) {
+            if (!wallets[walletNum]) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/balance/${wallets[walletNum].address}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById(`wallet${walletNum}-balance`).textContent = data.balance.toFixed(3);
+                }
+            } catch (error) {
+                console.error('Failed to update balance:', error);
+            }
+        }
+
+        // Handle transaction form submission
+        document.getElementById('transaction-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fromWallet = document.getElementById('from-wallet').value;
+            const toWallet = document.getElementById('to-wallet').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const fee = parseFloat(document.getElementById('fee').value);
+            
+            if (!wallets[fromWallet] || !wallets[toWallet]) {
+                showStatus('transaction-status', 'error', 'Please generate both wallets first');
+                return;
+            }
+            
+            if (fromWallet === toWallet) {
+                showStatus('transaction-status', 'error', 'Cannot send to the same wallet');
+                return;
+            }
+            
+            try {
+                showStatus('transaction-status', 'info', 'Creating transaction...');
+                
+                // Create transaction from the selected wallet to the target wallet
+                const response = await fetch(`${API_BASE}/wallet/transaction`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: wallets[toWallet].address,
+                        amount: amount,
+                        fee: fee
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus('transaction-status', 'success', 'Transaction created successfully!');
+                    document.getElementById('transaction-form').reset();
+                    refreshStats();
+                    loadTransactions();
+                    
+                    // Update balances
+                    updateBalance(fromWallet);
+                    updateBalance(toWallet);
+                } else {
+                    showStatus('transaction-status', 'error', data.error);
+                }
+            } catch (error) {
+                showStatus('transaction-status', 'error', 'Failed to create transaction: ' + error.message);
+            }
+        });
+
+        // Mine block
+        async function mineBlock() {
+            const minerWallet = document.getElementById('miner-wallet').value;
+            
+            if (!minerWallet || !wallets[minerWallet]) {
+                showStatus('mining-status', 'error', 'Please select a valid miner wallet');
+                return;
+            }
+            
+            try {
+                showStatus('mining-status', 'info', 'Mining block...');
+                
+                const response = await fetch(`${API_BASE}/mine`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        minerAddress: wallets[minerWallet].address
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus('mining-status', 'success', 'Mining started! Block will be mined in background.');
+                    
+                    // Wait a bit and refresh
+                    setTimeout(() => {
+                        refreshStats();
+                        loadTransactions();
+                        updateBalance(minerWallet);
+                    }, 2000);
+                } else {
+                    showStatus('mining-status', 'error', data.error);
+                }
+            } catch (error) {
+                showStatus('mining-status', 'error', 'Failed to mine block: ' + error.message);
+            }
+        }
+
+        // Refresh blockchain statistics
+        async function refreshStats() {
+            try {
+                const response = await fetch(`${API_BASE}/blockchain`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const stats = data.stats;
+                    document.getElementById('blockchain-stats').innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-value">${stats.totalBlocks}</div>
+                            <div class="stat-label">Total Blocks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${stats.totalTransactions}</div>
+                            <div class="stat-label">Total Transactions</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${stats.pendingTransactions}</div>
+                            <div class="stat-label">Pending Transactions</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${stats.difficulty}</div>
+                            <div class="stat-label">Mining Difficulty</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${stats.miningReward}</div>
+                            <div class="stat-label">Mining Reward</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${Math.round(stats.averageMiningTime)}ms</div>
+                            <div class="stat-label">Avg Mining Time</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Failed to refresh stats:', error);
+            }
+        }
+
+        // Load transactions
+        async function loadTransactions() {
+            try {
+                const response = await fetch(`${API_BASE}/transactions/pending`);
+                const pendingTransactions = await response.json();
+                
+                let html = '';
+                
+                if (pendingTransactions.length === 0) {
+                    html = '<div class="status info">No pending transactions</div>';
+                } else {
+                    pendingTransactions.forEach(tx => {
+                        html += `
+                            <div class="transaction-item pending">
+                                <strong>Pending Transaction</strong>
+                                <div class="transaction-details">
+                                    <div class="transaction-detail">
+                                        <strong>From:</strong> ${tx.from.substring(0, 20)}...
+                                    </div>
+                                    <div class="transaction-detail">
+                                        <strong>To:</strong> ${tx.to.substring(0, 20)}...
+                                    </div>
+                                    <div class="transaction-detail">
+                                        <strong>Amount:</strong> ${tx.amount}
+                                    </div>
+                                    <div class="transaction-detail">
+                                        <strong>Fee:</strong> ${tx.fee}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                document.getElementById('transactions-list').innerHTML = html;
+            } catch (error) {
+                console.error('Failed to load transactions:', error);
+                document.getElementById('transactions-list').innerHTML = 
+                    '<div class="status error">Failed to load transactions</div>';
+            }
+        }
+
+        // Show status message
+        function showStatus(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+            
+            // Clear status after 5 seconds
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

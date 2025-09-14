@@ -1,0 +1,52 @@
+{
+  "name": "pharbit-contracts",
+  "version": "1.0.0",
+  "description": "Pharmaceutical Supply Chain Blockchain Project",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "HARDHAT_TESTS=1 hardhat test",
+    "deploy": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:mumbai": "hardhat run scripts/deploy.js --network mumbai",
+    "node": "hardhat node",
+    "clean": "hardhat clean",
+    "coverage": "hardhat coverage",
+    "backend": "npm --prefix backend start",
+    "start": "node backend/index.mjs"
+  },
+  "keywords": [
+    "blockchain",
+    "pharmaceutical",
+    "supply-chain",
+    "ethereum",
+    "hardhat"
+  ],
+  "author": "Pharbit Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.0",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.1.1",
+    "@openzeppelin/contracts": "^4.9.6",
+    "chai": "^4.5.0",
+    "dotenv": "^16.6.1",
+    "ethers": "^6.15.0",
+    "hardhat": "^2.26.3",
+    "mocha": "^10.8.2"
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "morgan": "^1.10.1",
+    "ws": "^8.18.3"
+  }
+}
