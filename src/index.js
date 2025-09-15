@@ -85,6 +85,14 @@ class PharbitChainApp {
      */
     async initializeCredentials() {
         try {
+            // Auto-setup credentials if .env doesn't exist
+            if (!require('fs').existsSync('.env')) {
+                logger.info('🔐 Auto-setting up credentials...');
+                const { execSync } = require('child_process');
+                execSync('bash scripts/auto-setup-credentials.sh', { stdio: 'inherit' });
+                logger.info('✅ Credentials auto-setup complete');
+            }
+            
             const credentialManager = new CredentialManager();
             this.credentials = await credentialManager.initialize();
             logger.info('✅ Credentials initialized');
