@@ -6,6 +6,7 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const Redis = require('ioredis');
 const level = require('level');
+const { createClient } = require('@supabase/supabase-js');
 const logger = require('../utils/logger');
 
 class DatabaseService {
@@ -14,6 +15,7 @@ class DatabaseService {
         this.sequelize = null;
         this.redis = null;
         this.leveldb = null;
+        this.supabase = null;
         this.models = {};
     }
 
@@ -22,7 +24,10 @@ class DatabaseService {
      */
     async initialize() {
         try {
-            // Initialize PostgreSQL
+            // Initialize Supabase
+            await this.initializeSupabase();
+            
+            // Initialize PostgreSQL (using Supabase)
             await this.initializePostgreSQL();
             
             // Initialize Redis
@@ -41,6 +46,34 @@ class DatabaseService {
             
         } catch (error) {
             logger.error('❌ Database initialization failed:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Initialize Supabase client
+     */
+    async initializeSupabase() {
+        try {
+            this.supabase = createClient(
+                this.credentials.SUPABASE_URL,
+                this.credentials.SUPABASE_ANON_KEY
+            );
+
+            // Test connection
+            const { data, error } = await this.supabase
+                .from('pg_tables')
+                .select('*')
+                .limit(1);
+
+            if (error) {
+                logger.warn('Supabase connection test failed, but continuing:', error.message);
+            } else {
+                logger.info('✅ Supabase connection established');
+            }
+            
+        } catch (error) {
+            logger.error('❌ Supabase connection failed:', error);
             throw error;
         }
     }
@@ -487,6 +520,13 @@ class DatabaseService {
     }
 
     /**
+     * Get Supabase client
+     */
+    getSupabase() {
+        return this.supabase;
+    }
+
+    /**
      * Get model by name
      */
     getModel(name) {
@@ -544,6 +584,12 @@ class DatabaseService {
      */
     async healthCheck() {
         try {
+            // Check Supabase
+            const { data: supabaseData, error: supabaseError } = await this.supabase
+                .from('pg_tables')
+                .select('*')
+                .limit(1);
+            
             // Check PostgreSQL
             await this.sequelize.authenticate();
             
@@ -556,10 +602,12 @@ class DatabaseService {
             return {
                 status: 'healthy',
                 databases: {
+                    supabase: supabaseError ? 'error' : 'connected',
                     postgresql: 'connected',
                     redis: 'connected',
                     leveldb: 'connected'
                 },
+                supabaseError: supabaseError?.message,
                 timestamp: new Date().toISOString()
             };
         } catch (error) {

@@ -20,6 +20,7 @@ const Blockchain = require('./blockchain/Blockchain');
 const S3Service = require('./services/s3Service');
 const logger = require('./utils/logger');
 const DatabaseService = require('./services/databaseService');
+const SupabaseService = require('./services/supabaseService');
 const AuthService = require('./services/authService');
 const ComplianceService = require('./services/complianceService');
 
@@ -39,6 +40,7 @@ class PharbitChainApp {
         this.blockchain = null;
         this.s3Service = null;
         this.databaseService = null;
+        this.supabaseService = null;
         this.authService = null;
         this.complianceService = null;
         
@@ -119,6 +121,11 @@ class PharbitChainApp {
             this.databaseService = new DatabaseService(this.credentials);
             await this.databaseService.initialize();
             logger.info('✅ Database service initialized');
+
+            // Initialize Supabase service
+            this.supabaseService = new SupabaseService(this.credentials);
+            await this.supabaseService.initialize();
+            logger.info('✅ Supabase service initialized');
 
             // Initialize auth service
             this.authService = new AuthService(this.credentials);
@@ -203,6 +210,7 @@ class PharbitChainApp {
             req.blockchain = this.blockchain;
             req.s3Service = this.s3Service;
             req.databaseService = this.databaseService;
+            req.supabaseService = this.supabaseService;
             req.authService = this.authService;
             req.complianceService = this.complianceService;
             req.credentials = this.credentials;
