@@ -18,7 +18,7 @@ contract ComplianceManager is AccessControl {
     // ... [Previous ComplianceManager code remains the same]
 }
 
-contract BatchNFT is ERC721, ERC721URIStorage, AccessControl {
+contract BatchNFT is ERC721, AccessControl {
     using Counters for Counters.Counter;
     
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -29,46 +29,34 @@ contract BatchNFT is ERC721, ERC721URIStorage, AccessControl {
         _grantRole(MINTER_ROLE, msg.sender);
     }
     
-    function mintBatch(address to, string memory uri) public onlyRole(MINTER_ROLE) returns (uint256) {
+    function mintBatch(address to) public onlyRole(MINTER_ROLE) returns (uint256) {
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
         _safeMint(to, newTokenId);
-        _setTokenURI(newTokenId, uri);
         return newTokenId;
     }
 
-    // The following functions are overrides required by Solidity
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721, ERC721URIStorage, AccessControl)
+        override(ERC721, AccessControl)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
-    }
-
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
-        return super.tokenURI(tokenId);
-    }
-
-    function _burn(uint256 tokenId)
-        internal
-        override(ERC721, ERC721URIStorage)
-    {
-        super._burn(tokenId);
     }
 }
 
 // Deployment contract
 contract PharbitDeployer {
-    PharbitCore public pharbitCore;
-    ComplianceManager public complianceManager;
-    BatchNFT public batchNFT;
+    PharbitCore public immutable pharbitCore;
+    ComplianceManager public immutable complianceManager;
+    BatchNFT public immutable batchNFT;
+    
+    event ContractsDeployed(
+        address indexed pharbitCoreAddress,
+        address indexed complianceManagerAddress,
+        address indexed batchNFTAddress
+    );
     
     constructor() {
         // Deploy core contracts
@@ -80,6 +68,13 @@ contract PharbitDeployer {
         complianceManager.grantRole(complianceManager.FDA_ROLE(), msg.sender);
         complianceManager.grantRole(complianceManager.INSPECTOR_ROLE(), msg.sender);
         batchNFT.grantRole(batchNFT.MINTER_ROLE(), msg.sender);
+
+        // Emit deployment addresses
+        emit ContractsDeployed(
+            address(pharbitCore),
+            address(complianceManager),
+            address(batchNFT)
+        );
     }
     
     function getAddresses() public view returns (address, address, address) {
