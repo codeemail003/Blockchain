@@ -1,569 +1,360 @@
-/**
- * @fileoverview Blockchain Controller for PharbitChain
- * Handles blockchain operations and transaction management
- */
-
-const express = require('express');
-const { body, validationResult } = require('express-validator');
-const router = express.Router();
+const BlockchainService = require('../services/blockchainService');
 const logger = require('../utils/logger');
 
 /**
- * @swagger
- * /api/blockchain/status:
- *   get:
- *     summary: Get blockchain status and statistics
- *     tags: [Blockchain]
- *     responses:
- *       200:
- *         description: Blockchain status retrieved successfully
+ * Blockchain Controller for EVM-compatible pharmaceutical blockchain
+ * Handles API endpoints for smart contract interactions
  */
-router.get('/status', async (req, res) => {
-    try {
-        const stats = req.blockchain.getStats();
-        
-        res.json({
-            success: true,
-            blockchain: {
-                ...stats,
-                isHealthy: req.blockchain.validateChain(),
-                lastBlockTime: req.blockchain.getLatestBlock()?.timestamp,
-                pendingTransactions: req.blockchain.pendingTransactions.length
+class BlockchainController {
+    constructor() {
+        this.blockchainService = new BlockchainService();
+        this.initialize();
+    }
+
+    async initialize() {
+        try {
+            await this.blockchainService.initialize();
+            logger.info('✅ Blockchain Controller initialized');
+        } catch (error) {
+            logger.error('❌ Blockchain Controller initialization failed:', error);
+        }
+    }
+
+    /**
+     * Connect to MetaMask
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async connectMetaMask(req, res) {
+        try {
+            const result = await this.blockchainService.connectMetaMask();
+            res.json(result);
+        } catch (error) {
+            logger.error('MetaMask connection error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Get network information
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async getNetworkInfo(req, res) {
+        try {
+            const result = await this.blockchainService.getNetworkInfo();
+            res.json(result);
+        } catch (error) {
+            logger.error('Network info error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Switch network
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async switchNetwork(req, res) {
+        try {
+            const { chainId } = req.body;
+            const result = await this.blockchainService.switchNetwork(chainId);
+            res.json(result);
+        } catch (error) {
+            logger.error('Network switch error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Deploy PharbitCore contract
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async deployPharbitCore(req, res) {
+        try {
+            const result = await this.blockchainService.deployPharbitCore(req.body);
+            res.json(result);
+        } catch (error) {
+            logger.error('PharbitCore deployment error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Deploy ComplianceManager contract
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async deployComplianceManager(req, res) {
+        try {
+            const result = await this.blockchainService.deployComplianceManager(req.body);
+            res.json(result);
+        } catch (error) {
+            logger.error('ComplianceManager deployment error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Deploy BatchNFT contract
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async deployBatchNFT(req, res) {
+        try {
+            const result = await this.blockchainService.deployBatchNFT(req.body);
+            res.json(result);
+        } catch (error) {
+            logger.error('BatchNFT deployment error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Deploy PharbitDeployer contract
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async deployPharbitDeployer(req, res) {
+        try {
+            const result = await this.blockchainService.deployPharbitDeployer(req.body);
+            res.json(result);
+        } catch (error) {
+            logger.error('PharbitDeployer deployment error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Deploy all contracts
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async deployAllContracts(req, res) {
+        try {
+            const result = await this.blockchainService.deployAllContracts(req.body);
+            res.json(result);
+        } catch (error) {
+            logger.error('All contracts deployment error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Load contract from address
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async loadContract(req, res) {
+        try {
+            const { address, type } = req.body;
+            const contract = await this.blockchainService.loadContract(address, type);
+            res.json({
+                success: true,
+                contract: contract
+            });
+        } catch (error) {
+            logger.error('Contract loading error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Create a new batch
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async createBatch(req, res) {
+        try {
+            const result = await this.blockchainService.createBatch(req.body);
+            res.json(result);
+        } catch (error) {
+            logger.error('Batch creation error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Transfer batch
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async transferBatch(req, res) {
+        try {
+            const { batchId, to, reason, location } = req.body;
+            const result = await this.blockchainService.transferBatch(batchId, to, reason, location);
+            res.json(result);
+        } catch (error) {
+            logger.error('Batch transfer error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Get batch information
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async getBatch(req, res) {
+        try {
+            const { batchId } = req.params;
+            const result = await this.blockchainService.getBatch(parseInt(batchId));
+            res.json(result);
+        } catch (error) {
+            logger.error('Get batch error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Get user batches
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async getUserBatches(req, res) {
+        try {
+            const { address } = req.params;
+            const result = await this.blockchainService.getUserBatches(address);
+            res.json(result);
+        } catch (error) {
+            logger.error('Get user batches error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Get contract ABI
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async getContractABI(req, res) {
+        try {
+            const { type } = req.params;
+            const abi = this.blockchainService.getContractABI(type);
+            res.json({
+                success: true,
+                abi: abi
+            });
+        } catch (error) {
+            logger.error('Get contract ABI error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Get deployment status
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async getDeploymentStatus(req, res) {
+        try {
+            const contracts = this.blockchainService.contracts;
+            const status = {
+                pharbitCore: !!contracts.pharbitCore,
+                complianceManager: !!contracts.complianceManager,
+                batchNFT: !!contracts.batchNFT,
+                pharbitDeployer: !!contracts.pharbitDeployer,
+                isConnected: this.blockchainService.isConnected,
+                networkId: this.blockchainService.networkId
+            };
+
+            res.json({
+                success: true,
+                status: status
+            });
+        } catch (error) {
+            logger.error('Get deployment status error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
+
+    /**
+     * Get gas estimate for transaction
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async getGasEstimate(req, res) {
+        try {
+            const { method, params } = req.body;
+            
+            if (!this.blockchainService.contracts.pharbitCore) {
+                throw new Error('PharbitCore contract not loaded');
             }
-        });
 
-    } catch (error) {
-        logger.error('Failed to get blockchain status:', error);
-        res.status(500).json({
-            error: 'Failed to get blockchain status',
-            message: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/blockchain/transaction:
- *   post:
- *     summary: Add a new transaction to the blockchain
- *     tags: [Blockchain]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - type
- *               - from
- *               - to
- *               - amount
- *             properties:
- *               type:
- *                 type: string
- *                 enum: [BATCH_CREATE, BATCH_UPDATE, BATCH_TRANSFER, DOCUMENT_UPLOAD, DOCUMENT_UPDATE, COMPLIANCE_CHECK]
- *               from:
- *                 type: string
- *               to:
- *                 type: string
- *               amount:
- *                 type: number
- *               data:
- *                 type: object
- *               signature:
- *                 type: string
- *     responses:
- *       200:
- *         description: Transaction added successfully
- *       400:
- *         description: Invalid transaction data
- */
-router.post('/transaction', [
-    req.authService.authenticate,
-    body('type').isIn(['BATCH_CREATE', 'BATCH_UPDATE', 'BATCH_TRANSFER', 'DOCUMENT_UPLOAD', 'DOCUMENT_UPDATE', 'COMPLIANCE_CHECK']),
-    body('from').notEmpty(),
-    body('to').notEmpty(),
-    body('amount').isNumeric(),
-    body('data').optional().isObject()
-], async (req, res) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                error: 'Validation failed',
-                details: errors.array()
-            });
-        }
-
-        const transactionData = {
-            ...req.body,
-            timestamp: new Date().toISOString(),
-            uploaderId: req.user.id
-        };
-
-        // Calculate transaction hash
-        const transactionHash = req.blockchain.calculateTransactionHash(transactionData);
-        transactionData.hash = transactionHash;
-
-        // Add transaction to blockchain
-        const success = req.blockchain.addTransaction(transactionData);
-        
-        if (!success) {
-            return res.status(400).json({
-                error: 'Transaction validation failed',
-                message: 'Invalid transaction data or duplicate transaction'
-            });
-        }
-
-        logger.transaction(transactionData, {
-            userId: req.user.id,
-            userRole: req.user.role
-        });
-
-        res.json({
-            success: true,
-            transaction: {
-                hash: transactionHash,
-                type: transactionData.type,
-                from: transactionData.from,
-                to: transactionData.to,
-                amount: transactionData.amount,
-                timestamp: transactionData.timestamp,
-                status: 'pending'
-            },
-            message: 'Transaction added to pending pool'
-        });
-
-    } catch (error) {
-        logger.error('Transaction creation failed:', error);
-        res.status(400).json({
-            error: 'Transaction creation failed',
-            message: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/blockchain/mine:
- *   post:
- *     summary: Mine a new block
- *     tags: [Blockchain]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Block mined successfully
- *       400:
- *         description: Mining failed
- */
-router.post('/mine', req.authService.authenticate, async (req, res) => {
-    try {
-        const miningRewardAddress = req.body.miningAddress || req.user.id;
-        const block = await req.blockchain.mineBlock(miningRewardAddress);
-        
-        logger.logBlockMining(block, {
-            miner: req.user.id,
-            rewardAddress: miningRewardAddress
-        });
-
-        res.json({
-            success: true,
-            block: {
-                index: block.index,
-                hash: block.hash,
-                previousHash: block.previousHash,
-                timestamp: block.timestamp,
-                transactionCount: block.transactions.length,
-                difficulty: block.difficulty,
-                nonce: block.nonce,
-                blockTime: block.blockTime
-            },
-            message: 'Block mined successfully'
-        });
-
-    } catch (error) {
-        logger.error('Block mining failed:', error);
-        res.status(400).json({
-            error: 'Block mining failed',
-            message: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/blockchain/start-mining:
- *   post:
- *     summary: Start automatic mining
- *     tags: [Blockchain]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: false
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               miningAddress:
- *                 type: string
- *     responses:
- *       200:
- *         description: Mining started successfully
- */
-router.post('/start-mining', req.authService.authenticate, async (req, res) => {
-    try {
-        const miningAddress = req.body.miningAddress || req.user.id;
-        req.blockchain.startMining(miningAddress);
-        
-        logger.blockchain('Mining started', {
-            miner: req.user.id,
-            miningAddress
-        });
-
-        res.json({
-            success: true,
-            message: 'Automatic mining started',
-            miningAddress
-        });
-
-    } catch (error) {
-        logger.error('Failed to start mining:', error);
-        res.status(400).json({
-            error: 'Failed to start mining',
-            message: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/blockchain/stop-mining:
- *   post:
- *     summary: Stop automatic mining
- *     tags: [Blockchain]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Mining stopped successfully
- */
-router.post('/stop-mining', req.authService.authenticate, async (req, res) => {
-    try {
-        req.blockchain.stopMining();
-        
-        logger.blockchain('Mining stopped', {
-            stoppedBy: req.user.id
-        });
-
-        res.json({
-            success: true,
-            message: 'Automatic mining stopped'
-        });
-
-    } catch (error) {
-        logger.error('Failed to stop mining:', error);
-        res.status(400).json({
-            error: 'Failed to stop mining',
-            message: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/blockchain/block/{index}:
- *   get:
- *     summary: Get block by index
- *     tags: [Blockchain]
- *     parameters:
- *       - in: path
- *         name: index
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Block retrieved successfully
- *       404:
- *         description: Block not found
- */
-router.get('/block/:index', async (req, res) => {
-    try {
-        const blockIndex = parseInt(req.params.index);
-        const block = req.blockchain.getBlock(blockIndex);
-        
-        if (!block) {
-            return res.status(404).json({
-                error: 'Block not found',
-                message: `Block at index ${blockIndex} does not exist`
-            });
-        }
-
-        res.json({
-            success: true,
-            block
-        });
-
-    } catch (error) {
-        logger.error('Failed to get block:', error);
-        res.status(400).json({
-            error: 'Failed to get block',
-            message: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/blockchain/block/hash/{hash}:
- *   get:
- *     summary: Get block by hash
- *     tags: [Blockchain]
- *     parameters:
- *       - in: path
- *         name: hash
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Block retrieved successfully
- *       404:
- *         description: Block not found
- */
-router.get('/block/hash/:hash', async (req, res) => {
-    try {
-        const blockHash = req.params.hash;
-        const block = req.blockchain.getBlockByHash(blockHash);
-        
-        if (!block) {
-            return res.status(404).json({
-                error: 'Block not found',
-                message: `Block with hash ${blockHash} does not exist`
-            });
-        }
-
-        res.json({
-            success: true,
-            block
-        });
-
-    } catch (error) {
-        logger.error('Failed to get block by hash:', error);
-        res.status(400).json({
-            error: 'Failed to get block by hash',
-            message: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/blockchain/transaction/{hash}:
- *   get:
- *     summary: Get transaction by hash
- *     tags: [Blockchain]
- *     parameters:
- *       - in: path
- *         name: hash
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Transaction retrieved successfully
- *       404:
- *         description: Transaction not found
- */
-router.get('/transaction/:hash', async (req, res) => {
-    try {
-        const transactionHash = req.params.hash;
-        const transaction = req.blockchain.getTransaction(transactionHash);
-        
-        if (!transaction) {
-            return res.status(404).json({
-                error: 'Transaction not found',
-                message: `Transaction with hash ${transactionHash} does not exist`
-            });
-        }
-
-        res.json({
-            success: true,
-            transaction
-        });
-
-    } catch (error) {
-        logger.error('Failed to get transaction:', error);
-        res.status(400).json({
-            error: 'Failed to get transaction',
-            message: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/blockchain/address/{address}/transactions:
- *   get:
- *     summary: Get transactions by address
- *     tags: [Blockchain]
- *     parameters:
- *       - in: path
- *         name: address
- *         required: true
- *         schema:
- *           type: string
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 20
- *     responses:
- *       200:
- *         description: Transactions retrieved successfully
- */
-router.get('/address/:address/transactions', async (req, res) => {
-    try {
-        const address = req.params.address;
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20;
-        
-        const transactions = req.blockchain.getTransactionsByAddress(address);
-        
-        // Pagination
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        const paginatedTransactions = transactions.slice(startIndex, endIndex);
-        
-        res.json({
-            success: true,
-            transactions: paginatedTransactions,
-            pagination: {
-                page,
-                limit,
-                total: transactions.length,
-                pages: Math.ceil(transactions.length / limit)
+            let gasEstimate;
+            switch (method) {
+                case 'createBatch':
+                    gasEstimate = await this.blockchainService.contracts.pharbitCore.createBatch.estimateGas(
+                        ...params
+                    );
+                    break;
+                case 'transferBatch':
+                    gasEstimate = await this.blockchainService.contracts.pharbitCore.transferBatch.estimateGas(
+                        ...params
+                    );
+                    break;
+                default:
+                    throw new Error('Unknown method');
             }
-        });
 
-    } catch (error) {
-        logger.error('Failed to get transactions by address:', error);
-        res.status(400).json({
-            error: 'Failed to get transactions by address',
-            message: error.message
-        });
+            res.json({
+                success: true,
+                gasEstimate: gasEstimate.toString()
+            });
+        } catch (error) {
+            logger.error('Gas estimate error:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
     }
-});
+}
 
-/**
- * @swagger
- * /api/blockchain/batch/{batchId}/history:
- *   get:
- *     summary: Get batch transaction history
- *     tags: [Blockchain]
- *     parameters:
- *       - in: path
- *         name: batchId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Batch history retrieved successfully
- */
-router.get('/batch/:batchId/history', async (req, res) => {
-    try {
-        const batchId = req.params.batchId;
-        const transactions = req.blockchain.getBatchHistory(batchId);
-        
-        res.json({
-            success: true,
-            batchId,
-            transactions,
-            count: transactions.length
-        });
-
-    } catch (error) {
-        logger.error('Failed to get batch history:', error);
-        res.status(400).json({
-            error: 'Failed to get batch history',
-            message: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/blockchain/validate:
- *   get:
- *     summary: Validate entire blockchain
- *     tags: [Blockchain]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Blockchain validation result
- */
-router.get('/validate', req.authService.authenticate, async (req, res) => {
-    try {
-        const isValid = req.blockchain.validateChain();
-        
-        logger.blockchain('Blockchain validation', {
-            isValid,
-            validatedBy: req.user.id
-        });
-
-        res.json({
-            success: true,
-            isValid,
-            message: isValid ? 'Blockchain is valid' : 'Blockchain validation failed'
-        });
-
-    } catch (error) {
-        logger.error('Blockchain validation failed:', error);
-        res.status(500).json({
-            error: 'Blockchain validation failed',
-            message: error.message
-        });
-    }
-});
-
-/**
- * @swagger
- * /api/blockchain/pending:
- *   get:
- *     summary: Get pending transactions
- *     tags: [Blockchain]
- *     responses:
- *       200:
- *         description: Pending transactions retrieved successfully
- */
-router.get('/pending', async (req, res) => {
-    try {
-        const pendingTransactions = req.blockchain.pendingTransactions;
-        
-        res.json({
-            success: true,
-            pendingTransactions,
-            count: pendingTransactions.length
-        });
-
-    } catch (error) {
-        logger.error('Failed to get pending transactions:', error);
-        res.status(400).json({
-            error: 'Failed to get pending transactions',
-            message: error.message
-        });
-    }
-});
-
-module.exports = router;
+module.exports = new BlockchainController();

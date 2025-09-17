@@ -1,14 +1,67 @@
-# 🏥 PharbitChain - Pharmaceutical Supply Chain Blockchain
+# PharbitChain - EVM-Compatible Pharmaceutical Blockchain
 
-A production-ready pharmaceutical supply chain blockchain system with AWS integration, FDA 21 CFR Part 11 compliance, and comprehensive monitoring.
+A comprehensive EVM-compatible pharmaceutical blockchain system built with Solidity smart contracts, featuring batch tracking, compliance management, NFT tokenization, and a modern React frontend.
+
+## 🏥 Overview
+
+PharbitChain is a production-ready pharmaceutical supply chain blockchain that ensures compliance with FDA 21 CFR Part 11 regulations, provides end-to-end batch tracking, and enables secure document management through AWS S3 integration.
+
+## ✨ Features
+
+### Smart Contracts
+- **PharbitCore**: Main contract for pharmaceutical operations
+- **ComplianceManager**: FDA compliance and regulatory features
+- **BatchNFT**: NFT implementation for batch tokenization
+- **PharbitDeployer**: Factory contract for one-click deployment
+
+### Key Capabilities
+- 🔐 **Role-based Access Control** (RBAC)
+- 📦 **Batch Lifecycle Management**
+- 🛡️ **FDA 21 CFR Part 11 Compliance**
+- 🎫 **NFT Batch Tokenization**
+- 🔄 **Real-time Transfer Tracking**
+- 📊 **Comprehensive Audit Trails**
+- 🚨 **Emergency Pause Functionality**
+- 🔍 **Compliance Verification**
+- 📋 **Regulatory Approval Tracking**
+
+### Frontend Features
+- 🦊 **MetaMask Integration**
+- 📱 **Responsive React Interface**
+- 📊 **Real-time Dashboard**
+- 🔧 **Contract Deployment Tools**
+- 📦 **Batch Management Interface**
+- 🛡️ **Compliance Center**
+- 👥 **Role Management**
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Frontend Layer                           │
+├─────────────────────────────────────────────────────────────┤
+│  React App  │  MetaMask  │  Web3.js  │  Ethers.js         │
+├─────────────────────────────────────────────────────────────┤
+│                    API Layer                                │
+├─────────────────────────────────────────────────────────────┤
+│  Express.js  │  REST API  │  WebSocket  │  Authentication  │
+├─────────────────────────────────────────────────────────────┤
+│                  Smart Contract Layer                       │
+├─────────────────────────────────────────────────────────────┤
+│  PharbitCore  │  ComplianceManager  │  BatchNFT  │  Deployer│
+├─────────────────────────────────────────────────────────────┤
+│                    Blockchain Layer                         │
+├─────────────────────────────────────────────────────────────┤
+│  Ethereum  │  Polygon  │  BSC  │  Arbitrum  │  Other EVM   │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+
-- PostgreSQL 12+
-- Redis 6+
-- AWS Account with S3 access
+- npm 8+
+- MetaMask wallet
 - Git
 
 ### Installation
@@ -22,282 +75,306 @@ cd pharbit-blockchain
 2. **Install dependencies**
 ```bash
 npm install
+cd frontend
+npm install
+cd ..
 ```
 
-3. **Setup credentials**
+3. **Set up environment variables**
 ```bash
-npm run setup:credentials
+cp .env.example .env
+# Edit .env with your configuration
 ```
 
-4. **Setup database**
+4. **Compile contracts**
 ```bash
-npm run setup:database
+npm run compile
 ```
 
-5. **Start the application**
+5. **Run tests**
 ```bash
-npm run dev
+npm run test:contracts
+```
+
+6. **Deploy locally**
+```bash
+npm run deploy:local
+```
+
+7. **Start frontend**
+```bash
+npm run frontend
+```
+
+## 📦 Smart Contracts
+
+### PharbitCore.sol
+Main contract handling pharmaceutical operations:
+- Batch creation and management
+- Transfer tracking
+- Status updates
+- Emergency controls
+- Role-based access
+
+### ComplianceManager.sol
+FDA compliance and regulatory features:
+- Compliance record management
+- Regulatory approval tracking
+- Audit trail management
+- Compliance standards
+- Inspector role management
+
+### BatchNFT.sol
+NFT implementation for batch tokenization:
+- ERC721 standard compliance
+- Metadata management
+- Transfer history
+- Custom attributes
+- Compliance certificates
+
+### PharbitDeployer.sol
+Factory contract for deployment:
+- One-click deployment
+- Role setup
+- Address management
+- Configuration management
+
+## 🧪 Testing
+
+### Run All Tests
+```bash
+npm run test:contracts
+```
+
+### Run Specific Test Suites
+```bash
+# Unit tests
+npx hardhat test test/PharbitCore.test.js
+npx hardhat test test/ComplianceManager.test.js
+npx hardhat test test/BatchNFT.test.js
+npx hardhat test test/PharbitDeployer.test.js
+
+# Integration tests
+npx hardhat test test/integration.test.js
+```
+
+### Test Coverage
+```bash
+npm run coverage
+```
+
+## 🚀 Deployment
+
+### Local Development
+```bash
+# Start local blockchain
+npx hardhat node
+
+# Deploy contracts
+npm run deploy:local
+```
+
+### Sepolia Testnet
+```bash
+# Set environment variables
+export PRIVATE_KEY="your_private_key"
+export SEPOLIA_RPC_URL="your_rpc_url"
+export ETHERSCAN_API_KEY="your_etherscan_key"
+
+# Deploy to Sepolia
+npm run deploy:sepolia
+
+# Verify contracts
+npm run verify:sepolia
+```
+
+### Mainnet
+```bash
+# Set environment variables
+export PRIVATE_KEY="your_private_key"
+export MAINNET_RPC_URL="your_rpc_url"
+export ETHERSCAN_API_KEY="your_etherscan_key"
+
+# Deploy to Mainnet
+npm run deploy:mainnet
+
+# Verify contracts
+npm run verify:mainnet
 ```
 
 ## 🔧 Configuration
 
 ### Environment Variables
 
-Copy `.env.example` to `.env` and configure:
-
-```bash
+#### Backend (.env)
+```env
 # AWS Configuration
 AWS_REGION=eu-north-1
 AWS_S3_BUCKET=pharbit-blockchain
-AWS_ACCESS_KEY_ID=your_access_key_here
-AWS_SECRET_ACCESS_KEY=your_secret_key_here
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
 
-# Database Configuration
-DATABASE_URL=postgresql://pharbit_user:password@localhost:5432/pharbit
-REDIS_URL=redis://localhost:6379
+# Supabase Configuration
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+DATABASE_URL=your_database_url
 
-# Security
-JWT_SECRET=your_jwt_secret_here
-ENCRYPTION_KEY=your_encryption_key_here
-
-# Compliance
-COMPLIANCE_MODE=FDA_21CFR11
-DIGITAL_SIGNATURE_REQUIRED=true
-DSCSA_ENABLED=true
+# Application Configuration
+NODE_ENV=production
+PORT=3000
+LOG_LEVEL=info
 ```
 
-## 🏗️ Architecture
-
-### Core Components
-
-- **Blockchain Core**: Proof of Work consensus with pharmaceutical-specific features
-- **Database Layer**: PostgreSQL + Redis + LevelDB integration
-- **AWS S3 Integration**: Document storage with compliance features
-- **Authentication**: JWT-based with role-based access control
-- **Compliance Engine**: FDA 21 CFR Part 11, DSCSA, GDPR compliance
-- **API Layer**: RESTful APIs with comprehensive validation
-- **Monitoring**: Health checks, logging, and performance monitoring
-
-### Technology Stack
-
-- **Backend**: Node.js, Express.js
-- **Blockchain**: Custom implementation with Proof of Work
-- **Database**: PostgreSQL, Redis, LevelDB
-- **Storage**: AWS S3
-- **Authentication**: JWT, bcrypt
-- **Monitoring**: PM2, Winston, Custom health checks
-- **Documentation**: Swagger/OpenAPI
+#### Frontend (.env.local)
+```env
+REACT_APP_NETWORK_ID=1337
+REACT_APP_CHAIN_ID=0x539
+REACT_APP_PHARBIT_CORE_ADDRESS=0x...
+REACT_APP_COMPLIANCE_MANAGER_ADDRESS=0x...
+REACT_APP_BATCH_NFT_ADDRESS=0x...
+REACT_APP_PHARBIT_DEPLOYER_ADDRESS=0x...
+REACT_APP_RPC_URL=http://localhost:8545
+REACT_APP_BLOCK_EXPLORER_URL=
+```
 
 ## 📚 API Documentation
 
-### Authentication Endpoints
-
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/refresh` - Refresh token
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/me` - Get current user profile
-
 ### Blockchain Endpoints
 
-- `GET /api/blockchain/status` - Get blockchain status
-- `POST /api/blockchain/transaction` - Add transaction
-- `POST /api/blockchain/mine` - Mine new block
-- `GET /api/blockchain/block/{index}` - Get block by index
-- `GET /api/blockchain/transaction/{hash}` - Get transaction by hash
+#### Connect to MetaMask
+```http
+POST /api/blockchain/connect
+```
 
-### Document Management
+#### Deploy Contracts
+```http
+POST /api/blockchain/deploy/all
+Content-Type: application/json
 
-- `POST /api/documents/upload` - Upload document
-- `GET /api/documents/{fileId}/download` - Download document
-- `GET /api/documents` - List documents
-- `POST /api/documents/{fileId}/approve` - Approve document
-- `DELETE /api/documents/{fileId}` - Delete document
+{
+  "nftName": "PharbitBatch",
+  "nftSymbol": "PBT",
+  "baseTokenURI": "https://api.pharbit.com/metadata/",
+  "contractURI": "https://api.pharbit.com/contract"
+}
+```
 
-### Batch Management
+#### Create Batch
+```http
+POST /api/blockchain/batch/create
+Content-Type: application/json
 
-- `POST /api/batches` - Create batch
-- `GET /api/batches` - List batches
-- `GET /api/batches/{batchId}` - Get batch details
-- `PUT /api/batches/{batchId}/update` - Update batch
-- `POST /api/batches/{batchId}/transfer` - Transfer batch
-- `POST /api/batches/{batchId}/recall` - Recall batch
+{
+  "drugName": "Aspirin",
+  "drugCode": "ASP001",
+  "manufacturer": "PharmaCorp",
+  "quantity": 1000,
+  "productionDate": 1640995200,
+  "expiryDate": 1672531200,
+  "batchNumber": "BATCH001",
+  "serialNumbers": "SN001,SN002,SN003"
+}
+```
 
-### Compliance
+#### Transfer Batch
+```http
+POST /api/blockchain/batch/transfer
+Content-Type: application/json
 
-- `GET /api/compliance/audit-trail` - Get audit trail
-- `GET /api/compliance/violations` - Get compliance violations
-- `POST /api/compliance/report` - Generate compliance report
-- `GET /api/compliance/retention-check` - Check data retention
+{
+  "batchId": 1,
+  "to": "0x...",
+  "reason": "Distribution",
+  "location": "Warehouse A"
+}
+```
 
-### Health Monitoring
+## 🔐 Security Features
 
-- `GET /api/health` - System health status
-- `GET /api/health/detailed` - Detailed health status
-- `GET /api/health/ready` - Readiness check
-- `GET /api/health/live` - Liveness check
+### Smart Contract Security
+- **OpenZeppelin Contracts**: Battle-tested security libraries
+- **Access Control**: Role-based permissions
+- **Reentrancy Protection**: Prevents reentrancy attacks
+- **Pausable**: Emergency stop functionality
+- **Input Validation**: Comprehensive parameter validation
 
-## 🔒 Security Features
+### API Security
+- **Rate Limiting**: Prevents abuse
+- **Input Sanitization**: XSS and injection protection
+- **CORS Configuration**: Secure cross-origin requests
+- **Helmet.js**: Security headers
+- **JWT Authentication**: Secure API access
 
-### Authentication & Authorization
-- JWT-based authentication
-- Role-based access control (RBAC)
-- Password hashing with bcrypt
-- Token refresh mechanism
-- Session management
+### Compliance Features
+- **FDA 21 CFR Part 11**: Digital signature compliance
+- **Audit Trails**: Complete transaction history
+- **Data Integrity**: Immutable blockchain records
+- **Access Logging**: User activity tracking
+- **Document Versioning**: Change tracking
 
-### Data Protection
-- End-to-end encryption
-- Digital signatures for documents
-- Secure file storage in S3
-- Input validation and sanitization
-- SQL injection prevention
-- XSS protection
+## 🏥 Pharmaceutical Compliance
 
-### Compliance
-- FDA 21 CFR Part 11 compliance
-- DSCSA serialization support
-- GDPR data protection
-- ISO 27001 security standards
-- Audit trail maintenance
-- Data retention policies
-
-## 🏥 Pharmaceutical Features
+### FDA 21 CFR Part 11 Compliance
+- Digital signatures for all transactions
+- Immutable audit trails
+- User authentication and authorization
+- Data integrity verification
+- Electronic record management
 
 ### Supply Chain Tracking
-- Batch creation and tracking
-- Product serialization
-- Location tracking
-- Ownership transfers
+- End-to-end batch visibility
+- Real-time status updates
+- Transfer history tracking
+- Compliance verification
 - Recall management
 
-### Document Management
-- Secure document upload
-- Digital signatures
-- Version control
-- Access control
-- Compliance validation
+### Quality Assurance
+- Batch quality records
+- Compliance certificates
+- Inspection reports
+- Corrective action tracking
+- Regulatory approval management
 
-### Regulatory Compliance
-- FDA 21 CFR Part 11
-- DSCSA requirements
-- Audit trail generation
-- Compliance reporting
-- Data retention management
+## 🚀 Performance Optimization
 
-## 🚀 Deployment
+### Gas Optimization
+- Efficient storage patterns
+- Batch operations
+- Minimal external calls
+- Optimized data structures
 
-### Local Development
-```bash
-npm run dev
-```
+### Frontend Performance
+- React Query for caching
+- Lazy loading
+- Code splitting
+- Optimized re-renders
 
-### Production Deployment
-```bash
-npm run deploy:ec2
-```
+### Backend Performance
+- Database indexing
+- Connection pooling
+- Caching strategies
+- Async operations
 
-### Docker Deployment
-```bash
-docker-compose up -d
-```
+## 📊 Monitoring & Analytics
 
-### PM2 Management
-```bash
-pm2 start ecosystem.config.js
-pm2 status
-pm2 logs pharbit-blockchain
-pm2 monit
-```
-
-## 📊 Monitoring
-
-### Health Checks
-- System health monitoring
-- Database connectivity
-- Blockchain validation
-- S3 storage status
-- Performance metrics
-
-### Logging
-- Structured logging with Winston
-- Audit trail logging
-- Security event logging
-- Performance logging
+### Blockchain Monitoring
+- Transaction monitoring
+- Gas usage tracking
+- Contract event logging
 - Error tracking
 
-### Metrics
-- Blockchain statistics
-- Transaction throughput
-- Database performance
-- Memory usage
-- CPU utilization
+### Application Monitoring
+- API performance metrics
+- User activity tracking
+- Error logging
+- System health checks
 
-## 🧪 Testing
-
-### Run Tests
-```bash
-npm test
-npm run test:watch
-npm run test:coverage
-```
-
-### Test Types
-- Unit tests
-- Integration tests
-- API tests
-- Security tests
-- Compliance tests
-
-## 📈 Performance
-
-### Optimization Features
-- Database indexing
-- Redis caching
-- Connection pooling
-- Compression middleware
-- Rate limiting
-- Memory management
-
-### Scalability
-- Horizontal scaling with PM2
-- Database sharding support
-- Load balancing ready
-- Microservices architecture
-- Container support
-
-## 🔧 Development
-
-### Scripts
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run lint` - Run ESLint
-- `npm run migrate` - Run database migrations
-- `npm run seed` - Seed database
-- `npm run docs` - Generate API documentation
-
-### Code Quality
-- ESLint configuration
-- Prettier formatting
-- Pre-commit hooks
-- TypeScript support
-- JSDoc documentation
-
-## 📋 Requirements
-
-### System Requirements
-- Node.js 18+
-- PostgreSQL 12+
-- Redis 6+
-- 4GB RAM minimum
-- 20GB disk space
-- AWS S3 bucket
-
-### Browser Support
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
+### Compliance Reporting
+- Audit trail reports
+- Compliance status dashboards
+- Regulatory submission data
+- Quality metrics
 
 ## 🤝 Contributing
 
@@ -307,45 +384,37 @@ npm run test:coverage
 4. Add tests
 5. Submit a pull request
 
+### Development Guidelines
+- Follow Solidity style guide
+- Write comprehensive tests
+- Update documentation
+- Follow security best practices
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
-### Documentation
-- [API Documentation](http://localhost:3000/api-docs)
-- [Health Check](http://localhost:3000/health)
-- [System Status](http://localhost:3000/api/health)
+For support and questions:
+- Create an issue on GitHub
+- Check the documentation
+- Join our Discord community
 
-### Contact
-- Email: support@pharbit.com
-- GitHub Issues: [Create Issue](https://github.com/Maitreyapharbit/Blockchain/issues)
+## 🔗 Links
 
-## 🎯 Roadmap
+- **Website**: https://pharbit.com
+- **Documentation**: https://docs.pharbit.com
+- **GitHub**: https://github.com/Maitreyapharbit/Blockchain
+- **Discord**: https://discord.gg/pharbit
 
-### Phase 1 (Current)
-- ✅ Core blockchain implementation
-- ✅ Database integration
-- ✅ AWS S3 integration
-- ✅ Authentication system
-- ✅ API endpoints
-- ✅ Compliance features
+## 🙏 Acknowledgments
 
-### Phase 2 (Next)
-- 🔄 Smart contracts
-- 🔄 Mobile app
-- 🔄 Advanced analytics
-- 🔄 Machine learning integration
-- 🔄 IoT device integration
-
-### Phase 3 (Future)
-- 📋 Multi-chain support
-- 📋 Advanced AI features
-- 📋 Global deployment
-- 📋 Enterprise features
-- 📋 Third-party integrations
+- OpenZeppelin for security libraries
+- Hardhat for development framework
+- React team for frontend framework
+- Ethereum community for blockchain infrastructure
 
 ---
 
-**PharbitChain** - Revolutionizing pharmaceutical supply chain transparency and compliance through blockchain technology.
+**Built with ❤️ for the pharmaceutical industry**
