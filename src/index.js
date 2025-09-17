@@ -15,7 +15,7 @@ const swaggerUi = require('swagger-ui-express');
 require('express-async-errors');
 
 // Import services and utilities
-const CredentialManager = require('./config/credentials');
+const CredentialManager = require('../config/credentials');
 const Blockchain = require('./blockchain/Blockchain');
 const S3Service = require('./services/s3Service');
 const logger = require('./utils/logger');
