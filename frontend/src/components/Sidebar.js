@@ -9,7 +9,8 @@ import {
   FiUsers, 
   FiSettings,
   FiActivity,
-  FiTrendingUp
+  FiTrendingUp,
+  FiCreditCard
 } from 'react-icons/fi';
 
 const SidebarContainer = styled.aside`
@@ -160,6 +161,11 @@ const Sidebar = () => {
       path: '/roles',
       icon: FiUsers,
       label: 'Role Management'
+    },
+    {
+      path: '/wallet',
+      icon: FiCreditCard,
+      label: 'Wallet Generator'
     },
     {
       path: '/settings',

@@ -13,6 +13,7 @@ import BatchManagement from './pages/BatchManagement';
 import ComplianceCenter from './pages/ComplianceCenter';
 import RoleManagement from './pages/RoleManagement';
 import Settings from './pages/Settings';
+import Wallet from './pages/Wallet';
 import { MetaMaskProvider } from './contexts/MetaMaskContext';
 import { BlockchainProvider } from './contexts/BlockchainContext';
 
@@ -148,6 +149,7 @@ function App() {
                       <Route path="/batches" element={<BatchManagement />} />
                       <Route path="/compliance" element={<ComplianceCenter />} />
                       <Route path="/roles" element={<RoleManagement />} />
+                      <Route path="/wallet" element={<Wallet />} />
                       <Route path="/settings" element={<Settings />} />
                     </Routes>
                   </ContentArea>
