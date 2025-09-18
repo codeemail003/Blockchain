@@ -1,482 +1,509 @@
 # PharbitChain Deployment Guide
 
-## 🚀 Deployment Overview
+## Overview
 
-This guide covers deploying PharbitChain to various environments, from local development to production mainnet.
+This guide covers various deployment options for PharbitChain, from local development to production cloud deployment.
 
-## 📋 Prerequisites
+## Table of Contents
 
-### Required Tools
+1. [Local Development](#local-development)
+2. [Docker Deployment](#docker-deployment)
+3. [AWS EC2 Deployment](#aws-ec2-deployment)
+4. [Production Deployment](#production-deployment)
+5. [Monitoring and Maintenance](#monitoring-and-maintenance)
+
+## Local Development
+
+### Prerequisites
+
 - Node.js 18+
 - npm 8+
 - Git
-- MetaMask wallet
-- Hardhat CLI
+- MetaMask browser extension
 
-### Required Accounts
-- Ethereum wallet with testnet/mainnet ETH
-- AWS account (for S3 integration)
-- Supabase account (for database)
-- Etherscan account (for contract verification)
+### Quick Start
 
-## 🔧 Environment Setup
-
-### 1. Clone Repository
 ```bash
-git clone https://github.com/Maitreyapharbit/Blockchain.git
+# Clone repository
+git clone https://github.com/pharbitchain/pharbit-blockchain.git
 cd pharbit-blockchain
+
+# Install dependencies
+npm run install:all
+
+# Start all services
+./scripts/start-blockchain.sh
 ```
 
-### 2. Install Dependencies
-```bash
-# Install backend dependencies
-npm install
+### Manual Setup
 
-# Install frontend dependencies
-cd frontend
-npm install
-cd ..
-```
-
-### 3. Environment Configuration
-
-#### Backend Environment (.env)
-```env
-# AWS Configuration
-AWS_REGION=eu-north-1
-AWS_S3_BUCKET=pharbit-blockchain
-AWS_ACCESS_KEY_ID=your_access_key
-AWS_SECRET_ACCESS_KEY=your_secret_key
-
-# Supabase Configuration
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-DATABASE_URL=your_database_url
-
-# Application Configuration
-NODE_ENV=production
-PORT=3000
-LOG_LEVEL=info
-
-# Blockchain Configuration
-PRIVATE_KEY=your_private_key
-SEPOLIA_RPC_URL=your_sepolia_rpc_url
-MAINNET_RPC_URL=your_mainnet_rpc_url
-ETHERSCAN_API_KEY=your_etherscan_key
-```
-
-#### Frontend Environment (.env.local)
-```env
-REACT_APP_NETWORK_ID=1337
-REACT_APP_CHAIN_ID=0x539
-REACT_APP_PHARBIT_CORE_ADDRESS=0x...
-REACT_APP_COMPLIANCE_MANAGER_ADDRESS=0x...
-REACT_APP_BATCH_NFT_ADDRESS=0x...
-REACT_APP_PHARBIT_DEPLOYER_ADDRESS=0x...
-REACT_APP_RPC_URL=http://localhost:8545
-REACT_APP_BLOCK_EXPLORER_URL=
-```
-
-## 🏠 Local Development Deployment
-
-### 1. Start Local Blockchain
 ```bash
 # Terminal 1: Start Hardhat node
+cd contracts
 npx hardhat node
-```
 
-### 2. Deploy Contracts
-```bash
 # Terminal 2: Deploy contracts
-npm run deploy:local
-```
+cd contracts
+npx hardhat run scripts/deploy.js --network localhost
 
-### 3. Start Backend
-```bash
-# Terminal 3: Start backend server
+# Terminal 3: Start backend
+cd backend
+npm run dev
+
+# Terminal 4: Start frontend
+cd frontend
 npm start
 ```
 
-### 4. Start Frontend
+## Docker Deployment
+
+### Development with Docker
+
 ```bash
-# Terminal 4: Start frontend
-npm run frontend
+# Start development environment
+docker-compose -f docker-compose.dev.yml up
+
+# Run tests
+docker-compose -f docker-compose.dev.yml run test-runner
+
+# Run linting
+docker-compose -f docker-compose.dev.yml run linter
 ```
 
-### 5. Access Application
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:3000/api
-- Hardhat Console: http://localhost:8545
+### Production with Docker
 
-## 🧪 Sepolia Testnet Deployment
-
-### 1. Get Sepolia ETH
-- Visit [Sepolia Faucet](https://sepoliafaucet.com/)
-- Request testnet ETH for your wallet
-
-### 2. Configure Environment
 ```bash
-export PRIVATE_KEY="your_private_key"
-export SEPOLIA_RPC_URL="https://sepolia.infura.io/v3/YOUR_INFURA_KEY"
-export ETHERSCAN_API_KEY="your_etherscan_key"
-```
-
-### 3. Deploy Contracts
-```bash
-npm run deploy:sepolia
-```
-
-### 4. Verify Contracts
-```bash
-npm run verify:sepolia
-```
-
-### 5. Update Frontend
-```bash
-# Copy contract addresses to frontend .env
-cp .env.sepolia frontend/.env.local
-```
-
-### 6. Test on Sepolia
-- Connect MetaMask to Sepolia testnet
-- Import test accounts
-- Test all functionality
-
-## 🌐 Mainnet Deployment
-
-### 1. Pre-Deployment Checklist
-- [ ] All tests passing
-- [ ] Security audit completed
-- [ ] Testnet deployment successful
-- [ ] Sufficient ETH for gas fees
-- [ ] Backup private keys
-- [ ] Emergency procedures documented
-
-### 2. Configure Environment
-```bash
-export PRIVATE_KEY="your_private_key"
-export MAINNET_RPC_URL="https://mainnet.infura.io/v3/YOUR_INFURA_KEY"
-export ETHERSCAN_API_KEY="your_etherscan_key"
-```
-
-### 3. Deploy Contracts
-```bash
-npm run deploy:mainnet
-```
-
-### 4. Verify Contracts
-```bash
-npm run verify:mainnet
-```
-
-### 5. Update Frontend
-```bash
-# Copy contract addresses to frontend .env
-cp .env.mainnet frontend/.env.local
-```
-
-### 6. Production Testing
-- Test all functionality on mainnet
-- Verify contract interactions
-- Monitor gas usage
-- Check transaction confirmations
-
-## 🐳 Docker Deployment
-
-### 1. Build Docker Images
-```bash
-# Build backend image
-docker build -t pharbit-backend .
-
-# Build frontend image
-docker build -t pharbit-frontend ./frontend
-```
-
-### 2. Run with Docker Compose
-```bash
-# Create docker-compose.yml
-version: '3.8'
-services:
-  backend:
-    image: pharbit-backend
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - ./logs:/app/logs
-
-  frontend:
-    image: pharbit-frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-
-# Start services
+# Build and start production environment
 docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
 ```
 
-## ☁️ Cloud Deployment
+### Docker Configuration
 
-### AWS Deployment
+The project includes multiple Docker configurations:
 
-#### 1. EC2 Instance Setup
+- **Dockerfile**: Production multi-stage build
+- **Dockerfile.dev**: Development with hot reload
+- **docker-compose.yml**: Production services
+- **docker-compose.dev.yml**: Development services
+
+## AWS EC2 Deployment
+
+### Prerequisites
+
+- AWS Account
+- EC2 instance (t3.medium or larger)
+- Domain name (optional)
+- SSL certificate (optional)
+
+### Automated Deployment
+
 ```bash
-# Launch EC2 instance
+# Run deployment script
+./scripts/deploy-to-ec2.sh
+
+# Follow interactive prompts
+# Enter AWS credentials, instance details, etc.
+```
+
+### Manual Deployment
+
+#### 1. Launch EC2 Instance
+
+```bash
+# Launch Ubuntu 20.04 LTS instance
+aws ec2 run-instances \
+  --image-id ami-0c02fb55956c7d316 \
+  --instance-type t3.medium \
+  --key-name your-key-pair \
+  --security-group-ids sg-xxxxxxxxx \
+  --subnet-id subnet-xxxxxxxxx \
+  --associate-public-ip-address
+```
+
+#### 2. Configure Security Groups
+
+**Inbound Rules:**
+- SSH (22): Your IP
+- HTTP (80): 0.0.0.0/0
+- HTTPS (443): 0.0.0.0/0
+- Custom TCP (3000): 0.0.0.0/0 (Backend API)
+- Custom TCP (3001): 0.0.0.0/0 (Frontend)
+
+#### 3. Connect to Instance
+
+```bash
+ssh -i your-key.pem ubuntu@your-instance-ip
+```
+
+#### 4. Install Dependencies
+
+```bash
+# Update system
+sudo apt update && sudo apt upgrade -y
+
 # Install Node.js
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Install PM2
-npm install -g pm2
+sudo npm install -g pm2
 
-# Clone repository
-git clone https://github.com/Maitreyapharbit/Blockchain.git
-cd pharbit-blockchain
-npm install
+# Install Nginx
+sudo apt install nginx -y
+
+# Install Docker (optional)
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker ubuntu
 ```
 
-#### 2. Configure PM2
+#### 5. Deploy Application
+
 ```bash
+# Clone repository
+git clone https://github.com/pharbitchain/pharbit-blockchain.git
+cd pharbit-blockchain
+
+# Install dependencies
+npm run install:all
+
+# Configure environment
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+# Edit .env files with production values
+
+# Build application
+npm run build
+
 # Start with PM2
 pm2 start ecosystem.config.js
 pm2 save
 pm2 startup
 ```
 
-#### 3. Configure Nginx
-```nginx
+#### 6. Configure Nginx
+
+```bash
+# Create Nginx configuration
+sudo nano /etc/nginx/sites-available/pharbit-blockchain
+
+# Add configuration
 server {
     listen 80;
     server_name your-domain.com;
 
-    location / {
+    location /api/ {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location / {
+        proxy_pass http://localhost:3001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
     }
 }
+
+# Enable site
+sudo ln -s /etc/nginx/sites-available/pharbit-blockchain /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
 ```
 
-### Vercel Deployment (Frontend)
+#### 7. SSL Certificate (Optional)
 
-#### 1. Install Vercel CLI
 ```bash
-npm install -g vercel
+# Install Certbot
+sudo apt install certbot python3-certbot-nginx -y
+
+# Obtain SSL certificate
+sudo certbot --nginx -d your-domain.com
+
+# Auto-renewal
+sudo crontab -e
+# Add: 0 12 * * * /usr/bin/certbot renew --quiet
 ```
 
-#### 2. Deploy Frontend
+## Production Deployment
+
+### Environment Variables
+
+**Backend (.env):**
+```env
+NODE_ENV=production
+PORT=3000
+HOST=0.0.0.0
+
+# Database
+SUPABASE_URL=your_production_supabase_url
+SUPABASE_ANON_KEY=your_production_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_production_service_role_key
+
+# AWS
+AWS_ACCESS_KEY_ID=your_production_aws_key
+AWS_SECRET_ACCESS_KEY=your_production_aws_secret
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=your_production_bucket
+
+# JWT
+JWT_SECRET=your_production_jwt_secret
+
+# Blockchain
+ETHEREUM_RPC_URL=your_production_rpc_url
+PRIVATE_KEY=your_production_private_key
+CONTRACT_ADDRESS=your_deployed_contract_address
+```
+
+**Frontend (.env):**
+```env
+REACT_APP_ENV=production
+REACT_APP_API_URL=https://your-domain.com/api
+REACT_APP_ETHEREUM_RPC_URL=your_production_rpc_url
+REACT_APP_CONTRACT_ADDRESS=your_deployed_contract_address
+```
+
+### Database Setup
+
+1. **Supabase Setup:**
+   - Create production project
+   - Run database migrations
+   - Configure RLS policies
+   - Set up backups
+
+2. **Database Migrations:**
+   ```bash
+   cd backend
+   npm run db:migrate
+   npm run db:seed
+   ```
+
+### Smart Contract Deployment
+
+1. **Deploy to Testnet:**
+   ```bash
+   cd contracts
+   npx hardhat run scripts/deploy.js --network sepolia
+   ```
+
+2. **Deploy to Mainnet:**
+   ```bash
+   cd contracts
+   npx hardhat run scripts/deploy.js --network mainnet
+   ```
+
+3. **Verify Contracts:**
+   ```bash
+   npx hardhat verify --network mainnet CONTRACT_ADDRESS
+   ```
+
+### Monitoring Setup
+
+1. **PM2 Monitoring:**
+   ```bash
+   pm2 install pm2-logrotate
+   pm2 set pm2-logrotate:max_size 10M
+   pm2 set pm2-logrotate:retain 30
+   ```
+
+2. **Health Checks:**
+   ```bash
+   # Add to crontab
+   */5 * * * * curl -f http://localhost:3000/api/health || pm2 restart backend
+   ```
+
+3. **Log Management:**
+   ```bash
+   # Install logrotate
+   sudo apt install logrotate -y
+   
+   # Configure log rotation
+   sudo nano /etc/logrotate.d/pharbit-blockchain
+   ```
+
+## Monitoring and Maintenance
+
+### Health Monitoring
+
 ```bash
-cd frontend
-vercel --prod
+# Check service status
+pm2 status
+
+# View logs
+pm2 logs
+
+# Monitor resources
+pm2 monit
+
+# Restart services
+pm2 restart all
 ```
 
-### Railway Deployment (Backend)
+### Database Maintenance
 
-#### 1. Connect Repository
-- Connect GitHub repository to Railway
-- Set environment variables
-- Deploy automatically
-
-## 🔐 Security Considerations
-
-### 1. Private Key Management
-- Use hardware wallets for production
-- Implement multi-sig for admin functions
-- Store keys in secure key management systems
-- Never commit private keys to version control
-
-### 2. Access Control
-- Implement proper role-based access control
-- Use strong authentication mechanisms
-- Regular access reviews
-- Monitor for unauthorized access
-
-### 3. Smart Contract Security
-- Regular security audits
-- Use established libraries (OpenZeppelin)
-- Implement emergency pause functionality
-- Monitor for suspicious activity
-
-### 4. Infrastructure Security
-- Use HTTPS everywhere
-- Implement proper firewall rules
-- Regular security updates
-- Monitor system logs
-
-## 📊 Monitoring and Maintenance
-
-### 1. Application Monitoring
 ```bash
-# Install monitoring tools
-npm install -g pm2-logrotate
+# Backup database
+pg_dump -h your-db-host -U pharbit pharbit_blockchain > backup.sql
 
-# Configure log rotation
-pm2 install pm2-logrotate
-pm2 set pm2-logrotate:max_size 10M
-pm2 set pm2-logrotate:retain 30
+# Restore database
+psql -h your-db-host -U pharbit pharbit_blockchain < backup.sql
 ```
 
-### 2. Blockchain Monitoring
-- Monitor transaction confirmations
-- Track gas usage
-- Monitor contract events
-- Set up alerts for failures
+### Security Updates
 
-### 3. Database Monitoring
-- Monitor database performance
-- Set up backup procedures
-- Monitor disk usage
-- Track query performance
-
-### 4. Backup Procedures
 ```bash
-# Database backup
-pg_dump pharbit_db > backup_$(date +%Y%m%d).sql
+# Update system packages
+sudo apt update && sudo apt upgrade -y
 
-# Contract state backup
-# Export contract state and events
+# Update Node.js dependencies
+npm audit fix
+
+# Update Docker images
+docker-compose pull
+docker-compose up -d
 ```
 
-## 🚨 Troubleshooting
+### Performance Optimization
 
-### Common Issues
+1. **Enable Gzip Compression:**
+   ```nginx
+   gzip on;
+   gzip_types text/plain text/css application/json application/javascript;
+   ```
 
-#### 1. Contract Deployment Fails
-```bash
-# Check gas limit
-# Increase gas price
-# Verify network connection
-# Check account balance
-```
+2. **Configure Caching:**
+   ```nginx
+   location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+       expires 1y;
+       add_header Cache-Control "public, immutable";
+   }
+   ```
 
-#### 2. Frontend Connection Issues
-```bash
-# Check MetaMask connection
-# Verify network configuration
-# Check contract addresses
-# Clear browser cache
-```
+3. **Database Optimization:**
+   - Add indexes for frequently queried fields
+   - Configure connection pooling
+   - Set up read replicas for heavy read workloads
 
-#### 3. API Connection Issues
-```bash
-# Check backend server status
-# Verify environment variables
-# Check database connection
-# Review server logs
-```
+### Backup Strategy
 
-### Debug Commands
-```bash
-# Check contract deployment
-npx hardhat verify --list --network sepolia
+1. **Database Backups:**
+   - Daily automated backups
+   - Point-in-time recovery
+   - Cross-region replication
 
-# Check transaction status
-npx hardhat run scripts/check-tx.js --network sepolia
+2. **File Backups:**
+   - S3 versioning enabled
+   - Cross-region replication
+   - Lifecycle policies
 
-# Check contract state
-npx hardhat run scripts/check-state.js --network sepolia
-```
+3. **Code Backups:**
+   - Git repository
+   - Automated deployments
+   - Rollback procedures
 
-## 📈 Performance Optimization
+### Troubleshooting
 
-### 1. Gas Optimization
-- Use efficient data structures
-- Minimize external calls
-- Batch operations when possible
-- Optimize storage patterns
+**Common Issues:**
 
-### 2. Frontend Optimization
-- Implement code splitting
-- Use lazy loading
-- Optimize images
-- Implement caching
+1. **Service Won't Start:**
+   ```bash
+   # Check logs
+   pm2 logs backend
+   
+   # Check environment variables
+   pm2 env 0
+   
+   # Restart service
+   pm2 restart backend
+   ```
 
-### 3. Backend Optimization
-- Database indexing
-- Connection pooling
-- Caching strategies
-- Load balancing
+2. **Database Connection Issues:**
+   ```bash
+   # Test database connection
+   cd backend
+   node -e "require('./config/database').test()"
+   ```
 
-## 🔄 Update Procedures
+3. **Blockchain Connection Issues:**
+   ```bash
+   # Test RPC connection
+   curl -X POST -H "Content-Type: application/json" \
+     --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+     YOUR_RPC_URL
+   ```
 
-### 1. Smart Contract Updates
-- Deploy new contracts
-- Migrate data if needed
-- Update frontend addresses
-- Test thoroughly
+### Scaling
 
-### 2. Application Updates
-- Deploy new version
-- Run database migrations
-- Update environment variables
-- Test functionality
+1. **Horizontal Scaling:**
+   - Load balancer configuration
+   - Multiple backend instances
+   - Database read replicas
 
-### 3. Rollback Procedures
-- Keep previous versions
-- Database rollback scripts
-- Contract rollback procedures
-- Emergency contacts
+2. **Vertical Scaling:**
+   - Increase instance size
+   - Optimize database queries
+   - Implement caching
 
-## 📋 Post-Deployment Checklist
+3. **Auto-scaling:**
+   - AWS Auto Scaling Groups
+   - CloudWatch metrics
+   - Custom scaling policies
 
-### 1. Functionality Testing
-- [ ] All features working
-- [ ] MetaMask integration
-- [ ] Contract interactions
-- [ ] API endpoints
-- [ ] Database operations
+## Security Considerations
 
-### 2. Security Testing
-- [ ] Access controls
-- [ ] Input validation
-- [ ] Authentication
-- [ ] Authorization
-- [ ] Data encryption
+1. **Environment Variables:**
+   - Never commit .env files
+   - Use secure secret management
+   - Rotate keys regularly
 
-### 3. Performance Testing
-- [ ] Load testing
-- [ ] Stress testing
-- [ ] Gas usage optimization
-- [ ] Response times
-- [ ] Throughput
+2. **Network Security:**
+   - Configure firewalls
+   - Use VPCs and private subnets
+   - Enable DDoS protection
 
-### 4. Compliance Testing
-- [ ] Audit trail functionality
-- [ ] Data integrity
-- [ ] Regulatory compliance
-- [ ] Documentation
-- [ ] Reporting
+3. **Application Security:**
+   - Regular security audits
+   - Dependency updates
+   - Input validation
 
-## 📞 Support and Maintenance
+4. **Blockchain Security:**
+   - Secure private key storage
+   - Multi-signature wallets
+   - Regular security reviews
 
-### 1. Monitoring Setup
-- Application performance monitoring
-- Error tracking
-- Uptime monitoring
-- Security monitoring
+## Cost Optimization
 
-### 2. Backup Procedures
-- Regular database backups
-- Contract state backups
-- Configuration backups
-- Disaster recovery plan
+1. **Resource Right-sizing:**
+   - Monitor usage patterns
+   - Use appropriate instance types
+   - Implement auto-scaling
 
-### 3. Update Schedule
-- Regular security updates
-- Feature updates
-- Bug fixes
-- Performance improvements
+2. **Storage Optimization:**
+   - S3 lifecycle policies
+   - Database cleanup scripts
+   - Log rotation
 
-### 4. Support Contacts
-- Technical support team
-- Emergency contacts
-- Escalation procedures
-- Documentation updates
+3. **Network Optimization:**
+   - Use CDN for static assets
+   - Optimize API responses
+   - Implement caching
 
-This deployment guide provides comprehensive instructions for deploying PharbitChain across different environments while maintaining security, performance, and compliance standards.
+This deployment guide provides comprehensive instructions for deploying PharbitChain in various environments. Choose the deployment method that best fits your requirements and infrastructure.

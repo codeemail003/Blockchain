@@ -10,7 +10,8 @@ import {
   FiSettings,
   FiActivity,
   FiTrendingUp,
-  FiCreditCard
+  FiCreditCard,
+  FiLayers
 } from 'react-icons/fi';
 
 const SidebarContainer = styled.aside`
@@ -166,6 +167,12 @@ const Sidebar = () => {
       path: '/wallet',
       icon: FiCreditCard,
       label: 'Wallet Generator'
+    },
+    {
+      path: '/pharma',
+      icon: FiLayers,
+      label: 'Pharma Supply Chain',
+      badge: 'New'
     },
     {
       path: '/settings',

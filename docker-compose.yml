@@ -1,36 +1,182 @@
-version: "3.9"
+version: '3.8'
 
 services:
-  pharbitchain:
-    build:
-      context: ./real-blockchain
-      dockerfile: Dockerfile
-    image: pharbitchain:latest
-    container_name: pharbitchain
-    restart: unless-stopped
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: pharbit-postgres
+    environment:
+      POSTGRES_DB: pharbit_blockchain
+      POSTGRES_USER: pharbit
+      POSTGRES_PASSWORD: pharbit_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
-      - "3000:3000"
+      - "5432:5432"
+    networks:
+      - pharbit-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pharbit -d pharbit_blockchain"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: pharbit-redis
+    command: redis-server --appendonly yes --requirepass redis_password
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - pharbit-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Hardhat Local Node
+  hardhat:
+    image: node:18-alpine
+    container_name: pharbit-hardhat
+    working_dir: /app
+    volumes:
+      - ./contracts:/app
+      - hardhat_data:/app/data
+    command: >
+      sh -c "
+        npm install &&
+        npx hardhat node --hostname 0.0.0.0 --port 8545
+      "
+    ports:
+      - "8545:8545"
+    networks:
+      - pharbit-network
+    environment:
+      - NODE_ENV=development
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "8545"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Server
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: pharbit-backend
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - DB_PATH=/app/blockchain-db
-      - DIFFICULTY=4
-      - MINING_REWARD=50
-      - BLOCK_SIZE=1000
-      - CORS_ORIGINS=*
-      - RATE_WINDOW_MS=60000
-      - RATE_MAX=120
-      - JSON_BODY_LIMIT=1mb
-      # HTTPS (mount certs and enable if desired)
-      # - HTTPS_ENABLED=true
-      # - HTTPS_KEY_PATH=/certs/tls.key
-      # - HTTPS_CERT_PATH=/certs/tls.crt
+      - HOST=0.0.0.0
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - JWT_SECRET=${JWT_SECRET}
+      - ETHEREUM_RPC_URL=http://hardhat:8545
+      - REDIS_URL=redis://redis:6379
+      - REDIS_PASSWORD=redis_password
+    ports:
+      - "3000:3000"
+    networks:
+      - pharbit-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      hardhat:
+        condition: service_healthy
     volumes:
-      - pharbitchain_data:/app/blockchain-db
-      # If enabling HTTPS, mount certs:
-      # - ./certs:/certs:ro
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Frontend Application
+  frontend:
+    image: nginx:alpine
+    container_name: pharbit-frontend
+    volumes:
+      - ./frontend/build:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "3001:80"
+    networks:
+      - pharbit-network
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: pharbit-nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - pharbit-network
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+
+  # Contract Deployer
+  deployer:
+    image: node:18-alpine
+    container_name: pharbit-deployer
+    working_dir: /app/contracts
+    volumes:
+      - ./contracts:/app/contracts
+    command: >
+      sh -c "
+        npm install &&
+        sleep 10 &&
+        npx hardhat run scripts/deploy.js --network localhost
+      "
+    networks:
+      - pharbit-network
+    depends_on:
+      hardhat:
+        condition: service_healthy
+    environment:
+      - ETHEREUM_RPC_URL=http://hardhat:8545
 
 volumes:
-  pharbitchain_data:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  hardhat_data:
     driver: local
 
+networks:
+  pharbit-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

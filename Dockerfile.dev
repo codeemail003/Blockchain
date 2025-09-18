@@ -1,0 +1,46 @@
+# Development Dockerfile for PharbitChain
+FROM node:18-alpine
+
+# Install system dependencies
+RUN apk add --no-cache \
+    curl \
+    bash \
+    git \
+    && rm -rf /var/cache/apk/*
+
+# Create app user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S pharbit -u 1001
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY backend/package*.json ./backend/
+COPY frontend/package*.json ./frontend/
+COPY contracts/package*.json ./contracts/
+
+# Install dependencies
+RUN npm install
+RUN cd backend && npm install
+RUN cd frontend && npm install
+RUN cd contracts && npm install
+
+# Copy source code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p logs uploads
+
+# Set ownership
+RUN chown -R pharbit:nodejs /app
+
+# Switch to app user
+USER pharbit
+
+# Expose ports
+EXPOSE 3000 3001 8545
+
+# Default command for development
+CMD ["npm", "run", "dev"]

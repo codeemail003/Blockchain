@@ -14,6 +14,7 @@ import ComplianceCenter from './pages/ComplianceCenter';
 import RoleManagement from './pages/RoleManagement';
 import Settings from './pages/Settings';
 import Wallet from './pages/Wallet';
+import PharmaceuticalSupplyChain from './pages/PharmaceuticalSupplyChain';
 import { MetaMaskProvider } from './contexts/MetaMaskContext';
 import { BlockchainProvider } from './contexts/BlockchainContext';
 
@@ -150,6 +151,7 @@ function App() {
                       <Route path="/compliance" element={<ComplianceCenter />} />
                       <Route path="/roles" element={<RoleManagement />} />
                       <Route path="/wallet" element={<Wallet />} />
+                      <Route path="/pharma" element={<PharmaceuticalSupplyChain />} />
                       <Route path="/settings" element={<Settings />} />
                     </Routes>
                   </ContentArea>

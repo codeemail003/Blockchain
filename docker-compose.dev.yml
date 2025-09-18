@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  # Development version with hot reload
+  backend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: pharbit-backend-dev
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - HOST=0.0.0.0
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - JWT_SECRET=${JWT_SECRET}
+      - ETHEREUM_RPC_URL=http://hardhat:8545
+      - REDIS_URL=redis://redis:6379
+      - REDIS_PASSWORD=redis_password
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app/backend
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - /app/backend/node_modules
+    networks:
+      - pharbit-network
+    depends_on:
+      - postgres
+      - redis
+      - hardhat
+    command: npm run dev
+    restart: unless-stopped
+
+  # Frontend with hot reload
+  frontend-dev:
+    image: node:18-alpine
+    container_name: pharbit-frontend-dev
+    working_dir: /app/frontend
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000/api
+      - REACT_APP_ETHEREUM_RPC_URL=http://localhost:8545
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+    networks:
+      - pharbit-network
+    depends_on:
+      - backend-dev
+    command: npm start
+    restart: unless-stopped
+
+  # Contract development with hot reload
+  contracts-dev:
+    image: node:18-alpine
+    container_name: pharbit-contracts-dev
+    working_dir: /app/contracts
+    volumes:
+      - ./contracts:/app/contracts
+      - /app/contracts/node_modules
+    networks:
+      - pharbit-network
+    depends_on:
+      - hardhat
+    command: >
+      sh -c "
+        npm install &&
+        npx hardhat compile --watch
+      "
+    restart: unless-stopped
+
+  # Test runner
+  test-runner:
+    image: node:18-alpine
+    container_name: pharbit-test-runner
+    working_dir: /app
+    volumes:
+      - .:/app
+    networks:
+      - pharbit-network
+    depends_on:
+      - postgres
+      - redis
+      - hardhat
+    command: >
+      sh -c "
+        npm install &&
+        npm run test
+      "
+    profiles:
+      - testing
+
+  # Linting service
+  linter:
+    image: node:18-alpine
+    container_name: pharbit-linter
+    working_dir: /app
+    volumes:
+      - .:/app
+    networks:
+      - pharbit-network
+    command: >
+      sh -c "
+        npm install &&
+        npm run lint
+      "
+    profiles:
+      - linting
