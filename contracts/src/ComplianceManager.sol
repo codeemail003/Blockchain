@@ -4,7 +4,6 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "./PharmaceuticalBatch.sol";
 
 /**
@@ -13,7 +12,6 @@ import "./PharmaceuticalBatch.sol";
  * @author PharbitChain Team
  */
 contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
-    using Counters for Counters.Counter;
 
     // ============ ROLES ============
     bytes32 public constant AUDITOR_ROLE = keccak256("AUDITOR_ROLE");
@@ -81,14 +79,14 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
     }
 
     // ============ STATE VARIABLES ============
-    Counters.Counter private _recordCounter;
-    Counters.Counter private _auditCounter;
+    uint256 private _recordCounter;
+    uint256 private _auditCounter;
     
     PharmaceuticalBatch public pharmaceuticalBatchContract;
     
     mapping(uint256 => ComplianceRecord) public complianceRecords;
     mapping(uint256 => bool) public recordExists;
-    mapping(uint256 => ComplianceRecord[]) public batchComplianceHistory;
+    mapping(uint256 => uint256[]) public batchComplianceHistory;
     mapping(string => ComplianceStandard) public complianceStandards;
     mapping(uint256 => AuditTrail) public auditTrails;
     mapping(address => uint256[]) public auditorRecords;
@@ -196,8 +194,8 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
         require(bytes(notes).length > 0, "Notes required");
         require(additionalDataKeys.length == additionalDataValues.length, "Additional data arrays length mismatch");
 
-        _recordCounter.increment();
-        uint256 recordId = _recordCounter.current();
+        _recordCounter++;
+        uint256 recordId = _recordCounter;
 
         ComplianceRecord storage record = complianceRecords[recordId];
         record.recordId = recordId;
@@ -218,7 +216,7 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
         }
 
         recordExists[recordId] = true;
-        batchComplianceHistory[batchId].push(record);
+        batchComplianceHistory[batchId].push(recordId);
         auditorRecords[msg.sender].push(recordId);
 
         emit ComplianceRecordCreated(recordId, batchId, checkType, msg.sender, ComplianceStatus.PENDING);
@@ -289,8 +287,8 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
     ) external onlyAuthorizedRole whenNotPaused nonReentrant batchExists(batchId) {
         require(bytes(findings).length > 0, "Findings required");
 
-        _auditCounter.increment();
-        uint256 auditId = _auditCounter.current();
+        _auditCounter++;
+        uint256 auditId = _auditCounter;
 
         AuditTrail storage audit = auditTrails[auditId];
         audit.auditId = auditId;
@@ -344,7 +342,17 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
     /**
      * @dev Get compliance record
      * @param recordId ID of the record
-     * @return Record information
+     * @return recordId_ The record ID
+     * @return batchId The batch ID
+     * @return checkType The check type
+     * @return status The compliance status
+     * @return passed Whether the check passed
+     * @return timestamp The timestamp
+     * @return auditor The auditor address
+     * @return notes The notes
+     * @return findings The findings
+     * @return correctiveActions The corrective actions
+     * @return evidenceHashes The evidence hashes
      */
     function getComplianceRecord(uint256 recordId) external view recordExistsModifier(recordId) returns (
         uint256 recordId_,
@@ -380,7 +388,7 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
      * @param batchId ID of the batch
      * @return Array of compliance records
      */
-    function getComplianceHistory(uint256 batchId) external view batchExists(batchId) returns (ComplianceRecord[] memory) {
+    function getComplianceHistory(uint256 batchId) external view batchExists(batchId) returns (uint256[] memory) {
         return batchComplianceHistory[batchId];
     }
 
@@ -396,7 +404,16 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
     /**
      * @dev Get audit trail
      * @param auditId ID of the audit
-     * @return Audit trail information
+     * @return auditId_ The audit ID
+     * @return batchId The batch ID
+     * @return auditor The auditor address
+     * @return auditDate The audit date
+     * @return auditType The audit type
+     * @return findings The findings
+     * @return recommendations The recommendations
+     * @return result The compliance result
+     * @return evidenceHashes The evidence hashes
+     * @return createdAt The creation timestamp
      */
     function getAuditTrail(uint256 auditId) external view returns (
         uint256 auditId_,
@@ -410,7 +427,7 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
         string[] memory evidenceHashes,
         uint256 createdAt
     ) {
-        require(auditId > 0 && auditId <= _auditCounter.current(), "Invalid audit ID");
+        require(auditId > 0 && auditId <= _auditCounter, "Invalid audit ID");
         
         AuditTrail storage audit = auditTrails[auditId];
         return (
@@ -430,7 +447,13 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
     /**
      * @dev Get compliance standard
      * @param name Name of the standard
-     * @return Standard information
+     * @return standardName The standard name
+     * @return description The standard description
+     * @return version The standard version
+     * @return isActive Whether the standard is active
+     * @return requirements The standard requirements
+     * @return createdAt The creation timestamp
+     * @return createdBy The creator address
      */
     function getComplianceStandard(string memory name) external view returns (
         string memory standardName,
@@ -469,7 +492,7 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
      * @return Total record count
      */
     function getTotalRecords() external view returns (uint256) {
-        return _recordCounter.current();
+        return _recordCounter;
     }
 
     /**
@@ -477,7 +500,7 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
      * @return Total audit count
      */
     function getTotalAudits() external view returns (uint256) {
-        return _auditCounter.current();
+        return _auditCounter;
     }
 
     // ============ INTERNAL FUNCTIONS ============
@@ -487,11 +510,12 @@ contract ComplianceManager is AccessControl, Pausable, ReentrancyGuard {
      * @param batchId ID of the batch
      */
     function _updateBatchCompliance(uint256 batchId) internal {
-        ComplianceRecord[] storage records = batchComplianceHistory[batchId];
+        uint256[] storage recordIds = batchComplianceHistory[batchId];
         bool isCompliant_ = true;
 
-        for (uint256 i = 0; i < records.length; i++) {
-            if (records[i].status == ComplianceStatus.FAILED || records[i].status == ComplianceStatus.REQUIRES_ATTENTION) {
+        for (uint256 i = 0; i < recordIds.length; i++) {
+            ComplianceRecord storage record = complianceRecords[recordIds[i]];
+            if (record.status == ComplianceStatus.FAILED || record.status == ComplianceStatus.REQUIRES_ATTENTION) {
                 isCompliant_ = false;
                 break;
             }

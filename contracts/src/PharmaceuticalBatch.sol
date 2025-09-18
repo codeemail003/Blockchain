@@ -4,7 +4,6 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
  * @title PharmaceuticalBatch
@@ -12,7 +11,6 @@ import "@openzeppelin/contracts/utils/Counters.sol";
  * @author PharbitChain Team
  */
 contract PharmaceuticalBatch is AccessControl, Pausable, ReentrancyGuard {
-    using Counters for Counters.Counter;
 
     // ============ ROLES ============
     bytes32 public constant MANUFACTURER_ROLE = keccak256("MANUFACTURER_ROLE");
@@ -63,7 +61,7 @@ contract PharmaceuticalBatch is AccessControl, Pausable, ReentrancyGuard {
     }
 
     // ============ STATE VARIABLES ============
-    Counters.Counter private _batchCounter;
+    uint256 private _batchCounter;
     mapping(uint256 => Batch) public batches;
     mapping(uint256 => TransferRecord[]) public batchTransfers;
     mapping(string => uint256) public batchNumberToId;
@@ -172,8 +170,8 @@ contract PharmaceuticalBatch is AccessControl, Pausable, ReentrancyGuard {
         require(expiryDate > manufactureDate, "Invalid expiry date");
         require(metadataKeys.length == metadataValues.length, "Metadata arrays length mismatch");
 
-        _batchCounter.increment();
-        uint256 batchId = _batchCounter.current();
+        _batchCounter++;
+        uint256 batchId = _batchCounter;
 
         Batch storage batch = batches[batchId];
         batch.batchId = batchId;
@@ -329,7 +327,18 @@ contract PharmaceuticalBatch is AccessControl, Pausable, ReentrancyGuard {
     /**
      * @dev Get batch information
      * @param batchId ID of the batch
-     * @return Batch information
+     * @return batchId_ The batch ID
+     * @return drugName The drug name
+     * @return drugCode The drug code
+     * @return manufacturer The manufacturer
+     * @return manufactureDate The manufacture date
+     * @return expiryDate The expiry date
+     * @return quantity The quantity
+     * @return status The batch status
+     * @return currentOwner The current owner
+     * @return serialNumbers The serial numbers
+     * @return createdAt The creation timestamp
+     * @return updatedAt The update timestamp
      */
     function getBatch(uint256 batchId) external view batchExistsModifier(batchId) returns (
         uint256 batchId_,
@@ -395,7 +404,7 @@ contract PharmaceuticalBatch is AccessControl, Pausable, ReentrancyGuard {
      * @return Total batch count
      */
     function getTotalBatches() external view returns (uint256) {
-        return _batchCounter.current();
+        return _batchCounter;
     }
 
     /**

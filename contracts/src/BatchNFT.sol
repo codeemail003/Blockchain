@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "./PharmaceuticalBatch.sol";
 
 /**
@@ -16,7 +15,6 @@ import "./PharmaceuticalBatch.sol";
  * @author PharbitChain Team
  */
 contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, Pausable, ReentrancyGuard {
-    using Counters for Counters.Counter;
 
     // ============ ROLES ============
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -24,7 +22,7 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
     bytes32 public constant METADATA_UPDATER_ROLE = keccak256("METADATA_UPDATER_ROLE");
 
     // ============ STATE VARIABLES ============
-    Counters.Counter private _tokenIdCounter;
+    uint256 private _tokenIdCounter;
     PharmaceuticalBatch public pharmaceuticalBatchContract;
     
     // Mapping from tokenId to batchId
@@ -105,7 +103,7 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
      * @dev Mint NFT for a pharmaceutical batch
      * @param to Address to mint the NFT to
      * @param batchId ID of the batch to tokenize
-     * @param tokenURI URI for the token metadata
+     * @param _tokenURI URI for the token metadata
      * @param metadata Additional metadata for the token
      * @param attributesKeys Array of attribute keys
      * @param attributesValues Array of attribute values
@@ -113,17 +111,17 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
     function mintBatchNFT(
         address to,
         uint256 batchId,
-        string memory tokenURI,
+        string memory _tokenURI,
         string memory metadata,
         string[] memory attributesKeys,
         string[] memory attributesValues
     ) external onlyRole(MINTER_ROLE) whenNotPaused nonReentrant batchExists(batchId) batchNotTokenized(batchId) {
         require(to != address(0), "Cannot mint to zero address");
-        require(bytes(tokenURI).length > 0, "Token URI required");
+        require(bytes(_tokenURI).length > 0, "Token URI required");
         require(attributesKeys.length == attributesValues.length, "Attributes arrays length mismatch");
 
-        _tokenIdCounter.increment();
-        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter++;
+        uint256 tokenId = _tokenIdCounter;
 
         // Get batch information
         (
@@ -146,7 +144,7 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
 
         // Mint the NFT
         _mint(to, tokenId);
-        _setTokenURI(tokenId, tokenURI);
+        _setTokenURI(tokenId, _tokenURI);
 
         // Set mappings
         tokenIdToBatchId[tokenId] = batchId;
@@ -167,7 +165,7 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
      * @param tokenId ID of the token to burn
      */
     function burnBatchNFT(uint256 tokenId) external onlyRole(BURNER_ROLE) whenNotPaused nonReentrant {
-        require(_exists(tokenId), "Token does not exist");
+        require(ownerOf(tokenId) != address(0), "Token does not exist");
 
         uint256 batchId = tokenIdToBatchId[tokenId];
         require(batchId != 0, "Invalid batch ID");
@@ -197,7 +195,7 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
         uint256 tokenId,
         string memory metadata
     ) external onlyRole(METADATA_UPDATER_ROLE) whenNotPaused {
-        require(_exists(tokenId), "Token does not exist");
+        require(ownerOf(tokenId) != address(0), "Token does not exist");
 
         tokenMetadata[tokenId] = metadata;
 
@@ -215,7 +213,7 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
         string memory key,
         string memory value
     ) external onlyRole(METADATA_UPDATER_ROLE) whenNotPaused {
-        require(_exists(tokenId), "Token does not exist");
+        require(ownerOf(tokenId) != address(0), "Token does not exist");
         require(bytes(key).length > 0, "Key cannot be empty");
 
         tokenAttributes[tokenId][key] = value;
@@ -231,7 +229,7 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
      * @return Batch ID
      */
     function getBatchFromToken(uint256 tokenId) external view returns (uint256) {
-        require(_exists(tokenId), "Token does not exist");
+        require(ownerOf(tokenId) != address(0), "Token does not exist");
         return tokenIdToBatchId[tokenId];
     }
 
@@ -260,7 +258,7 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
      * @return Token metadata
      */
     function getTokenMetadata(uint256 tokenId) external view returns (string memory) {
-        require(_exists(tokenId), "Token does not exist");
+        require(ownerOf(tokenId) != address(0), "Token does not exist");
         return tokenMetadata[tokenId];
     }
 
@@ -271,14 +269,22 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
      * @return Attribute value
      */
     function getTokenAttribute(uint256 tokenId, string memory key) external view returns (string memory) {
-        require(_exists(tokenId), "Token does not exist");
+        require(ownerOf(tokenId) != address(0), "Token does not exist");
         return tokenAttributes[tokenId][key];
     }
 
     /**
      * @dev Get comprehensive token information
      * @param tokenId ID of the token
-     * @return Token information including batch data
+     * @return batchId The batch ID
+     * @return drugName The drug name
+     * @return drugCode The drug code
+     * @return manufacturer The manufacturer
+     * @return quantity The quantity
+     * @return status The batch status
+     * @return currentOwner The current owner
+     * @return tokenMetadata_ The token metadata
+     * @return tokenURI_ The token URI
      */
     function getTokenInfo(uint256 tokenId) external view returns (
         uint256 batchId,
@@ -291,7 +297,7 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
         string memory tokenMetadata_,
         string memory tokenURI_
     ) {
-        require(_exists(tokenId), "Token does not exist");
+        require(ownerOf(tokenId) != address(0), "Token does not exist");
         
         batchId = tokenIdToBatchId[tokenId];
         (
@@ -334,7 +340,7 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
      * @return Total number of tokens
      */
     function totalSupply() public view override returns (uint256) {
-        return _tokenIdCounter.current();
+        return _tokenIdCounter;
     }
 
     // ============ ADMIN FUNCTIONS ============
@@ -376,23 +382,27 @@ contract BatchNFT is ERC721, ERC721URIStorage, ERC721Enumerable, AccessControl, 
     }
 
     /**
-     * @dev Override _beforeTokenTransfer to add pausable functionality
+     * @dev Override _update to add pausable functionality
      */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        uint256 batchSize
-    ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
-        super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    function _update(address to, uint256 tokenId, address auth) 
+        internal 
+        override(ERC721, ERC721Enumerable) 
+        whenNotPaused 
+        returns (address) 
+    {
+        return super._update(to, tokenId, auth);
     }
 
     /**
-     * @dev Override _burn to handle ERC721URIStorage
+     * @dev Override _increaseBalance to handle enumerable functionality
      */
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(tokenId);
+    function _increaseBalance(address account, uint128 value) 
+        internal 
+        override(ERC721, ERC721Enumerable) 
+    {
+        super._increaseBalance(account, value);
     }
+
 
     /**
      * @dev Override supportsInterface to include all interfaces

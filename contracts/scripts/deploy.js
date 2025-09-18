@@ -15,7 +15,7 @@ async function main() {
   const batchAddress = await pharmaceuticalBatch.getAddress();
 
   console.log("Deploying BatchNFT...");
-  const batchNFT = await BatchNFT.deploy(batchAddress);
+  const batchNFT = await BatchNFT.deploy("PharbitBatchNFT", "PBNFT", batchAddress);
   await batchNFT.waitForDeployment();
   const nftAddress = await batchNFT.getAddress();
 
@@ -82,7 +82,7 @@ async function main() {
     try {
       await hre.run("verify:verify", {
         address: nftAddress,
-        constructorArguments: [batchAddress],
+        constructorArguments: ["PharbitBatchNFT", "PBNFT", batchAddress],
       });
       console.log("BatchNFT verified");
     } catch (error) {

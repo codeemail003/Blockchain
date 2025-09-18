@@ -35,8 +35,8 @@
   "author": "PharbitChain Team",
   "license": "MIT",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^3.0.2",
-    "@openzeppelin/hardhat-upgrades": "^1.28.0",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/hardhat-upgrades": "^3.9.1",
     "@typechain/ethers-v6": "^0.4.3",
     "@typechain/hardhat": "^9.1.0",
     "hardhat": "^2.19.0",
