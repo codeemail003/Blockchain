@@ -124,3 +124,10 @@ ecosystem.config.js
 
 # Uploads
 uploads/
+
+# Backup files
+*.backup
+*.bak
+
+# Local development
+.local/

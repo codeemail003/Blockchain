@@ -1,4 +1,4 @@
-# PharbitChain - Pharmaceutical Blockchain Supply Chain Management
+# PharbitChain - Pharmaceutical Blockchain Supply Chain
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
@@ -6,6 +6,44 @@
 [![React Version](https://img.shields.io/badge/react-18.2.0-blue)](https://reactjs.org/)
 
 A comprehensive blockchain-based pharmaceutical supply chain management system built with Ethereum smart contracts, Node.js backend, and React frontend. PharbitChain ensures transparency, traceability, and compliance in pharmaceutical supply chains.
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js** 18.0.0 or higher
+- **npm** 8.0.0 or higher
+- **MetaMask** browser extension
+
+### One-Command Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/Maitreyapharbit/Blockchain.git
+cd pharbit-blockchain
+
+# Start everything locally
+./quick-start-local.sh
+```
+
+This will:
+- Install all dependencies
+- Start Hardhat local node
+- Deploy smart contracts
+- Start backend server
+- Start frontend application
+
+### Access the Application
+
+- **Frontend**: http://localhost:3001
+- **Backend API**: http://localhost:3000
+- **API Health**: http://localhost:3000/api/health
+- **API Docs**: http://localhost:3000/api/docs
+
+### Stop Everything
+
+```bash
+./stop-local.sh
+```
 
 ## 🏗️ Architecture
 
@@ -22,12 +60,12 @@ A comprehensive blockchain-based pharmaceutical supply chain management system b
          │                       │                       │
          ▼                       ▼                       ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   MetaMask      │    │   Supabase      │    │   Hardhat       │
-│   Wallet        │    │   PostgreSQL    │    │   Local Node    │
+│   MetaMask      │    │   Local Storage │    │   Hardhat       │
+│   Wallet        │    │   (Optional)    │    │   Local Node    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 🚀 Features
+## ✨ Features
 
 ### Smart Contracts
 - **Batch Management**: Create, transfer, and track pharmaceutical batches
@@ -39,8 +77,8 @@ A comprehensive blockchain-based pharmaceutical supply chain management system b
 ### Backend API
 - **RESTful API**: Complete CRUD operations for all entities
 - **Authentication**: JWT-based authentication with role management
-- **File Management**: AWS S3 integration for document storage
-- **Database**: Supabase PostgreSQL with real-time features
+- **File Management**: Local file storage with S3 integration option
+- **Database**: Local storage with Supabase integration option
 - **Blockchain Integration**: Ethers.js for smart contract interaction
 
 ### Frontend Application
@@ -50,146 +88,78 @@ A comprehensive blockchain-based pharmaceutical supply chain management system b
 - **Responsive Design**: Mobile and desktop optimized
 - **Dashboard**: Comprehensive overview and analytics
 
-## 📋 Prerequisites
+## 📁 Project Structure
 
-- **Node.js** 18.0.0 or higher
-- **npm** 8.0.0 or higher
-- **Git** for version control
-- **MetaMask** browser extension
-- **Docker** (optional, for containerized deployment)
-
-## 🛠️ Installation
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/pharbitchain/pharbit-blockchain.git
-cd pharbit-blockchain
+```
+pharbit-blockchain/
+├── contracts/                 # Smart contracts
+│   ├── contracts/            # Solidity contracts
+│   ├── scripts/              # Deployment scripts
+│   ├── test/                 # Contract tests
+│   └── hardhat.config.js     # Hardhat configuration
+├── backend/                  # Node.js backend
+│   ├── routes/               # API routes
+│   ├── services/             # Business logic
+│   ├── middleware/           # Express middleware
+│   ├── migrations/           # Database migrations
+│   └── index.js              # Entry point
+├── frontend/                 # React frontend
+│   ├── src/                  # Source code
+│   │   ├── components/       # React components
+│   │   ├── pages/            # Page components
+│   │   ├── services/         # API services
+│   │   └── contexts/         # React contexts
+│   └── public/               # Static assets
+├── scripts/                  # Utility scripts
+├── docs/                     # Documentation
+├── quick-start-local.sh      # Local startup script
+└── stop-local.sh            # Local shutdown script
 ```
 
-### 2. Install Dependencies
+## 🔧 Configuration
 
-```bash
-# Install all dependencies
-npm run install:all
+### Backend Configuration
 
-# Or install individually
-npm install                    # Root dependencies
-cd backend && npm install     # Backend dependencies
-cd ../frontend && npm install # Frontend dependencies
-cd ../contracts && npm install # Contract dependencies
-```
+Edit `backend/.env` with your settings:
 
-### 3. Environment Configuration
-
-```bash
-# Copy environment files
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-
-# Edit configuration files
-nano backend/.env
-nano frontend/.env
-```
-
-#### Required Environment Variables
-
-**Backend (.env):**
 ```env
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-AWS_ACCESS_KEY_ID=your_aws_access_key_id
-AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
-AWS_S3_BUCKET=your_s3_bucket_name
-JWT_SECRET=your_jwt_secret_key
+# Server Configuration
+NODE_ENV=development
+PORT=3000
+HOST=localhost
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key_here
+JWT_EXPIRES_IN=24h
+
+# Blockchain Configuration
 ETHEREUM_RPC_URL=http://localhost:8545
-PRIVATE_KEY=your_private_key
+PRIVATE_KEY=your_private_key_here
+CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000
+
+# Optional: Database (Supabase)
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Optional: AWS S3
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_S3_BUCKET=your_s3_bucket
 ```
 
-**Frontend (.env):**
+### Frontend Configuration
+
+Edit `frontend/.env` with your settings:
+
 ```env
+# API Configuration
 REACT_APP_API_URL=http://localhost:3000/api
+
+# Blockchain Configuration
 REACT_APP_ETHEREUM_RPC_URL=http://localhost:8545
-REACT_APP_CONTRACT_ADDRESS=0x...
+REACT_APP_CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000
+REACT_APP_CHAIN_ID=31337
 ```
-
-## 🚀 Quick Start
-
-### Option 1: Automated Setup (Recommended)
-
-```bash
-# Start all services with one command
-./scripts/start-blockchain.sh
-```
-
-This will:
-- Start Hardhat local node
-- Deploy smart contracts
-- Start backend server
-- Start frontend application
-- Open browser to http://localhost:3001
-
-### Option 2: Manual Setup
-
-```bash
-# Terminal 1: Start Hardhat node
-cd contracts
-npx hardhat node
-
-# Terminal 2: Deploy contracts
-cd contracts
-npx hardhat run scripts/deploy.js --network localhost
-
-# Terminal 3: Start backend
-cd backend
-npm run dev
-
-# Terminal 4: Start frontend
-cd frontend
-npm start
-```
-
-### Option 3: Docker Setup
-
-```bash
-# Development with hot reload
-docker-compose -f docker-compose.dev.yml up
-
-# Production deployment
-docker-compose up -d
-```
-
-## 📚 Usage
-
-### 1. Access the Application
-
-- **Frontend**: http://localhost:3001
-- **Backend API**: http://localhost:3000
-- **API Documentation**: http://localhost:3000/api/docs
-- **Health Check**: http://localhost:3000/api/health
-
-### 2. Connect MetaMask
-
-1. Install MetaMask browser extension
-2. Create or import a wallet
-3. Add local network (http://localhost:8545, Chain ID: 31337)
-4. Import test accounts from Hardhat (check terminal output)
-
-### 3. Create Your First Batch
-
-1. Navigate to "Batch Management"
-2. Click "Create New Batch"
-3. Fill in batch details (drug name, quantity, etc.)
-4. Submit transaction via MetaMask
-5. View batch in dashboard
-
-### 4. Manage Compliance
-
-1. Go to "Compliance Center"
-2. Add compliance records for batches
-3. Track audit history
-4. Generate compliance reports
 
 ## 🧪 Testing
 
@@ -212,52 +182,42 @@ npm run test:backend
 npm run test:frontend
 ```
 
-### Test Coverage
+## 📚 Documentation
+
+- **[Local Setup Guide](LOCAL_SETUP.md)** - Detailed local development setup
+- **[API Documentation](docs/API.md)** - Complete API reference
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Production deployment instructions
+
+## 🛠️ Development
+
+### Manual Setup
+
+If you prefer to run each step manually:
 
 ```bash
-# Generate coverage reports
-npm run test:coverage
+# 1. Install dependencies
+npm run install:all
+
+# 2. Set up environment files
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+
+# 3. Start Hardhat node (Terminal 1)
+cd contracts
+npx hardhat node
+
+# 4. Deploy contracts (Terminal 2)
+cd contracts
+npx hardhat run scripts/deploy.js --network localhost
+
+# 5. Start backend (Terminal 3)
+cd backend
+npm run dev
+
+# 6. Start frontend (Terminal 4)
+cd frontend
+npm start
 ```
-
-## 📖 API Documentation
-
-### Authentication Endpoints
-
-```http
-POST /api/auth/login
-POST /api/auth/register
-POST /api/auth/refresh
-POST /api/auth/logout
-```
-
-### Batch Management
-
-```http
-GET    /api/batches              # List all batches
-POST   /api/batches              # Create new batch
-GET    /api/batches/:id          # Get batch details
-PUT    /api/batches/:id          # Update batch
-DELETE /api/batches/:id          # Delete batch
-POST   /api/batches/:id/transfer # Transfer ownership
-```
-
-### Compliance Management
-
-```http
-GET  /api/compliance/:batchId    # Get compliance history
-POST /api/compliance/check       # Add compliance record
-PUT  /api/compliance/:id         # Update compliance record
-```
-
-### File Management
-
-```http
-POST /api/files/upload           # Upload file to S3
-GET  /api/files/:id              # Download file
-GET  /api/files/:id/metadata     # Get file metadata
-```
-
-## 🔧 Development
 
 ### Code Quality
 
@@ -272,90 +232,42 @@ npm run format
 cd frontend && npm run type-check
 ```
 
-### Database Management
+## 🐛 Troubleshooting
 
-```bash
-# Run migrations
-cd backend && npm run db:migrate
+### Common Issues
 
-# Seed database
-cd backend && npm run db:seed
-```
-
-### Contract Deployment
-
-```bash
-# Deploy to local network
-cd contracts && npm run deploy:local
-
-# Deploy to Sepolia testnet
-cd contracts && npm run deploy:sepolia
-
-# Verify contracts
-cd contracts && npm run verify
-```
-
-## 🚀 Deployment
-
-### Production Deployment
-
-1. **Environment Setup**
+1. **Port already in use**
    ```bash
-   # Set production environment variables
-   export NODE_ENV=production
-   export SUPABASE_URL=your_production_url
-   # ... other production variables
+   # Kill processes on specific ports
+   lsof -ti :3000 | xargs kill -9
+   lsof -ti :3001 | xargs kill -9
+   lsof -ti :8545 | xargs kill -9
    ```
 
-2. **Build Application**
+2. **Node modules not found**
    ```bash
-   npm run build
+   # Reinstall dependencies
+   rm -rf node_modules backend/node_modules frontend/node_modules
+   npm run install:all
    ```
 
-3. **Deploy with Docker**
-   ```bash
-   docker-compose up -d
-   ```
+3. **MetaMask connection issues**
+   - Make sure you're on the correct network (Hardhat Local)
+   - Check that the RPC URL is correct
+   - Try refreshing the page
 
-4. **Deploy to Cloud**
-   - AWS EC2 with PM2
-   - Google Cloud Run
-   - Azure Container Instances
-   - Heroku
+### Logs
 
-### AWS EC2 Deployment
+Check the logs directory for detailed error information:
 
 ```bash
-# Use the provided deployment script
-./scripts/deploy-to-ec2.sh
-```
+# View all logs
+tail -f logs/*.log
 
-## 📁 Project Structure
-
-```
-pharbit-blockchain/
-├── contracts/                 # Smart contracts
-│   ├── contracts/            # Solidity contracts
-│   ├── scripts/              # Deployment scripts
-│   ├── test/                 # Contract tests
-│   └── hardhat.config.js     # Hardhat configuration
-├── backend/                  # Node.js backend
-│   ├── routes/               # API routes
-│   ├── services/             # Business logic
-│   ├── middleware/           # Express middleware
-│   ├── config/               # Configuration
-│   └── index.js              # Entry point
-├── frontend/                 # React frontend
-│   ├── src/                  # Source code
-│   │   ├── components/       # React components
-│   │   ├── pages/            # Page components
-│   │   ├── services/         # API services
-│   │   └── contexts/         # React contexts
-│   └── public/               # Static assets
-├── scripts/                  # Utility scripts
-├── docs/                     # Documentation
-├── tests/                    # Integration tests
-└── docker-compose.yml        # Docker configuration
+# View specific logs
+tail -f logs/backend.log
+tail -f logs/frontend.log
+tail -f logs/hardhat.log
 ```
 
 ## 🤝 Contributing
@@ -366,41 +278,15 @@ pharbit-blockchain/
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### Development Guidelines
-
-- Follow the existing code style
-- Write tests for new features
-- Update documentation
-- Use conventional commits
-- Ensure all tests pass
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
-- **Documentation**: [docs.pharbitchain.com](https://docs.pharbitchain.com)
-- **Issues**: [GitHub Issues](https://github.com/pharbitchain/pharbit-blockchain/issues)
-- **Discord**: [PharbitChain Community](https://discord.gg/pharbitchain)
+- **Documentation**: [LOCAL_SETUP.md](LOCAL_SETUP.md)
+- **Issues**: [GitHub Issues](https://github.com/Maitreyapharbit/Blockchain/issues)
 - **Email**: support@pharbitchain.com
-
-## 🙏 Acknowledgments
-
-- [OpenZeppelin](https://openzeppelin.com/) for smart contract libraries
-- [Hardhat](https://hardhat.org/) for development environment
-- [React](https://reactjs.org/) for frontend framework
-- [Supabase](https://supabase.com/) for backend services
-- [AWS](https://aws.amazon.com/) for cloud infrastructure
-
-## 📊 Roadmap
-
-- [ ] Multi-chain support (Polygon, BSC)
-- [ ] Mobile application
-- [ ] Advanced analytics dashboard
-- [ ] Machine learning integration
-- [ ] IoT device integration
-- [ ] Regulatory compliance automation
 
 ---
 

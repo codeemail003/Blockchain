@@ -4,7 +4,7 @@
   "description": "Pharmaceutical Blockchain Supply Chain Management System",
   "main": "index.js",
   "scripts": {
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../contracts && npm install",
     "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
     "backend:dev": "cd backend && npm run dev",
     "frontend:dev": "cd frontend && npm start",
@@ -30,8 +30,8 @@
     "docker:logs": "docker-compose logs -f",
     "setup": "npm run install:all && npm run setup:env",
     "setup:env": "cp backend/.env.example backend/.env && cp frontend/.env.example frontend/.env",
-    "start:blockchain": "./scripts/start-blockchain.sh",
-    "start:server": "./scripts/start-server.sh"
+    "start:local": "./quick-start-local.sh",
+    "stop:local": "./stop-local.sh"
   },
   "keywords": [
     "blockchain",
@@ -54,10 +54,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pharbitchain/pharbit-blockchain.git"
+    "url": "https://github.com/Maitreyapharbit/Blockchain.git"
   },
   "bugs": {
-    "url": "https://github.com/pharbitchain/pharbit-blockchain/issues"
+    "url": "https://github.com/Maitreyapharbit/Blockchain/issues"
   },
-  "homepage": "https://github.com/pharbitchain/pharbit-blockchain#readme"
+  "homepage": "https://github.com/Maitreyapharbit/Blockchain#readme"
 }

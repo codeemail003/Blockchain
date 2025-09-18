@@ -1,16 +1,18 @@
-import React, { Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import styled, { ThemeProvider } from 'styled-components';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import { ErrorBoundary } from 'react-error-boundary';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 // Contexts
-import { useTheme } from './contexts/ThemeContext';
-import { useAuth } from './contexts/AuthContext';
+import { Web3Provider } from './contexts/Web3Context';
+import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider as CustomThemeProvider } from './contexts/ThemeContext';
 
 // Components
 import Layout from './components/Layout';
+import ErrorFallback from './components/ErrorFallback';
 import LoadingSpinner from './components/LoadingSpinner';
-import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
 import Dashboard from './pages/Dashboard';
@@ -22,108 +24,53 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 
-// Lazy loaded components for better performance
-const BatchDetails = React.lazy(() => import('./pages/BatchDetails'));
-const ComplianceDetails = React.lazy(() => import('./pages/ComplianceDetails'));
-const TransactionHistory = React.lazy(() => import('./pages/TransactionHistory'));
+// Styles
+import GlobalStyles from './styles/GlobalStyles';
 
-const AppContainer = styled.div`
-  min-height: 100vh;
-  background-color: ${props => props.theme.colors.background};
-  color: ${props => props.theme.colors.text};
-  transition: background-color 0.3s ease, color 0.3s ease;
-`;
-
-const SuspenseWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-`;
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App: React.FC = () => {
-  const { theme } = useTheme();
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <ThemeProvider theme={theme}>
-        <AppContainer>
-          <SuspenseWrapper>
-            <LoadingSpinner size="large" />
-          </SuspenseWrapper>
-        </AppContainer>
-      </ThemeProvider>
-    );
-  }
-
   return (
-    <ThemeProvider theme={theme}>
-      <AppContainer>
-        <Helmet>
-          <title>PharbitChain - Pharmaceutical Blockchain Management</title>
-          <meta 
-            name="description" 
-            content="Secure, transparent, and compliant pharmaceutical supply chain management powered by blockchain technology." 
-          />
-        </Helmet>
-        
-        <Routes>
-          {/* Public routes */}
-          <Route 
-            path="/login" 
-            element={
-              isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
-            } 
-          />
-          
-          {/* Protected routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="batches" element={<BatchManagement />} />
-            <Route 
-              path="batches/:batchId" 
-              element={
-                <Suspense fallback={<LoadingSpinner size="large" />}>
-                  <BatchDetails />
-                </Suspense>
-              } 
-            />
-            <Route path="compliance" element={<ComplianceCenter />} />
-            <Route 
-              path="compliance/:recordId" 
-              element={
-                <Suspense fallback={<LoadingSpinner size="large" />}>
-                  <ComplianceDetails />
-                </Suspense>
-              } 
-            />
-            <Route path="wallets" element={<WalletManagement />} />
-            <Route path="files" element={<FileManagement />} />
-            <Route 
-              path="transactions" 
-              element={
-                <Suspense fallback={<LoadingSpinner size="large" />}>
-                  <TransactionHistory />
-                </Suspense>
-              } 
-            />
-            <Route path="settings" element={<Settings />} />
-          </Route>
-          
-          {/* 404 route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AppContainer>
-    </ThemeProvider>
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onError={(error, errorInfo) => {
+        console.error('App Error:', error, errorInfo);
+      }}
+    >
+      <QueryClientProvider client={queryClient}>
+        <CustomThemeProvider>
+          <ThemeProvider theme={{}}>
+            <Web3Provider>
+              <AuthProvider>
+                <GlobalStyles />
+                <Router>
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/" element={<Layout />}>
+                      <Route index element={<Dashboard />} />
+                      <Route path="batches" element={<BatchManagement />} />
+                      <Route path="compliance" element={<ComplianceCenter />} />
+                      <Route path="wallets" element={<WalletManagement />} />
+                      <Route path="files" element={<FileManagement />} />
+                      <Route path="settings" element={<Settings />} />
+                    </Route>
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Router>
+              </AuthProvider>
+            </Web3Provider>
+          </ThemeProvider>
+        </CustomThemeProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

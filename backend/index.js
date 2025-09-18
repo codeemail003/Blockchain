@@ -4,27 +4,24 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+require('express-async-errors');
 
+// Import configuration
+const config = require('./config/env');
 const logger = require('./utils/logger');
+
+// Import middleware
 const errorHandler = require('./middleware/errorHandler');
-const notFound = require('./middleware/notFound');
 
 // Import routes
+const authRoutes = require('./routes/auth');
 const batchRoutes = require('./routes/batches');
 const complianceRoutes = require('./routes/compliance');
-const walletRoutes = require('./routes/wallets');
 const fileRoutes = require('./routes/files');
-const authRoutes = require('./routes/auth');
+const walletRoutes = require('./routes/wallets');
 const healthRoutes = require('./routes/health');
 
-// Import services
-const blockchainService = require('./services/blockchainService');
-const databaseService = require('./services/databaseService');
-const s3Service = require('./services/s3Service');
-
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Security middleware
 app.use(helmet({
@@ -40,146 +37,133 @@ app.use(helmet({
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3001',
-  credentials: process.env.CORS_CREDENTIALS === 'true',
+  origin: config.cors.origin,
+  credentials: config.cors.credentials,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
+  windowMs: config.rateLimit.windowMs,
+  max: config.rateLimit.maxRequests,
   message: {
-    error: 'Too many requests from this IP, please try again later.',
-    retryAfter: Math.ceil((parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000) / 1000)
+    success: false,
+    error: {
+      code: 'RATE_LIMIT_ERROR',
+      message: 'Too many requests, please try again later.',
+    },
   },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-app.use(limiter);
-
-// Compression middleware
-app.use(compression());
-
-// Logging middleware
-app.use(morgan('combined', {
-  stream: {
-    write: (message) => logger.info(message.trim())
-  }
-}));
+app.use('/api/', limiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health check endpoint
+// Compression middleware
+app.use(compression());
+
+// Logging middleware
+if (config.env === 'development') {
+  app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
+}
+
+// Health check endpoint (before rate limiting)
 app.use('/health', healthRoutes);
 
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/batches', batchRoutes);
 app.use('/api/compliance', complianceRoutes);
-app.use('/api/wallets', walletRoutes);
 app.use('/api/files', fileRoutes);
+app.use('/api/wallets', walletRoutes);
 
-// Swagger documentation
-if (process.env.NODE_ENV !== 'production') {
+// API documentation
+if (config.env === 'development') {
   const swaggerUi = require('swagger-ui-express');
   const swaggerSpec = require('./utils/swagger');
   
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    explorer: true,
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'PharbitChain API Documentation'
+    customSiteTitle: 'PharbitChain API Documentation',
   }));
 }
 
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
-    message: 'PharbitChain Pharmaceutical Blockchain API',
+    success: true,
+    message: 'PharbitChain API Server',
     version: '1.0.0',
-    status: 'operational',
-    documentation: process.env.NODE_ENV !== 'production' ? '/api-docs' : 'Documentation not available in production',
-    timestamp: new Date().toISOString()
+    environment: config.env,
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/health',
+      api: '/api',
+      docs: config.env === 'development' ? '/api/docs' : 'Not available in production',
+    },
   });
 });
 
-// Error handling middleware
-app.use(notFound);
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    error: {
+      code: 'NOT_FOUND',
+      message: 'Endpoint not found',
+      path: req.originalUrl,
+    },
+  });
+});
+
+// Global error handler
 app.use(errorHandler);
 
-// Initialize services
-const initializeServices = async () => {
-  try {
-    logger.info('Initializing services...');
-    
-    // Initialize blockchain service
-    await blockchainService.initialize();
-    logger.info('Blockchain service initialized');
-    
-    // Initialize database service
-    await databaseService.initialize();
-    logger.info('Database service initialized');
-    
-    // Initialize S3 service
-    await s3Service.initialize();
-    logger.info('S3 service initialized');
-    
-    logger.info('All services initialized successfully');
-  } catch (error) {
-    logger.error('Failed to initialize services:', error);
-    process.exit(1);
+// Start server
+const PORT = config.port;
+const HOST = config.host;
+
+const server = app.listen(PORT, HOST, () => {
+  logger.info(`PharbitChain API Server running on http://${HOST}:${PORT}`);
+  logger.info(`Environment: ${config.env}`);
+  logger.info(`Health check: http://${HOST}:${PORT}/health`);
+  
+  if (config.env === 'development') {
+    logger.info(`API Documentation: http://${HOST}:${PORT}/api/docs`);
   }
-};
+});
 
 // Graceful shutdown
-const gracefulShutdown = (signal) => {
-  logger.info(`Received ${signal}. Starting graceful shutdown...`);
-  
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, shutting down gracefully');
   server.close(() => {
-    logger.info('HTTP server closed');
-    
-    // Close database connections
-    databaseService.close();
-    
-    logger.info('Graceful shutdown completed');
+    logger.info('Process terminated');
     process.exit(0);
   });
-  
-  // Force close after 30 seconds
-  setTimeout(() => {
-    logger.error('Could not close connections in time, forcefully shutting down');
-    process.exit(1);
-  }, 30000);
-};
+});
 
-// Start server
-const startServer = async () => {
-  try {
-    await initializeServices();
-    
-    const server = app.listen(PORT, () => {
-      logger.info(`🚀 PharbitChain API server running on port ${PORT}`);
-      logger.info(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
-      logger.info(`🏥 Health Check: http://localhost:${PORT}/health`);
-      logger.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    });
-    
-    // Handle graceful shutdown
-    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-    
-    return server;
-  } catch (error) {
-    logger.error('Failed to start server:', error);
-    process.exit(1);
-  }
-};
+process.on('SIGINT', () => {
+  logger.info('SIGINT received, shutting down gracefully');
+  server.close(() => {
+    logger.info('Process terminated');
+    process.exit(0);
+  });
+});
 
-// Start the server
-const server = startServer();
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
 
 module.exports = app;
