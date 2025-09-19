@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const { authenticate, authorize } = require('../middleware/auth');
-const { validationRules, fileSchemas, validateJoi } = require('../middleware/validation');
+const { validators, fileSchemas, validateJoi } = require('../middleware/validation');
 const { asyncHandler, sendSuccessResponse, sendErrorResponse } = require('../middleware/errorHandler');
 const s3Service = require('../services/s3Service');
 const databaseService = require('../services/databaseService');
@@ -178,7 +178,7 @@ router.post('/upload',
  */
 router.get('/:fileId',
   authenticate,
-  validationRules.fileId,
+  validators.validateFileId,
   asyncHandler(async (req, res) => {
     const { fileId } = req.params;
     
@@ -244,7 +244,7 @@ router.get('/:fileId',
  */
 router.get('/:fileId/download',
   authenticate,
-  validationRules.fileId,
+  validators.validateFileId,
   asyncHandler(async (req, res) => {
     const { fileId } = req.params;
     
@@ -333,7 +333,7 @@ router.get('/:fileId/download',
  */
 router.get('/:fileId/url',
   authenticate,
-  validationRules.fileId,
+  validators.validateFileId,
   asyncHandler(async (req, res) => {
     const { fileId } = req.params;
     const expiresIn = parseInt(req.query.expiresIn) || 3600;
@@ -411,7 +411,7 @@ router.get('/:fileId/url',
  */
 router.get('/batches/:batchId',
   authenticate,
-  validationRules.batchId,
+  validators.validateBatchId,
   asyncHandler(async (req, res) => {
     const { batchId } = req.params;
     const { category } = req.query;
@@ -500,7 +500,7 @@ router.get('/batches/:batchId',
  */
 router.get('/',
   authenticate,
-  validationRules.pagination,
+  validators.validatePagination,
   asyncHandler(async (req, res) => {
     const {
       page = 1,
@@ -579,7 +579,7 @@ router.get('/',
  */
 router.delete('/:fileId',
   authenticate,
-  validationRules.fileId,
+  validators.validateFileId,
   asyncHandler(async (req, res) => {
     const { fileId } = req.params;
     

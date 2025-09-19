@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticate, authorize } = require('../middleware/auth');
-const { validationRules, complianceSchemas, validateJoi } = require('../middleware/validation');
+const { validators, complianceSchemas, validateJoi } = require('../middleware/validation');
 const { asyncHandler, sendSuccessResponse, sendErrorResponse } = require('../middleware/errorHandler');
 const blockchainService = require('../services/blockchainService');
 const databaseService = require('../services/databaseService');
@@ -120,7 +120,7 @@ router.post('/checks',
  */
 router.get('/checks/:recordId',
   authenticate,
-  validationRules.recordId,
+  validators.validateRecordId,
   asyncHandler(async (req, res) => {
     const { recordId } = req.params;
     
@@ -188,7 +188,7 @@ router.get('/checks/:recordId',
 router.put('/checks/:recordId/status',
   authenticate,
   authorize(['auditor', 'compliance_officer', 'quality_manager', 'admin']),
-  validationRules.recordId,
+  validators.validateRecordId,
   validateJoi(complianceSchemas.updateStatus),
   asyncHandler(async (req, res) => {
     const { recordId } = req.params;
@@ -268,7 +268,7 @@ router.put('/checks/:recordId/status',
  */
 router.get('/batches/:batchId',
   authenticate,
-  validationRules.batchId,
+  validators.validateBatchId,
   asyncHandler(async (req, res) => {
     const { batchId } = req.params;
     
@@ -408,7 +408,7 @@ router.post('/audits',
  */
 router.get('/audits',
   authenticate,
-  validationRules.pagination,
+  validators.validatePagination,
   asyncHandler(async (req, res) => {
     const {
       page = 1,

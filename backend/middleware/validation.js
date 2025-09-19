@@ -420,11 +420,38 @@ const handleValidationError = (error, req, res, next) => {
   next(error);
 };
 
+
+// Joi validation middleware for request bodies
+const validateJoi = (schema) => (req, res, next) => {
+  const { error } = schema.validate(req.body, { abortEarly: false });
+  if (error) {
+    logger.warn('Joi validation error', {
+      error: error.message,
+      path: req.path,
+      method: req.method
+    });
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid input data',
+        details: error.details.map(detail => ({
+          field: detail.path.join('.'),
+          message: detail.message,
+          value: detail.context?.value
+        }))
+      }
+    });
+  }
+  next();
+};
+
 module.exports = {
   validate,
   sanitize,
   schemas,
   validators,
   customValidators,
-  handleValidationError
+  handleValidationError,
+  validateJoi
 };
