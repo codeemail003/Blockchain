@@ -70,7 +70,6 @@
     "validate": "npm run lint && npm run format:check && npm run type-check && npm test",
     "analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
     "preview": "serve -s build -l 3000",
-    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
