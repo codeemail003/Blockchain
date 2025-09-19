@@ -68,11 +68,17 @@ wait_for_service() {
 main() {
     print_status "Starting PharbitChain Blockchain Setup..."
     
-    # Check if we're in the right directory
+        # Check if we're in the right directory
     if [ ! -f "package.json" ]; then
         print_error "Please run this script from the project root directory"
         exit 1
     fi
+
+    # Create necessary directories
+    mkdir -p logs
+    mkdir -p contracts
+    mkdir -p backend
+    mkdir -p frontend
 
     # Check required commands
     print_status "Checking system requirements..."

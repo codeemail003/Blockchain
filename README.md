@@ -133,9 +133,10 @@ JWT_SECRET=your_jwt_secret_key_here
 JWT_EXPIRES_IN=24h
 
 # Blockchain Configuration
+Contract Configuration
 ETHEREUM_RPC_URL=http://localhost:8545
-PRIVATE_KEY=your_private_key_here
-CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000
+PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
 
 # Optional: Database (Supabase)
 SUPABASE_URL=your_supabase_url
@@ -202,13 +203,11 @@ npm run install:all
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 
-# 3. Start Hardhat node (Terminal 1)
-cd contracts
-npx hardhat node
+# 3. Start Docker container with Hardhat node (Terminal 1)
+docker run -v $(pwd)/contracts:/app -w /app -p 8545:8545 node:18 npx hardhat node
 
 # 4. Deploy contracts (Terminal 2)
-cd contracts
-npx hardhat run scripts/deploy.js --network localhost
+docker run -v $(pwd)/contracts:/app -w /app node:18 bash -c "npm install --save-dev hardhat@2.19.1 @nomicfoundation/hardhat-ethers@3.0.2 ethers@6.8.1 --legacy-peer-deps && npx hardhat compile && npx hardhat run scripts/deploy.js --network hardhat"
 
 # 5. Start backend (Terminal 3)
 cd backend
