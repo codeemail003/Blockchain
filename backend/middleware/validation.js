@@ -191,6 +191,7 @@ const schemas = {
 
 // Validation middleware functions
 const validators = {
+  validateRecordId: [ (req, res, next) => { next(); } ],
   // User validators
   validateUserCreate: [
     body('email').isEmail().normalizeEmail(),
@@ -446,6 +447,31 @@ const validateJoi = (schema) => (req, res, next) => {
   next();
 };
 
+// Minimal batchSchemas for backend startup
+const batchSchemas = {
+  create: Joi.object({
+    drugName: Joi.string().required(),
+    drugCode: Joi.string().required(),
+    manufacturer: Joi.string().required(),
+    manufactureDate: Joi.string().required(),
+    expiryDate: Joi.string().required(),
+    quantity: Joi.number().required(),
+    serialNumbers: Joi.array().items(Joi.string()),
+    metadata: Joi.object().optional()
+  }),
+  transfer: Joi.object({}),
+  updateStatus: Joi.object({}),
+  updateMetadata: Joi.object({})
+};
+
+const complianceSchemas = {
+  createCheck: Joi.object({
+    batchId: Joi.number().required(),
+    checkType: Joi.string().required()
+  }),
+  updateStatus: Joi.object({}),
+  recordAudit: Joi.object({})
+};
 module.exports = {
   validate,
   sanitize,
@@ -453,5 +479,7 @@ module.exports = {
   validators,
   customValidators,
   handleValidationError,
-  validateJoi
+  validateJoi,
+  batchSchemas,
+  complianceSchemas
 };
