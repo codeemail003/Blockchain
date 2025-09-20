@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "node": "hardhat node --port 8545"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +14,9 @@
     "@nomicfoundation/hardhat-ethers": "^3.0.2",
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
     "ethers": "^6.8.1",
-    "hardhat": "^2.19.1"
+    "hardhat": "^2.26.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
   }
 }

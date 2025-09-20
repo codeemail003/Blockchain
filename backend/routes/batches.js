@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticate, authorize, checkOwnership } = require('../middleware/auth');
-const { validationRules, batchSchemas, validateJoi } = require('../middleware/validation');
+const { validators, batchSchemas, validateJoi } = require('../middleware/validation');
 const { asyncHandler, sendSuccessResponse, sendErrorResponse } = require('../middleware/errorHandler');
 const blockchainService = require('../services/blockchainService');
 const databaseService = require('../services/databaseService');
@@ -80,7 +80,7 @@ const logger = require('../utils/logger');
  */
 router.get('/', 
   authenticate,
-  validationRules.pagination,
+  validators.validatePagination,
   asyncHandler(async (req, res) => {
     const options = {
       page: parseInt(req.query.page) || 1,
@@ -133,7 +133,7 @@ router.get('/',
  */
 router.get('/:batchId',
   authenticate,
-  validationRules.batchId,
+  validators.validateBatchId,
   asyncHandler(async (req, res) => {
     const { batchId } = req.params;
     
@@ -292,7 +292,7 @@ router.post('/',
  */
 router.put('/:batchId/transfer',
   authenticate,
-  validationRules.batchId,
+  validators.validateBatchId,
   validateJoi(batchSchemas.transfer),
   asyncHandler(async (req, res) => {
     const { batchId } = req.params;
@@ -384,7 +384,7 @@ router.put('/:batchId/transfer',
 router.put('/:batchId/status',
   authenticate,
   authorize(['manufacturer', 'distributor', 'pharmacy', 'regulator', 'admin']),
-  validationRules.batchId,
+  validators.validateBatchId,
   validateJoi(batchSchemas.updateStatus),
   asyncHandler(async (req, res) => {
     const { batchId } = req.params;
@@ -447,7 +447,7 @@ router.put('/:batchId/status',
 router.put('/:batchId/metadata',
   authenticate,
   checkOwnership('batchId'),
-  validationRules.batchId,
+  validators.validateBatchId,
   validateJoi(batchSchemas.updateMetadata),
   asyncHandler(async (req, res) => {
     const { batchId } = req.params;
@@ -505,7 +505,7 @@ router.put('/:batchId/metadata',
  */
 router.get('/:batchId/transfers',
   authenticate,
-  validationRules.batchId,
+  validators.validateBatchId,
   asyncHandler(async (req, res) => {
     const { batchId } = req.params;
     

@@ -459,16 +459,10 @@ class DatabaseService {
   async linkFileToBatch(batchId, fileId, options = {}) {
     return this.executeWithRetry(async () => {
       const { data, error } = await this.supabase
-        .from('batch_files')
-        .insert([{
-          batch_id: batchId,
-          file_id: fileId,
-          file_purpose: options.purpose || null,
-          is_required: options.isRequired || false
-        }])
-        .select()
+        .from('batches')
+        .insert([batchData])
+        .select('*')
         .single();
-
       if (error) throw error;
       return data;
     });

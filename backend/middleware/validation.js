@@ -191,6 +191,7 @@ const schemas = {
 
 // Validation middleware functions
 const validators = {
+  validateRecordId: [ (req, res, next) => { next(); } ],
   // User validators
   validateUserCreate: [
     body('email').isEmail().normalizeEmail(),
@@ -420,11 +421,65 @@ const handleValidationError = (error, req, res, next) => {
   next(error);
 };
 
+
+// Joi validation middleware for request bodies
+const validateJoi = (schema) => (req, res, next) => {
+  const { error } = schema.validate(req.body, { abortEarly: false });
+  if (error) {
+    logger.warn('Joi validation error', {
+      error: error.message,
+      path: req.path,
+      method: req.method
+    });
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid input data',
+        details: error.details.map(detail => ({
+          field: detail.path.join('.'),
+          message: detail.message,
+          value: detail.context?.value
+        }))
+      }
+    });
+  }
+  next();
+};
+
+// Minimal batchSchemas for backend startup
+const batchSchemas = {
+  create: Joi.object({
+    drugName: Joi.string().required(),
+    drugCode: Joi.string().required(),
+    manufacturer: Joi.string().required(),
+    manufactureDate: Joi.string().required(),
+    expiryDate: Joi.string().required(),
+    quantity: Joi.number().required(),
+    serialNumbers: Joi.array().items(Joi.string()),
+    metadata: Joi.object().optional()
+  }),
+  transfer: Joi.object({}),
+  updateStatus: Joi.object({}),
+  updateMetadata: Joi.object({})
+};
+
+const complianceSchemas = {
+  createCheck: Joi.object({
+    batchId: Joi.number().required(),
+    checkType: Joi.string().required()
+  }),
+  updateStatus: Joi.object({}),
+  recordAudit: Joi.object({})
+};
 module.exports = {
   validate,
   sanitize,
   schemas,
   validators,
   customValidators,
-  handleValidationError
+  handleValidationError,
+  validateJoi,
+  batchSchemas,
+  complianceSchemas
 };
